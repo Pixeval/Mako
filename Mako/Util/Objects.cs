@@ -1,123 +1,122 @@
-#region Copyright (C) 2019-2020 Dylech30th. All rights reserved.
-// Pixeval - A Strong, Fast and Flexible Pixiv Client
-// Copyright (C) 2019-2020 Dylech30th
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as
-// published by the Free Software Foundation, either version 3 of the
-// License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-//
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#endregion
-
-using System;
+﻿using System;
+using System.Buffers;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
+using Microsoft.Toolkit.HighPerformance;
+using Microsoft.Toolkit.HighPerformance.Buffers;
 
 namespace Mako.Util
 {
-    /// <summary>
-    /// Provide a set of utilities upon a variety of types
-    /// </summary>
     [PublicAPI]
     public static class Objects
     {
-        /// <summary>
-        /// Turns a <see cref="string"/> into <see cref="Regex"/>
-        /// </summary>
-        /// <param name="str">string to be transformed</param>
-        /// <returns>regex</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Regex ToRegex(this string str)
-        {
-            return new Regex(str);
-        }
+        public static Regex ToRegex(this string str) => new Regex(str);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool NotNullOrEmpty(this string str)
-        {
-            return !string.IsNullOrEmpty(str);
-        }
+        public static bool IsNotNullOrEmpty(this string? str) => !string.IsNullOrEmpty(str);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullOrEmpty(this string str)
-        {
-            return string.IsNullOrEmpty(str);
-        }
+        public static bool IsNullOrEmpty(this string? str) => string.IsNullOrEmpty(str);
 
         /// <summary>
-        /// Acquires a byte array from <see cref="string"/> in specified <see cref="Encoding"/>.
-        /// If the <see cref="Encoding"/> is not set it will use <see cref="Encoding.UTF8"/> as its
-        /// default encoding
+        /// 根据指定的<see cref="Encoding"/>获取<paramref name="str"/>的字节数组形式，如果未指定
+        /// <paramref name="encoding"/>参数则默认使用<see cref="Encoding.UTF8"/>
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="encoding"></param>
-        /// <returns></returns>
-        public static byte[] GetBytes(this string str, Encoding encoding = null)
+        /// <param name="str">字符串</param>
+        /// <param name="encoding">字符串的编码</param>
+        /// <returns>字符串的字节数组</returns>
+        public static byte[] GetBytes(this string str, Encoding? encoding = null)
         {
-            return encoding?.Mapped(e => e.GetBytes(str)) ?? Encoding.UTF8.GetBytes(str);
+            return encoding?.Let(e => e!.GetBytes(str)) ?? Encoding.UTF8.GetBytes(str);
         }
-
-        public static string Hash<T>(this string str) where T : HashAlgorithm, new()
+        
+        public static string GetString(this byte[] bytes, Encoding? encoding = null)
         {
-            static string Sum(string s1, string s2) => s1 + s2;
-
-            using var hasher = new T();
-            var bytes = hasher.ComputeHash(str.GetBytes());
-            return bytes.Select(b => b.ToString("x2")).Aggregate(Sum);
+            return encoding?.Let(e => e!.GetString(bytes)) ?? Encoding.UTF8.GetString(bytes);
+        }
+        
+        public static string GetString(this MemoryOwner<byte> bytes, Encoding? encoding = null)
+        {
+            using (bytes)
+            {
+                return encoding?.Let(e => e!.GetString(bytes.Span)) ?? Encoding.UTF8.GetString(bytes.Span);
+            }
         }
 
         /// <summary>
-        /// Returns a <see cref="HttpResponseMessage"/> once current request has read the header
-        /// instead of full response
+        /// 使用指定的Hash算法计算<paramref name="str"/>的Hash值
         /// </summary>
-        /// <param name="client"></param>
-        /// <param name="url"></param>
-        /// <returns></returns>
+        /// <param name="str">要被计算的字符串</param>
+        /// <typeparam name="THash">指定的Hash算法类型</typeparam>
+        /// <returns>字符串的Hash值</returns>
+        public static async Task<string> HashAsync<THash>(this string str) where THash : HashAlgorithm, new()
+        {
+            using var hasher = new THash();
+            await using var memoryStream = new MemoryStream(str.GetBytes());
+            var bytes = await hasher.ComputeHashAsync(memoryStream);
+            return bytes.Select(b => b.ToString("x2")).Aggregate(string.Concat);
+        }
+
+        /// <summary>
+        /// 发送一个请求并只获取响应头，抛弃响应内容
+        /// </summary>
+        /// <param name="client">HttpClient</param>
+        /// <param name="url">要请求的URL</param>
+        /// <returns>响应</returns>
         public static Task<HttpResponseMessage> GetResponseHeader(this HttpClient client, string url)
         {
             return client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string ToJson(
-            #nullable enable
-            this object? obj,
-            #nullable disable
-            Formatting formatting = Formatting.None
-        )
+        public static async Task<string?> ToJsonAsync<TEntity>(this TEntity? obj, Func<JsonSerializerOptions>? serializerOptionFactory = null)
         {
-            return JsonConvert.SerializeObject(obj, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, Formatting = formatting });
+            if (obj is null) return null;
+            await using var memoryStream = new MemoryStream();
+            await JsonSerializer.SerializeAsync<TEntity>(memoryStream, obj, serializerOptionFactory?.Invoke());
+            return memoryStream.ToArray().GetString();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T FromJson<T>(this string src)
+        public static string? ToJson(this object? obj, Func<JsonSerializerOptions>? serializerOptionFactory = null)
         {
-            return JsonConvert.DeserializeObject<T>(src);
+            return obj?.Let(o => JsonSerializer.Serialize(o, serializerOptionFactory?.Invoke()));
+        }
+
+        /// <summary>
+        /// 异步的反序列化JSON，为了尽可能的减小数组分配，使用了<see cref="IMemoryOwner{T}"/>
+        /// </summary>
+        /// <remarks>本函数执行结束后将会释放作为参数的<see cref="IMemoryOwner{T}"/></remarks>
+        /// <param name="bytes">要被反序列化的字节数组</param>
+        /// <typeparam name="TEntity">目标类型</typeparam>
+        /// <returns>反序列化的对象</returns>
+        public static async ValueTask<TEntity?> FromJsonAsync<TEntity>(this IMemoryOwner<byte> bytes)
+        {
+            using (bytes)
+            {
+                await using var stream = bytes.Memory.AsStream();
+                return await JsonSerializer.DeserializeAsync<TEntity>(stream);
+            }
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TEntity? FromJson<TEntity>(this string str)
+        {
+            return JsonSerializer.Deserialize<TEntity>(str);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EqualsIgnoreCase(this string str1, string str2)
         {
             return string.Equals(str1, str2, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static async Task<T> GetJsonAsync<T>(this HttpClient httpClient, string url)
-        {
-            return (await httpClient.GetStringAsync(url)).FromJson<T>();
         }
     }
 }
