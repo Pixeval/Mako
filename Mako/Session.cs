@@ -18,6 +18,8 @@ namespace Mako
         /// </summary>
         public DateTime ExpireIn { get; set; }
 
+        public int ConnectionTimeout { get; set; } = 5000;
+
         /// <summary>
         /// Current access token
         /// </summary>

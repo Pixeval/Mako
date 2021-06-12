@@ -38,8 +38,8 @@ namespace Mako.Engines
                 var first = InitialUrl();
                 switch (await GetJsonResponse(first))
                 {
-                    case { IsSuccess: true } success: 
-                        Update(success.Value);
+                    case Result.Success<TRawEntity> (var raw): 
+                        Update(raw);
                         break;
                     default: 
                         Errors.ThrowNetworkException(first, PixivFetchEngine!.RequestedPages, null, MakoClient.Session?.Bypass ?? false);
@@ -57,9 +57,9 @@ namespace Mako.Engines
                 return false;
             }
 
-            if (await GetJsonResponse(NextUrl()) is {IsSuccess: true} result)
+            if (await GetJsonResponse(NextUrl()) is Result.Success<TRawEntity> (var value))
             {
-                Update(result.Value);
+                Update(value);
                 return true;
             }
 

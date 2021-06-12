@@ -23,6 +23,9 @@ namespace Mako.Util
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNotNullOrEmpty(this string? str) => !string.IsNullOrEmpty(str);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNotNullOrBlank(this string? str) => !string.IsNullOrWhiteSpace(str);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullOrEmpty(this string? str) => string.IsNullOrEmpty(str);

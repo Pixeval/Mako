@@ -5,27 +5,44 @@ using JetBrains.Annotations;
 namespace Mako.Util
 {
     [PublicAPI]
-    public readonly struct Result<T>
+    public record Result
     {
-        public T Value { get; }
+        [PublicAPI]
+        public record Success<T> : Result
+        {
+            public T Value { get; }
+
+            public void Deconstruct(out T value)
+            {
+                value = Value;
+            }
+
+            public Success(T value)
+            {
+                Value = value;
+            }
+        }
+
+        [PublicAPI]
+        public record Failure : Result
+        {
+            public Exception? Cause { get; }
+
+            public void Deconstruct([CanBeNull] out Exception? cause)
+            {
+                cause = Cause;
+            }
+
+            public Failure(Exception? cause)
+            {
+                Cause = cause;
+            }
+        }
         
-        public bool IsSuccess { get; }
-
-        public Result(T value, bool isSuccess)
-        {
-            Value = value;
-            IsSuccess = isSuccess;
-        }
-
-        public void Deconstruct(out T value, out bool isSuccess)
-        {
-            value = Value;
-            isSuccess = IsSuccess;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Result OfSuccess<T>(T value) => new Success<T>(value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Result<T> Success(T value) => new(value, true);
-
-        public static readonly Result<T> Failure = new(default!, false);
+        public static Result OfFailure(Exception? cause = null) => new Failure(cause);
     }
 }

@@ -85,13 +85,13 @@ namespace Mako.Engines
         /// <returns>JSON实体对象是否合法</returns>
         protected abstract bool ValidateResponse(TRawEntity rawEntity);
 
-        protected async Task<Result<TRawEntity>> GetJsonResponse(string url)
+        protected async Task<Result> GetJsonResponse(string url)
         {
             var result = await MakoClient.GetMakoTaggedHttpClient(_apiKind).GetFromJsonAsync<TRawEntity>(url);
-            if (result is null) return Result<TRawEntity>.Failure;
+            if (result is null) return Result.OfFailure();
             return ValidateResponse(result)
-                ? Result<TRawEntity>.Success(result)
-                : Result<TRawEntity>.Failure;
+                ? Result.OfSuccess<TRawEntity>(result)
+                : Result.OfFailure();
         }
         
         public ValueTask DisposeAsync() => default;

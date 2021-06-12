@@ -1,29 +1,40 @@
 ﻿using System;
 using System.Globalization;
+using Autofac;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Mako
 {
     [PublicAPI]
     public class MakoClient
     {
-        public Session? Session { get; private set; }
-        
-        internal IServiceCollection MakoServices { get; init; }
-
-        internal IServiceProvider MakoServiceProvider => MakoServices.BuildServiceProvider();
-        
-        public CultureInfo ClientCulture { get; set; }
-
-        internal T? GetService<T>()
+        public MakoClient(Session session, CultureInfo clientCulture)
         {
-            return GetService<T>(typeof(T));
+            Session = session;
+            MakoServices = BuildContainer();
+            ClientCulture = clientCulture;
         }
 
-        internal T? GetService<T>(Type type)
+        private static IContainer BuildContainer()
         {
-            return (T?) MakoServiceProvider.GetService(type);
+            // TODO
+            throw new NotImplementedException();
+        }
+        
+        public Session Session { get; private set; }
+        
+        internal IContainer MakoServices { get; init; }
+
+        public CultureInfo ClientCulture { get; set; }
+
+        internal TResult Resolve<TResult>() where TResult : notnull
+        {
+            return MakoServices.Resolve<TResult>();
+        }
+        
+        internal TResult Resolve<TResult>(Type type) where TResult : notnull
+        {
+            return (TResult) MakoServices.Resolve(type);
         }
     }
 }
