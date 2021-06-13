@@ -42,10 +42,10 @@ namespace Mako.Model
             public long PageCount { get; set; }
 
             [JsonPropertyName("width")]
-            public long Width { get; set; }
+            public int Width { get; set; }
 
             [JsonPropertyName("height")]
-            public long Height { get; set; }
+            public int Height { get; set; }
 
             [JsonPropertyName("sanity_level")]
             public long SanityLevel { get; set; }
@@ -60,10 +60,10 @@ namespace Mako.Model
             public List<MetaPage>? MetaPages { get; set; }
 
             [JsonPropertyName("total_view")]
-            public long TotalView { get; set; }
+            public int TotalView { get; set; }
 
             [JsonPropertyName("total_bookmarks")]
-            public long TotalBookmarks { get; set; }
+            public int TotalBookmarks { get; set; }
 
             [JsonPropertyName("is_bookmarked")]
             public bool IsBookmarked { get; set; }

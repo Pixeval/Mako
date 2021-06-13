@@ -15,7 +15,7 @@ namespace Mako.Engines
     ///     "nextUrl": "&lt;下一页的URL&gt;"
     /// }
     /// </code>
-    /// <see cref="AbstractPixivAsyncEnumerator{E,R}"/>提供了一个枚举器以枚举JSON资源的
+    /// <see cref="AbstractPixivAsyncEnumerator{TEntity,TRawEntity,TFetchEngine}"/>提供了一个枚举器以枚举JSON资源的
     /// <c>contents</c>部分，该类包含四个主要任务：
     /// <list type="number">
     ///     <item>
@@ -39,10 +39,12 @@ namespace Mako.Engines
     /// </remarks>
     /// <typeparam name="TEntity">统一的对象类型</typeparam>
     /// <typeparam name="TRawEntity">JSON反序列化实体类类型</typeparam>
-    public abstract class AbstractPixivAsyncEnumerator<TEntity, TRawEntity> : IAsyncEnumerator<TEntity?>
+    /// <typeparam name="TFetchEngine">搜索引擎类型</typeparam>
+    public abstract class AbstractPixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine> : IAsyncEnumerator<TEntity?>
         where TEntity : class?
+        where TFetchEngine : class, IFetchEngine<TEntity>
     {
-        protected readonly IFetchEngine<TEntity>? PixivFetchEngine;
+        protected readonly TFetchEngine PixivFetchEngine;
 
         protected IEnumerator<TEntity>? CurrentEntityEnumerator;
 
@@ -51,7 +53,7 @@ namespace Mako.Engines
         /// <summary>
         /// 当前的任务采用了哪种<see cref="MakoApiKind"/>
         /// </summary>
-        private readonly MakoApiKind _apiKind;
+        protected MakoApiKind ApiKind { get; }
 
         protected readonly MakoClient MakoClient;
         
@@ -63,11 +65,11 @@ namespace Mako.Engines
         /// </remarks>
         protected bool IsCancellationRequested => PixivFetchEngine?.IsCanceled ?? true;
 
-        protected AbstractPixivAsyncEnumerator(IFetchEngine<TEntity>? pixivFetchEngine, MakoApiKind apiKind, MakoClient makoClient)
+        protected AbstractPixivAsyncEnumerator(TFetchEngine pixivFetchEngine,  MakoApiKind apiKind, MakoClient makoClient)
         {
             PixivFetchEngine = pixivFetchEngine;
-            _apiKind = apiKind;
             MakoClient = makoClient;
+            ApiKind = apiKind;
         }
 
         public abstract ValueTask<bool> MoveNextAsync();
@@ -87,7 +89,7 @@ namespace Mako.Engines
 
         protected async Task<Result> GetJsonResponse(string url)
         {
-            var result = await MakoClient.GetMakoTaggedHttpClient(_apiKind).GetFromJsonAsync<TRawEntity>(url);
+            var result = await MakoClient.GetMakoTaggedHttpClient(ApiKind).GetFromJsonAsync<TRawEntity>(url);
             if (result is null) return Result.OfFailure();
             return ValidateResponse(result)
                 ? Result.OfSuccess<TRawEntity>(result)

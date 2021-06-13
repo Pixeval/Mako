@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -23,7 +24,7 @@ namespace Mako.Util
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNotNullOrEmpty(this string? str) => !string.IsNullOrEmpty(str);
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNotNullOrBlank(this string? str) => !string.IsNullOrWhiteSpace(str);
 
@@ -41,12 +42,12 @@ namespace Mako.Util
         {
             return encoding?.Let(e => e!.GetBytes(str)) ?? Encoding.UTF8.GetBytes(str);
         }
-        
+
         public static string GetString(this byte[] bytes, Encoding? encoding = null)
         {
             return encoding?.Let(e => e!.GetString(bytes)) ?? Encoding.UTF8.GetString(bytes);
         }
-        
+
         public static string GetString(this MemoryOwner<byte> bytes, Encoding? encoding = null)
         {
             using (bytes)
@@ -109,7 +110,7 @@ namespace Mako.Util
                 return await JsonSerializer.DeserializeAsync<TEntity>(stream);
             }
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TEntity? FromJson<TEntity>(this string str)
         {
@@ -120,6 +121,21 @@ namespace Mako.Util
         public static bool EqualsIgnoreCase(this string str1, string str2)
         {
             return string.Equals(str1, str2, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static readonly IEqualityComparer<string> CaseIgnoredComparer = new CaseIgnoredStringComparer();
+
+        private class CaseIgnoredStringComparer : IEqualityComparer<string>
+        {
+            public bool Equals(string? x, string? y)
+            {
+                return x is not null && y is not null && x.EqualsIgnoreCase(y);
+            }
+
+            public int GetHashCode(string obj)
+            {
+                return obj.GetHashCode();
+            }
         }
     }
 }

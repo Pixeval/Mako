@@ -41,9 +41,9 @@ namespace Mako.Model
 
         public IEnumerable<string>? Comments { get; set; }
 
-        public string? Resolution { get; set; }
+        public Resolution? Resolution { get; set; }
         
-        public IEnumerable<IllustrationEssential.Tag>? Tags { get; set; }
+        public IEnumerable<Tag>? Tags { get; set; }
 
         public bool IsR18 => Tags?.Any(x => Regex.IsMatch(x.Name ?? string.Empty, "[Rr][-]?18[Gg]?") || Regex.IsMatch(x.TranslatedName ?? string.Empty, "[Rr][-]?18[Gg]?")) ?? false;
     }

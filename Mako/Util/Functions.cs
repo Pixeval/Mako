@@ -8,7 +8,7 @@ namespace Mako.Util
     [PublicAPI]
     public static class Functions
     {
-        public static Func<T, T> Identity<T>() => t => t;
+        public static Func<T, T> Identity<T>() => static t => t;
 
         public static ROut? Let<TIn, ROut>(this TIn obj, Func<TIn, ROut> block)
         {

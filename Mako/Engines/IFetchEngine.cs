@@ -20,21 +20,12 @@ namespace Mako.Engines
     /// </example>
     /// <typeparam name="E">搜索引擎所搜索的对象类型</typeparam>
     [PublicAPI]
-    public interface IFetchEngine<E> : IAsyncEnumerable<E>, ICancellable
+    public interface IFetchEngine<E> : IAsyncEnumerable<E>, IListSupport<E>, IMakoClientSupport, ICancellable
     {
         /// <summary>
         /// 指示该引擎已经搜索了多少页，每页都会包含多个<see cref="E"/>实例
         /// </summary>
         int RequestedPages { get; set; }
-
-        /// <summary>
-        /// 把一个<typeparamref name="E"/>插入到<see cref="IList{E}"/>中
-        /// 可以在这个方法里选择把<typeparamref name="E"/>插入到<see cref="IList{E}"/>
-        /// 中的合适位置
-        /// </summary>
-        /// <param name="list">被插入的列表</param>
-        /// <param name="item">要插入的元素</param>
-        void InsertTo(IList<E> list, E? item);
 
         /// <summary>
         /// 验证一个<typeparamref name="E"/>是否有资格被放到<see cref="IList{E}"/>中

@@ -13,6 +13,8 @@ namespace Mako.Engines
     {
         public abstract IAsyncEnumerator<E> GetAsyncEnumerator(CancellationToken cancellationToken = new());
 
+        public abstract MakoClient MakoClient { get; set; }
+        
         public int RequestedPages { get; set; }
         
         /// <summary>

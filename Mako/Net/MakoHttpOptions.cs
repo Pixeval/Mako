@@ -27,7 +27,9 @@ namespace Mako.Net
         public const string AppApiHost = "app-api.pixiv.net";
 
         public static readonly Regex BypassRequiredHost = "^app-api\\.pixiv\\.net$|^www\\.pixiv\\.net$".ToRegex();
-        
+
+        public static string AppApiUrl(string query) => $"{AppApiBaseUrl}/{query}";
+
         public static void UseHttpScheme(HttpRequestMessage request)
         {
             if (request.RequestUri != null)

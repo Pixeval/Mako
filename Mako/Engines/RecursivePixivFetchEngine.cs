@@ -6,17 +6,18 @@ using Mako.Util;
 
 namespace Mako.Engines
 {
-    internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity> : AbstractPixivAsyncEnumerator<TEntity, TRawEntity> 
-        where TEntity : class
+    internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine> : AbstractPixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>
+        where TEntity : class?
+        where TFetchEngine : class, IFetchEngine<TEntity>
     {
         protected TRawEntity? Entity { get; private set; }
 
-        protected RecursivePixivAsyncEnumerator([CanBeNull] IFetchEngine<TEntity>? pixivFetchEngine, MakoApiKind apiKind, [NotNull] MakoClient makoClient) 
-            : base(pixivFetchEngine, apiKind, makoClient)
+        protected RecursivePixivAsyncEnumerator(TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind, [NotNull] MakoClient makoClient)
+            : base(pixivFetchEngine, makoApiKind, makoClient)
         {
         }
 
-        protected abstract string NextUrl();
+        protected abstract string? NextUrl();
 
         protected abstract string InitialUrl();
 
@@ -38,11 +39,11 @@ namespace Mako.Engines
                 var first = InitialUrl();
                 switch (await GetJsonResponse(first))
                 {
-                    case Result.Success<TRawEntity> (var raw): 
+                    case Result.Success<TRawEntity> (var raw):
                         Update(raw);
                         break;
-                    default: 
-                        Errors.ThrowNetworkException(first, PixivFetchEngine!.RequestedPages, null, MakoClient.Session?.Bypass ?? false);
+                    default:
+                        Errors.ThrowNetworkException(first, PixivFetchEngine!.RequestedPages, null, MakoClient.Session.Bypass);
                         break;
                 }
             }
@@ -57,7 +58,7 @@ namespace Mako.Engines
                 return false;
             }
 
-            if (await GetJsonResponse(NextUrl()) is Result.Success<TRawEntity> (var value))
+            if (await GetJsonResponse(NextUrl()!) is Result.Success<TRawEntity> (var value))
             {
                 Update(value);
                 return true;
