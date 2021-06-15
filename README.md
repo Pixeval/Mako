@@ -1,5 +1,5 @@
 # Mako
-The core logic extracted from Pixeval, provieded here as an individual library for refactoring
+An asynchronous-based, high-performance Pixiv framework aims to provide a fluent API and can be seamlessly used on both desktop, console, or web apps, With the additional ability to bypass the GFW without using proxy
 
 ## How to use?
 Requirements:
