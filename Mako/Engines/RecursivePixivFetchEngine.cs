@@ -6,6 +6,12 @@ using Mako.Util;
 
 namespace Mako.Engines
 {
+    /// <summary>
+    /// 一个可以不停的搜索新页面直到不再有更多页面可以被抓取的迭代器，一个页面可以包含多个搜索结果
+    /// </summary>
+    /// <typeparam name="TEntity">搜索结果对应的实体类</typeparam>
+    /// <typeparam name="TRawEntity">页面对应的实体类</typeparam>
+    /// <typeparam name="TFetchEngine">搜索引擎</typeparam>
     internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine> : AbstractPixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>
         where TEntity : class?
         where TFetchEngine : class, IFetchEngine<TEntity>
@@ -17,20 +23,49 @@ namespace Mako.Engines
         {
         }
 
+        /// <summary>
+        /// 获取下一个页面的URL
+        /// </summary>
+        /// <returns>下一个页面的URL</returns>
         protected abstract string? NextUrl();
 
+        /// <summary>
+        /// 获取第一个页面的URL
+        /// </summary>
+        /// <returns>第一个页面的URL</returns>
         protected abstract string InitialUrl();
 
+        /// <summary>
+        /// 从新页面的返回结果中获取该页面的所有搜索结果的迭代器
+        /// </summary>
+        /// <returns>所有搜索结果的迭代器</returns>
         protected abstract IEnumerator<TEntity> GetNewEnumerator();
 
+        /// <summary>
+        /// 指示是否还有下一页
+        /// </summary>
+        /// <returns>是否还有下一页</returns>
         protected virtual bool HasNextPage() => NextUrl().IsNotNullOrEmpty();
 
+        /// <summary>
+        /// 指示是否还有下一个结果，该函数在搜索结果数被限制的时候很有用
+        /// </summary>
+        /// <returns>是否还有下一个结果</returns>
         protected virtual bool HasNext() => true;
 
+        /// <summary>
+        /// 获取下一个搜索结果，如果已经到达了当前页的末尾，则请求一个新的页面并返回新页面的第一个搜索结果
+        /// </summary>
+        /// <remarks>
+        /// 如果该函数发现搜索引擎已经搜索到了末尾，也即无法再提供更多的结果，则将会设置<see cref="EngineHandle.IsCompleted"/>属性
+        /// 以标明该搜索引擎已经结束运行
+        /// </remarks>
+        /// <returns>是否还有更多的结果</returns>
         public override async ValueTask<bool> MoveNextAsync()
         {
             if (IsCancellationRequested || !HasNext())
             {
+                PixivFetchEngine.EngineHandle.Complete(); // Set the state of the 'PixivFetchEngine' to Completed
                 return false;
             }
 
@@ -43,30 +78,35 @@ namespace Mako.Engines
                         Update(raw);
                         break;
                     default:
-                        Errors.ThrowNetworkException(first, PixivFetchEngine!.RequestedPages, null, MakoClient.Session.Bypass);
-                        break;
+                        throw new MakoNetworkException(first, PixivFetchEngine!.RequestedPages, MakoClient.Session.Bypass, null);
                 }
             }
 
-            if (CurrentEntityEnumerator!.MoveNext())
+            if (CurrentEntityEnumerator!.MoveNext()) // If the enumerator can proceeds then return true
             {
                 return true;
             }
 
-            if (!HasNextPage())
+            if (!HasNextPage()) // Check if there are more pages, return false if not
             {
+                PixivFetchEngine.EngineHandle.Complete();
                 return false;
             }
 
-            if (await GetJsonResponse(NextUrl()!) is Result.Success<TRawEntity> (var value))
+            if (await GetJsonResponse(NextUrl()!) is Result.Success<TRawEntity> (var value)) // Else request a new page
             {
                 Update(value);
                 return true;
             }
 
+            PixivFetchEngine.EngineHandle.Complete();
             return false;
         }
 
+        /// <summary>
+        /// 每申请一个新的页面后负责更新迭代器，实体对象和页数
+        /// </summary>
+        /// <param name="rawEntity">新页面的请求结果</param>
         protected override void Update(TRawEntity rawEntity)
         {
             Entity = rawEntity;

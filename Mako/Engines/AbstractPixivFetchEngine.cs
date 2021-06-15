@@ -14,7 +14,7 @@ namespace Mako.Engines
     {
         protected AbstractPixivFetchEngine(EngineHandle? engineHandle)
         {
-            EngineHandle = engineHandle ?? new EngineHandle(Guid.NewGuid().ToString());
+            EngineHandle = engineHandle ?? new EngineHandle(Guid.NewGuid());
         }
 
         public abstract IAsyncEnumerator<E> GetAsyncEnumerator(CancellationToken cancellationToken = new());

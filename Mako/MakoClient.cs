@@ -16,14 +16,13 @@ using Refit;
 namespace Mako
 {
     [PublicAPI]
-    public class MakoClient
+    public class MakoClient : ICancellable
     {
         public MakoClient(Session session, CultureInfo clientCulture)
         {
             Session = session;
             MakoServices = BuildContainer();
             ClientCulture = clientCulture;
-            _cancellationTokenSource = new CancellationTokenSource();
         }
 
         private IContainer BuildContainer()
@@ -86,20 +85,16 @@ namespace Mako
         /// <summary>
         /// 正在执行的所有实例
         /// </summary>
-        private readonly IList<IEngineHandleSource> _runningInstances = new List<IEngineHandleSource>();
+        private readonly List<IEngineHandleSource> _runningInstances = new();
 
-        private CancellationTokenSource _cancellationTokenSource;
-        
-        public CancellationTokenSource CancellationTokenSource
+        public bool IsCanceled { get; set; }
+
+        public void Cancel()
         {
-            get => _cancellationTokenSource;
-            set
-            {
-                _cancellationTokenSource = value;
-                _cancellationTokenSource.Token.Register(() => _runningInstances.ForEach(handle => handle.EngineHandle.Cancel()));
-            }
+            IsCanceled = true;
+            _runningInstances.ForEach(instance => instance.EngineHandle.Cancel());
         }
-
+        
         internal TResult Resolve<TResult>() where TResult : notnull
         {
             return MakoServices.Resolve<TResult>();
@@ -116,10 +111,12 @@ namespace Mako
         }
 
         private void RegisterInstance(IEngineHandleSource engineHandleSource) => _runningInstances.Add(engineHandleSource);
+
+        private void CancelInstance(EngineHandle handle) => _runningInstances.RemoveAll(instance => instance.EngineHandle == handle);
         
-        public IFetchEngine<Illustration?> Bookmarks(string uid, PrivacyPolicy privacyPolicy)
+        public IFetchEngine<Illustration> Bookmarks(string uid, PrivacyPolicy privacyPolicy)
         {
-            return new BookmarkEngine(this, uid, privacyPolicy).Apply(RegisterInstance);
+            return new BookmarkEngine(this, uid, privacyPolicy, new EngineHandle(CancelInstance)).Apply(RegisterInstance);
         }
 
         public IFetchEngine<T>? GetByHandle<T>(EngineHandle handle)
