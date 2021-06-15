@@ -8,6 +8,13 @@ namespace Mako
     [PublicAPI]
     public record Session
     {
+        public static readonly Session Default = new()
+        {
+            ConnectionTimeout = 5000,
+            Bypass = false,
+            MinBookmark = 0
+        };
+        
         /// <summary>
         /// User name
         /// </summary>
@@ -18,7 +25,7 @@ namespace Mako
         /// </summary>
         public DateTime ExpireIn { get; set; }
 
-        public int ConnectionTimeout { get; set; } = 5000;
+        public int ConnectionTimeout { get; set; }
 
         /// <summary>
         /// Current access token
@@ -39,12 +46,7 @@ namespace Mako
         /// User id
         /// </summary>
         public string? Id { get; set; }
-
-        /// <summary>
-        /// User's registered e-mail address
-        /// </summary>
-        public string? MailAddress { get; set; }
-
+        
         /// <summary>
         /// Account for login
         /// </summary>
@@ -79,19 +81,14 @@ namespace Mako
         public string? MirrorHost { get; set; }
 
         /// <summary>
-        /// The time of current session's refresh
-        /// </summary>
-        public DateTime TokenRefreshed { get; set; }
-
-        /// <summary>
         /// Indicates which tags should be strictly exclude when performing a query operation
         /// </summary>
-        public ISet<string> ExcludeTags { get; } = new HashSet<string>();
+        public ISet<string>? ExcludeTags { get; }
 
         /// <summary>
         /// Indicates which tags should be strictly include when performing a query operation
         /// </summary>
-        public ISet<string> IncludeTags { get; } = new HashSet<string>();
+        public ISet<string>? IncludeTags { get; }
 
         /// <summary>
         /// Any illust with less bookmarks will be filtered out
@@ -105,7 +102,7 @@ namespace Mako
 
         public bool RefreshRequired()
         {
-            return AccessToken.IsNullOrEmpty() || DateTime.Now - TokenRefreshed >= TimeSpan.FromMinutes(50);
+            return AccessToken.IsNullOrEmpty() || DateTime.Now >= ExpireIn;
         }
     }
 }

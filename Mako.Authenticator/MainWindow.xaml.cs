@@ -23,7 +23,9 @@ namespace Mako.Authenticator
     
     public partial class MainWindow
     {
-        private readonly TaskCompletionSource<(string, string)> webViewLoginCompletion = new();
+        private readonly TaskCompletionSource<(string, string)> _webViewLoginCompletion = new();
+
+        public static string SessionJson { get; set; }
         
         public MainWindow()
         {
@@ -72,7 +74,7 @@ namespace Mako.Authenticator
         {
             if (e.Uri.StartsWith("pixiv://"))
             {
-                webViewLoginCompletion.SetResult((e.Uri, AsString(await LoginWebView.CoreWebView2.CookieManager.GetCookiesAsync("https://www.pixiv.net"))));
+                _webViewLoginCompletion.SetResult((e.Uri, AsString(await LoginWebView.CoreWebView2.CookieManager.GetCookiesAsync("https://www.pixiv.net"))));
             }
         }
 
@@ -82,7 +84,7 @@ namespace Mako.Authenticator
             var verifier = GetCodeVerify();
             LoginWebView.Source = new Uri(GenerateWebPageUrl(verifier));
 
-            var (url, cookie) = await webViewLoginCompletion.Task;
+            var (url, cookie) = await _webViewLoginCompletion.Task;
             var code = HttpUtility.ParseQueryString(new Uri(url).Query)["code"];
 
             var httpClient = new HttpClient();
@@ -97,8 +99,8 @@ namespace Mako.Authenticator
                 new KeyValuePair<string, string>("include_policy", "true"),
                 new KeyValuePair<string, string>("redirect_uri", "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback")
             }));
-            Clipboard.SetText(await responseMessage.Content.ReadAsStringAsync());
-            MessageBox.Show("Copied");
+            SessionJson = await responseMessage.Content.ReadAsStringAsync();
+            Clipboard.SetText(SessionJson);
             Close();
         }
     }

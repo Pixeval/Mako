@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Mako.Engines
@@ -11,6 +12,11 @@ namespace Mako.Engines
     /// <typeparam name="E"><inheritdoc cref="IFetchEngine{E}"/></typeparam>
     internal abstract class AbstractPixivFetchEngine<E> : IFetchEngine<E>
     {
+        protected AbstractPixivFetchEngine(EngineHandle? engineHandle)
+        {
+            EngineHandle = engineHandle ?? new EngineHandle(Guid.NewGuid().ToString());
+        }
+
         public abstract IAsyncEnumerator<E> GetAsyncEnumerator(CancellationToken cancellationToken = new());
 
         public abstract MakoClient MakoClient { get; set; }
@@ -42,7 +48,7 @@ namespace Mako.Engines
         {
             return item is not null && list.Contains(item);
         }
-
-        public bool IsCanceled { get; set; }
+        
+        public EngineHandle EngineHandle { get; }
     }
 }

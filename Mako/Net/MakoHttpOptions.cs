@@ -54,10 +54,9 @@ namespace Mako.Net
             return async (context, token) =>
             {
                 var sockets = new Socket(SocketType.Stream, ProtocolType.Tcp); // disposed by networkStream
-                await sockets.ConnectAsync(await nameResolver.Lookup(context.DnsEndPoint.Host), 443, token);
+                await sockets.ConnectAsync(await nameResolver.Lookup(context.InitialRequestMessage.RequestUri!.Host), 443, token);
                 var networkStream = new NetworkStream(sockets, true); // disposed by sslStream
                 var sslStream = new SslStream(networkStream, false, (_, _, _, _) => true);
-
                 await sslStream.AuthenticateAsClientAsync(string.Empty);
                 return sslStream;
             };

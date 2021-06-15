@@ -20,13 +20,13 @@ namespace Mako.Engines
     /// </example>
     /// <typeparam name="E">搜索引擎所搜索的对象类型</typeparam>
     [PublicAPI]
-    public interface IFetchEngine<E> : IAsyncEnumerable<E>, IListSupport<E>, IMakoClientSupport, ICancellable
+    public interface IFetchEngine<E> : IAsyncEnumerable<E>, IListSupport<E>, IMakoClientSupport, IEngineHandleSource
     {
         /// <summary>
         /// 指示该引擎已经搜索了多少页，每页都会包含多个<see cref="E"/>实例
         /// </summary>
         int RequestedPages { get; set; }
-
+        
         /// <summary>
         /// 验证一个<typeparamref name="E"/>是否有资格被放到<see cref="IList{E}"/>中
         /// 可以在这个方法里验证<paramref name="list"/>是否已经包含<paramref name="item"/>

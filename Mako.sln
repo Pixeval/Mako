@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mako", "Mako\Mako.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mako.Authenticator", "Mako.Authenticator\Mako.Authenticator.csproj", "{788A8488-4708-4963-A27B-1E05FACE1AB5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mako.Console", "Mako.Console\Mako.Console.csproj", "{787E91F2-5FD0-4143-8938-089A718B0C44}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{788A8488-4708-4963-A27B-1E05FACE1AB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{788A8488-4708-4963-A27B-1E05FACE1AB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{788A8488-4708-4963-A27B-1E05FACE1AB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{787E91F2-5FD0-4143-8938-089A718B0C44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{787E91F2-5FD0-4143-8938-089A718B0C44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{787E91F2-5FD0-4143-8938-089A718B0C44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{787E91F2-5FD0-4143-8938-089A718B0C44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 
 namespace Mako.Util
@@ -27,16 +28,28 @@ namespace Mako.Util
             };
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> enumerable)
         {
             return enumerable.Where(i => i is not null)!;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TResult> SelectNotNull<T, TResult>(this IEnumerable<T> src, Func<T, TResult> selector)
         {
             return src.WhereNotNull().Select(selector);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool None<T>(this IEnumerable<T> enumerable) => !enumerable.Any();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            foreach (var t in enumerable)
+            {
+                action(t);
+            }
+        }
     }
 }

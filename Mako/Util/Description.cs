@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace Mako.Util
 {
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Delegate | AttributeTargets.Property)]
     [PublicAPI]
     public class Description : Attribute
     {

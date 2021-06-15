@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Mako.Net;
@@ -53,7 +54,7 @@ namespace Mako.Engines
         /// <summary>
         /// 当前的任务采用了哪种<see cref="MakoApiKind"/>
         /// </summary>
-        protected MakoApiKind ApiKind { get; }
+        private MakoApiKind ApiKind { get; }
 
         protected readonly MakoClient MakoClient;
         
@@ -63,7 +64,7 @@ namespace Mako.Engines
         /// <remarks>
         /// 如果<see cref="PixivFetchEngine"/>是<c>null</c>，则直接返回<c>true</c>来中断任务执行
         /// </remarks>
-        protected bool IsCancellationRequested => PixivFetchEngine?.IsCanceled ?? true;
+        protected bool IsCancellationRequested => PixivFetchEngine?.EngineHandle.IsCanceled ?? true;
 
         protected AbstractPixivAsyncEnumerator(TFetchEngine pixivFetchEngine,  MakoApiKind apiKind, MakoClient makoClient)
         {
@@ -89,7 +90,13 @@ namespace Mako.Engines
 
         protected async Task<Result> GetJsonResponse(string url)
         {
-            var result = await MakoClient.GetMakoTaggedHttpClient(ApiKind).GetFromJsonAsync<TRawEntity>(url);
+            var responseMessage = await MakoClient.ResolveKeyed<HttpClient>(ApiKind).GetAsync(url);
+            if (!responseMessage.IsSuccessStatusCode)
+            {
+                throw new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, await responseMessage.Content.ReadAsStringAsync());
+            }
+
+            var result = (await responseMessage.Content.ReadAsStringAsync()).FromJson<TRawEntity>();
             if (result is null) return Result.OfFailure();
             return ValidateResponse(result)
                 ? Result.OfSuccess<TRawEntity>(result)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Mako.Model;
@@ -116,6 +117,38 @@ namespace Mako
             }
 
             return illustration;
+        }
+
+        public static Session ToSession(this TokenResponse tokenResponse, string password)
+        {
+            return Session.Default with
+            {
+                AccessToken = tokenResponse.AccessToken,
+                Account = tokenResponse.User?.Account,
+                AvatarUrl = tokenResponse.User?.ProfileImageUrls?.Px170X170,
+                ExpireIn = DateTime.Now + TimeSpan.FromSeconds(tokenResponse.ExpiresIn) - TimeSpan.FromMinutes(5), // 减去5分钟是考虑到网络延迟会导致精确时间不可能恰好是一小时(TokenResponse的ExpireIn是60分钟)
+                Id = tokenResponse.User?.Id,
+                IsPremium = tokenResponse.User?.IsPremium ?? false,
+                RefreshToken = tokenResponse.RefreshToken,
+                Password = password,
+                Name = tokenResponse.User?.Name
+            };
+        }
+        
+        public static Session ComposeSession(this Session oldSession, Session newSession)
+        {
+            return oldSession with
+            {
+                AccessToken = newSession.AccessToken,
+                Account = newSession.Account,
+                AvatarUrl = newSession.AvatarUrl,
+                ExpireIn = newSession.ExpireIn,
+                Id = newSession.Id,
+                IsPremium = newSession.IsPremium,
+                RefreshToken = newSession.RefreshToken,
+                Password = newSession.Password,
+                Name = newSession.Name
+            };
         }
     }
 }

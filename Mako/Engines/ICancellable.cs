@@ -9,15 +9,5 @@ namespace Mako.Engines
     public interface ICancellable
     {
         bool IsCanceled { get; set; }
-
-        public void Cancel ()
-        {
-            IsCanceled = true;
-        }
-
-        protected void A()
-        {
-            
-        }
     }
 }

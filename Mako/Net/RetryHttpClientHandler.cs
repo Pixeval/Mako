@@ -11,7 +11,6 @@ namespace Mako.Net
         public MakoClient MakoClient { get; set; } = null!;
 
         private readonly HttpMessageInvoker _delegatedHandler;
-
         
         public RetryHttpClientHandler(HttpMessageHandler delegatedHandler)
         {

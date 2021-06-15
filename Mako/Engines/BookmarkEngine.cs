@@ -17,7 +17,11 @@ namespace Mako.Engines
         
         public sealed override MakoClient MakoClient { get; set; }
 
-        public BookmarkEngine(MakoClient makoClient, string uid, PrivacyPolicy privacyPolicy)
+        public BookmarkEngine(
+            MakoClient makoClient,
+            string uid, 
+            PrivacyPolicy privacyPolicy,
+            EngineHandle? engineHandle = null) : base(engineHandle)
         {
             _uid = uid;
             _privacyPolicy = privacyPolicy;
@@ -31,13 +35,13 @@ namespace Mako.Engines
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new BookmarkAsyncEnumerator(this, MakoApiKind.AppApi, MakoClient)!;
+            return new BookmarkAsyncEnumerator(this, MakoClient)!;
         }
 
         private class BookmarkAsyncEnumerator : RecursivePixivAsyncEnumerator<Illustration, BookmarkResponse, BookmarkEngine>
         {
-            public BookmarkAsyncEnumerator(BookmarkEngine pixivFetchEngine, MakoApiKind makoApiKind, [NotNull] MakoClient makoClient) 
-                : base(pixivFetchEngine, makoApiKind, makoClient)
+            public BookmarkAsyncEnumerator(BookmarkEngine pixivFetchEngine, [NotNull] MakoClient makoClient) 
+                : base(pixivFetchEngine, MakoApiKind.AppApi, makoClient)
             {
             }
             
@@ -53,7 +57,7 @@ namespace Mako.Engines
 
             protected override string InitialUrl()
             {
-                return MakoHttpOptions.AppApiUrl($"/v1/user/bookmarks/illust?user_id={PixivFetchEngine._uid}restrict={PixivFetchEngine._privacyPolicy.GetDescription()}&filter=for_ios");
+                return $"/v1/user/bookmarks/illust?user_id={PixivFetchEngine._uid}&restrict={PixivFetchEngine._privacyPolicy.GetDescription().Name}&filter=for_ios";
             }
 
             protected override IEnumerator<Illustration> GetNewEnumerator()

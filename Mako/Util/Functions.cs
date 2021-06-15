@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -8,20 +9,31 @@ namespace Mako.Util
     [PublicAPI]
     public static class Functions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Func<T, T> Identity<T>() => static t => t;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ROut? Let<TIn, ROut>(this TIn obj, Func<TIn, ROut> block)
         {
             return obj is not null ? block(obj) : default;
         }
         
-        public static void Let<TIn>(this TIn obj, Action<TIn?> block)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Let<T>(this T obj, Action<T> block)
         {
             if (obj is not null)
             {
                 block(obj);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Apply<T>(this T obj, Action<T> block)
+        {
+            block(obj);
+            return obj;
+        }
+        
 
         public static async Task<Result> WithTimeout<TResult>(Task<TResult> task, int timeoutMills)
         {

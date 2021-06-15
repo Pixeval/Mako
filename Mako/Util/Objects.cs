@@ -81,18 +81,18 @@ namespace Mako.Util
             return client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
         }
 
-        public static async Task<string?> ToJsonAsync<TEntity>(this TEntity? obj, Func<JsonSerializerOptions>? serializerOptionFactory = null)
+        public static async Task<string?> ToJsonAsync<TEntity>(this TEntity? obj, Action<JsonSerializerOptions>? serializerOptionConfigure = null)
         {
             if (obj is null) return null;
             await using var memoryStream = new MemoryStream();
-            await JsonSerializer.SerializeAsync<TEntity>(memoryStream, obj, serializerOptionFactory?.Invoke());
+            await JsonSerializer.SerializeAsync<TEntity>(memoryStream, obj, new JsonSerializerOptions().Apply(option => serializerOptionConfigure?.Invoke(option)));
             return memoryStream.ToArray().GetString();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string? ToJson(this object? obj, Func<JsonSerializerOptions>? serializerOptionFactory = null)
+        public static string? ToJson(this object? obj, Action<JsonSerializerOptions>? serializerOptionConfigure = null)
         {
-            return obj?.Let(o => JsonSerializer.Serialize(o, serializerOptionFactory?.Invoke()));
+            return obj?.Let(o => JsonSerializer.Serialize(o, new JsonSerializerOptions().Apply(option => serializerOptionConfigure?.Invoke(option))));
         }
 
         /// <summary>
@@ -100,21 +100,22 @@ namespace Mako.Util
         /// </summary>
         /// <remarks>本函数执行结束后将会释放作为参数的<see cref="IMemoryOwner{T}"/></remarks>
         /// <param name="bytes">要被反序列化的字节数组</param>
+        /// <param name="serializerOptionConfigure">序列化选项配置</param>
         /// <typeparam name="TEntity">目标类型</typeparam>
         /// <returns>反序列化的对象</returns>
-        public static async ValueTask<TEntity?> FromJsonAsync<TEntity>(this IMemoryOwner<byte> bytes)
+        public static async ValueTask<TEntity?> FromJsonAsync<TEntity>(this IMemoryOwner<byte> bytes, Action<JsonSerializerOptions>? serializerOptionConfigure = null)
         {
             using (bytes)
             {
                 await using var stream = bytes.Memory.AsStream();
-                return await JsonSerializer.DeserializeAsync<TEntity>(stream);
+                return await JsonSerializer.DeserializeAsync<TEntity>(stream, new JsonSerializerOptions().Apply(option => serializerOptionConfigure?.Invoke(option)));
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TEntity? FromJson<TEntity>(this string str)
+        public static TEntity? FromJson<TEntity>(this string str, Action<JsonSerializerOptions>? serializerOptionConfigure = null)
         {
-            return JsonSerializer.Deserialize<TEntity>(str);
+            return JsonSerializer.Deserialize<TEntity>(str, new JsonSerializerOptions().Apply(option => serializerOptionConfigure?.Invoke(option)));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
