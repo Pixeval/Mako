@@ -3,8 +3,8 @@
 namespace Mako.Engines
 {
     [PublicAPI]
-    public interface IEndNotify
+    public interface ICompletionNotify
     {
-        void SetEnd();
+        void Complete();
     }
 }
