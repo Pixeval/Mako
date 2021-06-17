@@ -9,7 +9,7 @@ namespace Mako.Net.Response
     internal class PixivResponse
     {
         [JsonPropertyName("illusts")]
-        public List<IllustrationEssential.Illust>? Illusts { get; set; }
+        public IEnumerable<IllustrationEssential.Illust>? Illusts { get; set; }
 
         [JsonPropertyName("next_url")]
         public string? NextUrl { get; set; }

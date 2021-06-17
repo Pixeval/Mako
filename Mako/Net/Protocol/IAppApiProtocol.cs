@@ -1,7 +1,13 @@
-﻿namespace Mako.Net.Protocol
+﻿using System.Threading.Tasks;
+using Mako.Net.Request;
+using Mako.Net.Response;
+using Refit;
+
+namespace Mako.Net.Protocol
 {
-    public interface IAppApiProtocol
+    internal interface IAppApiProtocol
     {
-        
+        [Get("/v1/user/recommended?filter=for_android")]
+        Task<PixivUserResponse> GetRecommendIllustrators(RecommendIllustratorRequest request);
     }
 }

@@ -46,7 +46,7 @@ namespace Mako
 
             builder.RegisterType<PixivApiHttpMessageHandler>().SingleInstance();
             builder.RegisterType<PixivImageHttpMessageHandler>().SingleInstance();
-            
+
             builder.Register(static c => new RetryHttpClientHandler(c.Resolve<PixivApiHttpMessageHandler>()))
                 .Keyed<HttpMessageHandler>(typeof(PixivApiHttpMessageHandler))
                 .As<HttpMessageHandler>()
