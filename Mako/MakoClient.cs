@@ -164,7 +164,7 @@ namespace Mako
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
-            // Search function is not inadequate for caching
+            // Search function is inadequate for caching
             return new SearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, start, pages, sortOption, searchDuration, startDate, endDate);
         }
 
@@ -182,6 +182,12 @@ namespace Mako
                        CancelInstance(handle);
                        TryCache(CacheType.Ranking, handle.Cache.Cast<Illustration>(), key);
                    }));
+        }
+
+        public IFetchEngine<Illustration> Recommends()
+        {
+            // Search function is inadequate for caching, 5000 in total
+            return new RecommendsEngine(this, new EngineHandle(CancelInstance));
         }
 
         public IFetchEngine<T>? GetByHandle<T>(EngineHandle handle)

@@ -29,6 +29,12 @@ namespace Mako.Console
                 }
             }
         }
+
+        private static async Task Recommend()
+        {
+            var recommend = MakoClient.Recommends();
+            await PrintIllusts(recommend);
+        }
         
         private static async Task Ranking()
         {
@@ -50,7 +56,7 @@ namespace Mako.Console
         
         public static async Task Main()
         {
-            await Ranking();
+            await Recommend();
         }
     }
 }
