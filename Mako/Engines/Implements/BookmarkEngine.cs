@@ -51,7 +51,7 @@ namespace Mako.Engines.Implements
             
             protected override bool ValidateResponse(PixivResponse rawEntity)
             {
-                return rawEntity.Illusts?.Any() ?? false;
+                return rawEntity.Illusts.IsNotNullOrEmpty();
             }
 
             protected override string? NextUrl()

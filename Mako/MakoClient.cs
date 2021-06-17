@@ -168,6 +168,22 @@ namespace Mako
             return new SearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, start, pages, sortOption, searchDuration, startDate, endDate);
         }
 
+        public IFetchEngine<Illustration> Ranking(RankOption rankOption, DateTime dateTime)
+        {
+            if (DateTime.Today - dateTime.Date > TimeSpan.FromDays(2))
+            {
+                throw new RankingDateOutOfRangeException();
+            }
+
+            var key = Caches.CreateRankingCacheKey(rankOption, dateTime);
+            return (IFetchEngine<Illustration>?) GetCached<AdaptedComputedFetchEngine<Illustration>>(CacheType.Ranking, key)
+                   ?? new RankingEngine(this, rankOption, dateTime, new EngineHandle(handle =>
+                   {
+                       CancelInstance(handle);
+                       TryCache(CacheType.Ranking, handle.Cache.Cast<Illustration>(), key);
+                   }));
+        }
+
         public IFetchEngine<T>? GetByHandle<T>(EngineHandle handle)
         {
             return _runningInstances.FirstOrDefault(h => h.EngineHandle == handle) as IFetchEngine<T>;

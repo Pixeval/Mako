@@ -68,4 +68,27 @@ namespace Mako
 
         public Illustration Illustration { get; }
     }
+
+    /// <summary>
+    /// 搜索榜单时设定的日期大于等于当前日期-2天
+    /// </summary>
+    [PublicAPI]
+    public class RankingDateOutOfRangeException : MakoException
+    {
+        public RankingDateOutOfRangeException()
+        {
+        }
+
+        protected RankingDateOutOfRangeException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+
+        public RankingDateOutOfRangeException([CanBeNull] string? message) : base(message)
+        {
+        }
+
+        public RankingDateOutOfRangeException([CanBeNull] string? message, [CanBeNull] Exception? innerException) : base(message, innerException)
+        {
+        }
+    }
 }

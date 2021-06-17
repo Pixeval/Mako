@@ -114,7 +114,7 @@ namespace Mako.Engines
                 var responseMessage = await MakoClient.ResolveKeyed<HttpClient>(ApiKind).GetAsync(url);
                 if (!responseMessage.IsSuccessStatusCode)
                 {
-                    throw new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, await responseMessage.Content.ReadAsStringAsync());
+                    return Result.OfFailure(new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, await responseMessage.Content.ReadAsStringAsync()));
                 }
 
                 var result = (await responseMessage.Content.ReadAsStringAsync()).FromJson<TRawEntity>();
