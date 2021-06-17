@@ -12,7 +12,8 @@ namespace Mako
         {
             ConnectionTimeout = 5000,
             Bypass = false,
-            MinBookmark = 0
+            MinBookmark = 0,
+            AllowCache = false
         };
         
         /// <summary>
@@ -94,7 +95,21 @@ namespace Mako
         /// Any illust with less bookmarks will be filtered out
         /// </summary>
         public int MinBookmark { get; set; }
+        
+        public bool AllowCache { get; set; }
 
+        public Session UseCache()
+        {
+            AllowCache = true;
+            return this;
+        }
+
+        public Session UseBypass()
+        {
+            Bypass = true;
+            return this;
+        }
+        
         public override string? ToString()
         {
             return this.ToJson();

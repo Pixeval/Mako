@@ -79,7 +79,7 @@ namespace Mako.Engines
         /// </remarks>
         protected bool IsCancellationRequested => PixivFetchEngine.EngineHandle.IsCanceled;
 
-        protected AbstractPixivAsyncEnumerator(TFetchEngine pixivFetchEngine,  MakoApiKind apiKind, MakoClient makoClient)
+        protected AbstractPixivAsyncEnumerator(TFetchEngine pixivFetchEngine, MakoApiKind apiKind, MakoClient makoClient)
         {
             PixivFetchEngine = pixivFetchEngine;
             MakoClient = makoClient;
@@ -125,7 +125,7 @@ namespace Mako.Engines
             }
             catch (HttpRequestException e)
             {
-                throw new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, e.Message);
+                return Result.OfFailure(new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, e.Message));
             }
         }
         

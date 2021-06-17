@@ -24,8 +24,6 @@ namespace Mako.Authenticator
     public partial class MainWindow
     {
         private readonly TaskCompletionSource<(string, string)> _webViewLoginCompletion = new();
-
-        public static string SessionJson { get; set; }
         
         public MainWindow()
         {
@@ -84,7 +82,7 @@ namespace Mako.Authenticator
             var verifier = GetCodeVerify();
             LoginWebView.Source = new Uri(GenerateWebPageUrl(verifier));
 
-            var (url, cookie) = await _webViewLoginCompletion.Task;
+            var (url, _) = await _webViewLoginCompletion.Task;
             var code = HttpUtility.ParseQueryString(new Uri(url).Query)["code"];
 
             var httpClient = new HttpClient();
@@ -99,8 +97,7 @@ namespace Mako.Authenticator
                 new KeyValuePair<string, string>("include_policy", "true"),
                 new KeyValuePair<string, string>("redirect_uri", "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback")
             }));
-            SessionJson = await responseMessage.Content.ReadAsStringAsync();
-            Clipboard.SetText(SessionJson);
+            Clipboard.SetText(await responseMessage.Content.ReadAsStringAsync());
             Close();
         }
     }

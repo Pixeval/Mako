@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
+using Mako.Util;
 
 namespace Mako.Engines
 {
@@ -11,11 +13,14 @@ namespace Mako.Engines
     public struct EngineHandle : ICancellable, INotifyCompletion, ICompletionCallback<EngineHandle>
 #pragma warning restore 660,661
     {
+        // Works if and only if the 'MakoClient' allows cache
+        private readonly IList<object> _cache;
+        
         private readonly Action<EngineHandle>? _onCompletion;
 
         public bool Equals(EngineHandle other)
         {
-            return Id == other.Id && IsCanceled == other.IsCanceled;
+            return Id == other.Id && IsCanceled == other.IsCanceled && IsCompleted == other.IsCompleted;
         }
 
         /// <summary>
@@ -34,9 +39,15 @@ namespace Mako.Engines
         
         public bool IsCompleted { get; set; }
 
+        /// <summary>
+        /// 当前搜索引擎搜索结果的缓存
+        /// </summary>
+        internal ICollection<object> Cache => _cache; // Excluded from equality comparison
+
         public EngineHandle(Guid id, Action<EngineHandle>? onCompletion = null)
         {
             _onCompletion = onCompletion;
+            _cache = new List<object>();
             Id = id;
             IsCanceled = false;
             IsCompleted = false;
@@ -45,6 +56,7 @@ namespace Mako.Engines
         public EngineHandle(Action<EngineHandle> onCompletion)
         {
             _onCompletion = onCompletion;
+            _cache = new List<object>();
             Id = Guid.NewGuid();
             IsCanceled = false;
             IsCompleted = false;
@@ -63,6 +75,8 @@ namespace Mako.Engines
             IsCompleted = true;
             OnCompletion(this);
         }
+
+        internal void CacheValue(object? value) => value?.Let(_cache.Add);
 
         public static bool operator ==(EngineHandle lhs, EngineHandle rhs)
         {

@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace Mako.Util
 {
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Delegate | AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Field)]
     [PublicAPI]
     public class Description : Attribute
     {
@@ -19,9 +19,9 @@ namespace Mako.Util
     [PublicAPI]
     public static class DescriptionHelper
     {
-        public static Description GetDescription<TEnum>(this TEnum @enum) where TEnum : Enum
+        public static string GetDescription<TEnum>(this TEnum @enum) where TEnum : Enum
         {
-            return (Description) (typeof(TEnum).GetField(@enum.ToString())?.GetCustomAttribute(typeof(Description)) ?? throw new InvalidOperationException("Attribute not found"));
+            return (typeof(TEnum).GetField(@enum.ToString())?.GetCustomAttribute(typeof(Description)) as Description)?.Name ?? throw new InvalidOperationException("Attribute not found");
         }
     }
 }

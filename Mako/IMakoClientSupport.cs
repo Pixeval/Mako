@@ -5,6 +5,6 @@ namespace Mako
     [PublicAPI]
     public interface IMakoClientSupport
     {
-        public MakoClient MakoClient { get; set; }
+        public MakoClient MakoClient { get; }
     }
 }

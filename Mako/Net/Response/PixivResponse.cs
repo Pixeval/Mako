@@ -4,7 +4,9 @@ using Mako.Model;
 
 namespace Mako.Net.Response
 {
-    public class BookmarkResponse
+    
+    // ReSharper disable UnusedAutoPropertyAccessor.Global
+    internal class PixivResponse
     {
         [JsonPropertyName("illusts")]
         public List<IllustrationEssential.Illust>? Illusts { get; set; }

@@ -7,7 +7,7 @@ using Mako.Net;
 using Mako.Net.Response;
 using Mako.Util;
 
-namespace Mako.Engines
+namespace Mako.Engines.Implements
 {
     /// <summary>
     /// 获取用户收藏的Pixiv搜素引擎
@@ -36,25 +36,20 @@ namespace Mako.Engines
             _privacyPolicy = privacyPolicy;
             MakoClient = makoClient;
         }
-
-        public override bool Validate(IList<Illustration> list, Illustration? item)
-        {
-            return item.Satisfies(list, MakoClient.Session);
-        }
-
+        
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
             return new BookmarkAsyncEnumerator(this, MakoClient)!;
         }
 
-        private class BookmarkAsyncEnumerator : RecursivePixivAsyncEnumerator<Illustration, BookmarkResponse, BookmarkEngine>
+        private class BookmarkAsyncEnumerator : RecursivePixivAsyncEnumerator<Illustration, PixivResponse, BookmarkEngine>
         {
             public BookmarkAsyncEnumerator(BookmarkEngine pixivFetchEngine, [NotNull] MakoClient makoClient) 
                 : base(pixivFetchEngine, MakoApiKind.AppApi, makoClient)
             {
             }
             
-            protected override bool ValidateResponse(BookmarkResponse rawEntity)
+            protected override bool ValidateResponse(PixivResponse rawEntity)
             {
                 return rawEntity.Illusts?.Any() ?? false;
             }
@@ -66,7 +61,7 @@ namespace Mako.Engines
 
             protected override string InitialUrl()
             {
-                return $"/v1/user/bookmarks/illust?user_id={PixivFetchEngine._uid}&restrict={PixivFetchEngine._privacyPolicy.GetDescription().Name}&filter=for_ios";
+                return $"/v1/user/bookmarks/illust?user_id={PixivFetchEngine._uid}&restrict={PixivFetchEngine._privacyPolicy.GetDescription()}&filter=for_ios";
             }
 
             protected override IEnumerator<Illustration> GetNewEnumerator()
