@@ -186,8 +186,17 @@ namespace Mako
 
         public IFetchEngine<Illustration> Recommends()
         {
-            // Search function is inadequate for caching, 5000 in total
             return new RecommendsEngine(this, new EngineHandle(CancelInstance));
+        }
+
+        public IFetchEngine<User> RecommendIllustrators()
+        {
+            return new RecommendIllustratorEngine(this, new EngineHandle(CancelInstance));
+        }
+
+        public IFetchEngine<SpotlightArticle> Spotlights()
+        {
+            return new SpotlightArticleEngine(this, new EngineHandle(CancelInstance));
         }
 
         public IFetchEngine<T>? GetByHandle<T>(EngineHandle handle)

@@ -8,6 +8,9 @@ using Mako.Util;
 
 namespace Mako.Console
 {
+    /// <summary>
+    /// 由于登录原因测试没法自动化，干脆这样好了
+    /// </summary>
     [PublicAPI]
     public static class Program
     {
@@ -26,6 +29,28 @@ namespace Mako.Console
                 if (i != null)
                 {
                     System.Console.WriteLine(i.Id);
+                }
+            }
+        }
+        
+        private static async Task PrintUser(IAsyncEnumerable<User> users)
+        {
+            await foreach (var i in users)
+            {
+                if (i != null)
+                {
+                    System.Console.WriteLine(i.Id);
+                }
+            }
+        }
+        
+        private static async Task PrintSpotlight(IAsyncEnumerable<SpotlightArticle> articles)
+        {
+            await foreach (var i in articles)
+            {
+                if (i != null)
+                {
+                    System.Console.WriteLine(i.Title);
                 }
             }
         }
@@ -54,9 +79,21 @@ namespace Mako.Console
             await PrintIllusts(search);
         }
         
+        private static async Task RecommendIllustrators()
+        {
+            var illustrators = MakoClient.RecommendIllustrators();
+            await PrintUser(illustrators);
+        }
+        
+        private static async Task Spotlights()
+        {
+            var spotlights = MakoClient.Spotlights();
+            await PrintSpotlight(spotlights);
+        }
+        
         public static async Task Main()
         {
-            await Recommend();
+            await Spotlights();
         }
     }
 }

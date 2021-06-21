@@ -20,6 +20,6 @@ namespace Mako.Model
         
         public bool IsPremium { get; set; }
         
-        public IEnumerable<string>? Thumbnails { get; set; }
+        public IEnumerable<Illustration>? Thumbnails { get; set; }
     }
 }

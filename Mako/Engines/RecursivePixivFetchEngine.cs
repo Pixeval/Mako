@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Mako.Model;
 using Mako.Net;
 using Mako.Util;
 
@@ -27,7 +28,7 @@ namespace Mako.Engines
         /// 获取下一个页面的URL
         /// </summary>
         /// <returns>下一个页面的URL</returns>
-        protected abstract string? NextUrl();
+        protected abstract string? NextUrl(TRawEntity? rawEntity);
 
         /// <summary>
         /// 获取第一个页面的URL
@@ -39,13 +40,13 @@ namespace Mako.Engines
         /// 从新页面的返回结果中获取该页面的所有搜索结果的迭代器
         /// </summary>
         /// <returns>所有搜索结果的迭代器</returns>
-        protected abstract IEnumerator<TEntity> GetNewEnumerator();
+        protected abstract IEnumerator<TEntity>? GetNewEnumerator(TRawEntity? rawEntity);
 
         /// <summary>
         /// 指示是否还有下一页
         /// </summary>
         /// <returns>是否还有下一页</returns>
-        protected virtual bool HasNextPage() => NextUrl().IsNotNullOrEmpty();
+        protected virtual bool HasNextPage() => NextUrl(Entity).IsNotNullOrEmpty();
 
         /// <summary>
         /// 指示是否还有下一个结果，该函数在搜索结果数被限制的时候很有用
@@ -99,7 +100,7 @@ namespace Mako.Engines
                 return false;
             }
 
-            if (await GetJsonResponse(NextUrl()!) is Result.Success<TRawEntity> (var value)) // Else request a new page
+            if (await GetJsonResponse(NextUrl(Entity)!) is Result.Success<TRawEntity> (var value)) // Else request a new page
             {
                 Update(value);
                 TryCacheCurrent();
@@ -125,7 +126,7 @@ namespace Mako.Engines
         protected override void Update(TRawEntity rawEntity)
         {
             Entity = rawEntity;
-            CurrentEntityEnumerator = GetNewEnumerator();
+            CurrentEntityEnumerator = GetNewEnumerator(rawEntity) ?? EmptyEnumerators<TEntity>.Sync;
             PixivFetchEngine!.RequestedPages++;
         }
     }

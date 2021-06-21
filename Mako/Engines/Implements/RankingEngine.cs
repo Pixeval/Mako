@@ -14,12 +14,8 @@ namespace Mako.Engines.Implements
         private readonly RankOption _rankOption;
         private readonly DateTime _dateTime;
         
-        public sealed override MakoClient MakoClient { get; set; } 
-        
-        
-        public RankingEngine(MakoClient makoClient, RankOption rankOption, DateTime dateTime, EngineHandle? engineHandle) : base(engineHandle)
+        public RankingEngine(MakoClient makoClient, RankOption rankOption, DateTime dateTime, EngineHandle? engineHandle) : base(makoClient, engineHandle)
         {
-            MakoClient = makoClient;
             _rankOption = rankOption;
             _dateTime = dateTime;
         }
@@ -40,13 +36,13 @@ namespace Mako.Engines.Implements
                 return rawEntity.Illusts.IsNotNullOrEmpty();
             }
 
-            protected override string? NextUrl() => Entity?.NextUrl;
+            protected override string? NextUrl(PixivResponse? rawEntity) => rawEntity?.NextUrl;
 
             protected override string InitialUrl() => $"/v1/illust/ranking?filter=for_android&mode={PixivFetchEngine._rankOption.GetDescription()}&date={PixivFetchEngine._dateTime:yyyy-MM-dd}";
             
-            protected override IEnumerator<Illustration> GetNewEnumerator()
+            protected override IEnumerator<Illustration>? GetNewEnumerator(PixivResponse? rawEntity)
             {
-                return (Entity?.Illusts!.SelectNotNull(MakoExtension.ToIllustration) ?? Array.Empty<Illustration>()).GetEnumerator();
+                return rawEntity?.Illusts?.SelectNotNull(MakoExtension.ToIllustration).GetEnumerator();
             }
         }
     }

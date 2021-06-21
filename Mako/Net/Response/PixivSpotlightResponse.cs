@@ -4,11 +4,11 @@ using Mako.Model;
 
 namespace Mako.Net.Response
 {
-    internal class PixivUserResponse
+    internal class PixivSpotlightResponse
     {
-        [JsonPropertyName("user_previews")]
-        public IEnumerable<UserEssential.User>? Users { get; set; }
-        
+        [JsonPropertyName("spotlight_articles")]
+        public IEnumerable<SpotlightArticle>? SpotlightArticles { get; set; }
+
         [JsonPropertyName("next_url")]
         public string? NextUrl { get; set; }
     }

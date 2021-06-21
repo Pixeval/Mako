@@ -8,10 +8,10 @@ namespace Mako.Model
         public class User
         {
             [JsonPropertyName("user")]
-            public UserInfo UserInfo { get; set; }
+            public UserInfo? UserInfo { get; set; }
             
             [JsonPropertyName("illusts")]
-            public IEnumerable<IllustrationEssential.Illust> Illusts { get; set; }
+            public IEnumerable<IllustrationEssential.Illust>? Illusts { get; set; }
             
             [JsonPropertyName("is_muted")]
             public bool IsMuted { get; set; }
@@ -23,13 +23,13 @@ namespace Mako.Model
             public long Id { get; set; }
 
             [JsonPropertyName("name")]
-            public string Name { get; set; }
+            public string? Name { get; set; }
 
             [JsonPropertyName("account")]
-            public string Account { get; set; }
+            public string? Account { get; set; }
 
             [JsonPropertyName("profile_image_urls")]
-            public IllustrationEssential.ProfileImageUrls ProfileImageUrls { get; set; }
+            public ProfileImageUrls? ProfileImageUrls { get; set; }
 
             [JsonPropertyName("is_followed")]
             public bool IsFollowed { get; set; }

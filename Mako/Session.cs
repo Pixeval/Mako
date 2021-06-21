@@ -24,7 +24,7 @@ namespace Mako
         /// <summary>
         /// Token expiration
         /// </summary>
-        public DateTime ExpireIn { get; set; }
+        public DateTimeOffset ExpireIn { get; set; }
 
         public int ConnectionTimeout { get; set; }
 

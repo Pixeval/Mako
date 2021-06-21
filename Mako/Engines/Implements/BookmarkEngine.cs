@@ -16,8 +16,6 @@ namespace Mako.Engines.Implements
     {
         private readonly string _uid;
         private readonly PrivacyPolicy _privacyPolicy;
-        
-        public sealed override MakoClient MakoClient { get; set; }
 
         /// <summary>
         /// 创建一个新的<see cref="BookmarkEngine"/>
@@ -30,11 +28,10 @@ namespace Mako.Engines.Implements
             MakoClient makoClient,
             string uid, 
             PrivacyPolicy privacyPolicy,
-            EngineHandle? engineHandle = null) : base(engineHandle)
+            EngineHandle? engineHandle = null) : base(makoClient, engineHandle)
         {
             _uid = uid;
             _privacyPolicy = privacyPolicy;
-            MakoClient = makoClient;
         }
         
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
@@ -54,19 +51,19 @@ namespace Mako.Engines.Implements
                 return rawEntity.Illusts.IsNotNullOrEmpty();
             }
 
-            protected override string? NextUrl()
+            protected override string? NextUrl(PixivResponse? rawEntity)
             {
-                return Entity?.NextUrl;
+                return rawEntity?.NextUrl;
             }
 
             protected override string InitialUrl()
             {
-                return $"/v1/user/bookmarks/illust?user_id={PixivFetchEngine._uid}&restrict={PixivFetchEngine._privacyPolicy.GetDescription()}&filter=for_ios";
+                return $"/v1/user/bookmarks/illust?user_id={PixivFetchEngine._uid}&restrict={PixivFetchEngine._privacyPolicy.GetDescription()}&filter=for_android";
             }
 
-            protected override IEnumerator<Illustration> GetNewEnumerator()
+            protected override IEnumerator<Illustration>? GetNewEnumerator(PixivResponse? rawEntity)
             {
-                return Entity!.Illusts!.SelectNotNull(MakoExtension.ToIllustration).GetEnumerator();
+                return rawEntity?.Illusts?.SelectNotNull(MakoExtension.ToIllustration).GetEnumerator();
             }
         }
     }

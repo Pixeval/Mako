@@ -21,8 +21,6 @@ namespace Mako.Engines.Implements
         private readonly int _pages;
         private int _current;
 
-        public sealed override MakoClient MakoClient { get; set; }
-
         /// <summary>
         /// 实例化一个<see cref="SearchEngine"/>
         /// </summary>
@@ -46,9 +44,8 @@ namespace Mako.Engines.Implements
             IllustrationSortOption? sortOption, 
             SearchDuration? searchDuration, 
             DateTime? startDate,
-            DateTime? endDate) : base(engineHandle)
+            DateTime? endDate) : base(makoClient, engineHandle)
         {
-            MakoClient = makoClient;
             _matchOption = matchOption;
             _tag = tag;
             _current = start;
@@ -75,7 +72,7 @@ namespace Mako.Engines.Implements
                 return rawEntity.Illusts.IsNotNullOrEmpty();
             }
 
-            protected override string NextUrl() => GetSearchUrl();
+            protected override string NextUrl(PixivResponse? rawEntity) => GetSearchUrl();
 
             protected override string InitialUrl() => GetSearchUrl();
 
@@ -101,9 +98,9 @@ namespace Mako.Engines.Implements
                 return $"/v1/search/illust?search_target={match}&word={PixivFetchEngine._tag}&filter=for_android&offset={PixivFetchEngine._current}{sortSegment}{startDateSegment}{endDateSegment}{durationSegment}";
             }
             
-            protected override IEnumerator<Illustration> GetNewEnumerator()
+            protected override IEnumerator<Illustration>? GetNewEnumerator(PixivResponse? rawEntity)
             {
-                return (Entity!.Illusts?.SelectNotNull(MakoExtension.ToIllustration) ?? Array.Empty<Illustration>()).GetEnumerator();
+                return rawEntity?.Illusts?.SelectNotNull(MakoExtension.ToIllustration).GetEnumerator();
             }
         }
     }

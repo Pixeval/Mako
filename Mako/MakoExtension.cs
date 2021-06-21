@@ -119,6 +119,17 @@ namespace Mako
             return illustration;
         }
 
+        public static User ToUserIncomplete(this UserEssential.User user)
+        {
+            return new()
+            {
+                Avatar = user.UserInfo?.ProfileImageUrls?.Medium,
+                Id = user.UserInfo?.Id.ToString(),
+                Name = user.UserInfo?.Name,
+                Thumbnails = user.Illusts?.Take(5).SelectNotNull(ToIllustration)
+            };
+        }
+        
         public static Session ToSession(this TokenResponse tokenResponse, string password)
         {
             return Session.Default with

@@ -56,4 +56,12 @@ namespace Mako.Util
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNotNullOrEmpty<T>(this IEnumerable<T>? enumerable) => enumerable is not null && enumerable.Any();
     }
+
+    [PublicAPI]
+    public static class EmptyEnumerators<T>
+    {
+        public static readonly IEnumerator<T> Sync = new List<T>().GetEnumerator();
+
+        public static readonly IAsyncEnumerator<T> Async = new AdaptedAsyncEnumerator<T>(new List<T>().GetEnumerator());
+    }
 }

@@ -124,12 +124,6 @@ namespace Mako.Model
             public bool IsFollowed { get; set; }
         }
 
-        public class ProfileImageUrls
-        {
-            [JsonPropertyName("medium")]
-            public string? Medium { get; set; }
-        }
-
         public class MetaPage
         {
             [JsonPropertyName("image_urls")]
