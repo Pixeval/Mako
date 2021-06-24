@@ -77,10 +77,10 @@ namespace Mako.Engines
         /// </remarks>
         protected bool IsCancellationRequested => PixivFetchEngine.EngineHandle.IsCanceled;
 
-        protected AbstractPixivAsyncEnumerator(TFetchEngine pixivFetchEngine, MakoApiKind apiKind, MakoClient makoClient)
+        protected AbstractPixivAsyncEnumerator(TFetchEngine pixivFetchEngine, MakoApiKind apiKind)
         {
             PixivFetchEngine = pixivFetchEngine;
-            MakoClient = makoClient;
+            MakoClient = pixivFetchEngine.MakoClient;
             ApiKind = apiKind;
         }
 

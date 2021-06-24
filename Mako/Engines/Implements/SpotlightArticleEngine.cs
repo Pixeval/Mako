@@ -16,12 +16,12 @@ namespace Mako.Engines.Implements
 
         public override IAsyncEnumerator<SpotlightArticle> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new SpotlightArticleAsyncEnumerator(this, MakoApiKind.AppApi, MakoClient)!;
+            return new SpotlightArticleAsyncEnumerator(this, MakoApiKind.AppApi)!;
         }
 
         private class SpotlightArticleAsyncEnumerator : RecursivePixivAsyncEnumerator<SpotlightArticle, PixivSpotlightResponse, SpotlightArticleEngine>
         {
-            public SpotlightArticleAsyncEnumerator([NotNull] SpotlightArticleEngine pixivFetchEngine, MakoApiKind makoApiKind, [NotNull] MakoClient makoClient) : base(pixivFetchEngine, makoApiKind, makoClient)
+            public SpotlightArticleAsyncEnumerator([NotNull] SpotlightArticleEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
             {
             }
 

@@ -36,13 +36,13 @@ namespace Mako.Engines.Implements
         
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new BookmarkAsyncEnumerator(this, MakoClient)!;
+            return new BookmarkAsyncEnumerator(this)!;
         }
 
         private class BookmarkAsyncEnumerator : RecursivePixivAsyncEnumerator<Illustration, PixivResponse, BookmarkEngine>
         {
-            public BookmarkAsyncEnumerator(BookmarkEngine pixivFetchEngine, [NotNull] MakoClient makoClient) 
-                : base(pixivFetchEngine, MakoApiKind.AppApi, makoClient)
+            public BookmarkAsyncEnumerator(BookmarkEngine pixivFetchEngine) 
+                : base(pixivFetchEngine, MakoApiKind.AppApi)
             {
             }
             

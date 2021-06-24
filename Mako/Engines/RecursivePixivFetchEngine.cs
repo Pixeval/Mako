@@ -19,8 +19,8 @@ namespace Mako.Engines
     {
         protected TRawEntity? Entity { get; private set; }
 
-        protected RecursivePixivAsyncEnumerator(TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind, [NotNull] MakoClient makoClient)
-            : base(pixivFetchEngine, makoApiKind, makoClient)
+        protected RecursivePixivAsyncEnumerator(TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind)
+            : base(pixivFetchEngine, makoApiKind)
         {
         }
 

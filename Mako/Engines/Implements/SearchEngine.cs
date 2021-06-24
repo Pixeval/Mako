@@ -58,12 +58,12 @@ namespace Mako.Engines.Implements
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new SearchAsyncEnumerator(this, MakoApiKind.AppApi, MakoClient)!;
+            return new SearchAsyncEnumerator(this, MakoApiKind.AppApi)!;
         }
 
         private class SearchAsyncEnumerator : RecursivePixivAsyncEnumerator<Illustration, PixivResponse, SearchEngine>
         {
-            public SearchAsyncEnumerator([NotNull] SearchEngine pixivFetchEngine, MakoApiKind makoApiKind, [NotNull] MakoClient makoClient) : base(pixivFetchEngine, makoApiKind, makoClient)
+            public SearchAsyncEnumerator([NotNull] SearchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
             {
             }
 

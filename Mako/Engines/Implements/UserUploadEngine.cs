@@ -8,21 +8,23 @@ using Mako.Util;
 
 namespace Mako.Engines.Implements
 {
-    internal class RecommendsEngine : AbstractPixivFetchEngine<Illustration>
+    public class UserUploadEngine : AbstractPixivFetchEngine<Illustration>
     {
+        private readonly string _uid;
         
-        public RecommendsEngine(MakoClient makoClient, EngineHandle? engineHandle) : base(makoClient, engineHandle)
+        public UserUploadEngine([NotNull] MakoClient makoClient, string uid, EngineHandle? engineHandle) : base(makoClient, engineHandle)
         {
+            _uid = uid;
         }
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new RecommendsAsyncEnumerator(this, MakoApiKind.AppApi)!;
+            return new UserUploadAsyncEnumerable(this, MakoApiKind.AppApi)!;
         }
 
-        private class RecommendsAsyncEnumerator : RecursivePixivAsyncEnumerator<Illustration, PixivResponse, RecommendsEngine>
+        private class UserUploadAsyncEnumerable : RecursivePixivAsyncEnumerator<Illustration, PixivResponse, UserUploadEngine>
         {
-            public RecommendsAsyncEnumerator([NotNull] RecommendsEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
+            public UserUploadAsyncEnumerable([NotNull] UserUploadEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
             {
             }
 
@@ -33,7 +35,7 @@ namespace Mako.Engines.Implements
 
             protected override string? NextUrl(PixivResponse? rawEntity) => rawEntity?.NextUrl;
 
-            protected override string InitialUrl() => "/v1/illust/recommended";
+            protected override string InitialUrl() => $"/v1/user/illusts?user_id={PixivFetchEngine._uid}&filter=for_android&type=illust";
 
             protected override IEnumerator<Illustration>? GetNewEnumerator(PixivResponse? rawEntity)
             {

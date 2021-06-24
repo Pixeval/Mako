@@ -22,12 +22,12 @@ namespace Mako.Engines.Implements
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new RankingAsyncEnumerator(this, MakoApiKind.AppApi, MakoClient)!;
+            return new RankingAsyncEnumerator(this, MakoApiKind.AppApi)!;
         }
 
         private class RankingAsyncEnumerator : RecursivePixivAsyncEnumerator<Illustration, PixivResponse, RankingEngine>
         {
-            public RankingAsyncEnumerator([NotNull] RankingEngine pixivFetchEngine, MakoApiKind makoApiKind, [NotNull] MakoClient makoClient) : base(pixivFetchEngine, makoApiKind, makoClient)
+            public RankingAsyncEnumerator([NotNull] RankingEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
             {
             }
 

@@ -201,9 +201,14 @@ namespace Mako
 
         public IFetchEngine<Feed> Feeds()
         {
-            return new UserFeedsEngine(this, new EngineHandle(CancelInstance));
+            return new UserFeedEngine(this, new EngineHandle(CancelInstance));
         }
 
+        public IFetchEngine<Illustration> Uploads(string uid)
+        {
+            return new UserUploadEngine(this, uid, new EngineHandle(CancelInstance));
+        }
+        
         public IFetchEngine<T>? GetByHandle<T>(EngineHandle handle)
         {
             return _runningInstances.FirstOrDefault(h => h.EngineHandle == handle) as IFetchEngine<T>;

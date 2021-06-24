@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 
@@ -31,6 +32,9 @@ namespace Mako.Model
 
         public string? ArtistId { get; set; }
 
+#if DEBUG // this object may will serialized into json under DEBUG mode, use [JsonIgnore] to prevents the object cycle on this property
+        [JsonIgnore]
+#endif
         public Illustration[]? MangaMetadata { get; set; }
 
         public DateTimeOffset PublishDate { get; set; }

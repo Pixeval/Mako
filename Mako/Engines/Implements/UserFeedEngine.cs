@@ -13,24 +13,24 @@ using Mako.Util;
 
 namespace Mako.Engines.Implements
 {
-    public class UserFeedsEngine : AbstractPixivFetchEngine<Feed>
+    public class UserFeedEngine : AbstractPixivFetchEngine<Feed>
     {
-        public UserFeedsEngine([NotNull] MakoClient makoClient, EngineHandle? engineHandle) : base(makoClient, engineHandle)
+        public UserFeedEngine([NotNull] MakoClient makoClient, EngineHandle? engineHandle) : base(makoClient, engineHandle)
         {
         }
 
         public override IAsyncEnumerator<Feed> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new UserFeedsAsyncEnumerator(this, MakoApiKind.WebApi, MakoClient)!;
+            return new UserFeedsAsyncEnumerator(this, MakoApiKind.WebApi)!;
         }
 
-        private class UserFeedsAsyncEnumerator : AbstractPixivAsyncEnumerator<Feed, string, UserFeedsEngine>
+        private class UserFeedsAsyncEnumerator : AbstractPixivAsyncEnumerator<Feed, string, UserFeedEngine>
         {
             private FeedRequestContext? _feedRequestContext;
             private string? _tt;
 
 
-            public UserFeedsAsyncEnumerator([NotNull] UserFeedsEngine pixivFetchEngine, MakoApiKind apiKind, [NotNull] MakoClient makoClient) : base(pixivFetchEngine, apiKind, makoClient)
+            public UserFeedsAsyncEnumerator([NotNull] UserFeedEngine pixivFetchEngine, MakoApiKind apiKind) : base(pixivFetchEngine, apiKind)
             {
             }
 

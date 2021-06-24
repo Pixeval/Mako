@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Model;
@@ -22,13 +23,20 @@ namespace Mako.Console
 
         private static readonly MakoClient MakoClient = new(Session, CultureInfo.CurrentCulture);
 
+        private static readonly Action<JsonSerializerOptions> DefaultSerializerOptions = options =>
+        {
+            options.WriteIndented = true;
+            options.IgnoreNullValues = true;
+            options.ReferenceHandler = ReferenceHandler.Preserve;
+        };
+        
         private static async Task PrintIllusts(IAsyncEnumerable<Illustration> illustrations)
         {
             await foreach (var i in illustrations)
             {
                 if (i != null)
                 {
-                    System.Console.WriteLine(i.Id);
+                    System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
             }
         }
@@ -39,7 +47,7 @@ namespace Mako.Console
             {
                 if (i != null)
                 {
-                    System.Console.WriteLine(i.Id);
+                    System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
             }
         }
@@ -50,7 +58,7 @@ namespace Mako.Console
             {
                 if (i != null)
                 {
-                    System.Console.WriteLine(i.Title);
+                    System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
             }
         }
@@ -61,11 +69,7 @@ namespace Mako.Console
             {
                 if (i != null)
                 {
-                    System.Console.WriteLine(JsonSerializer.Serialize(i, new JsonSerializerOptions
-                    {
-                        WriteIndented = true,
-                        IgnoreNullValues = true
-                    }));
+                    System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
             }
         }
@@ -112,9 +116,15 @@ namespace Mako.Console
             await PrintFeeds(feeds);
         }
         
+        private static async Task Uploads()
+        {
+            var uploads = MakoClient.Uploads("333556");
+            await PrintIllusts(uploads);
+        }
+        
         public static async Task Main()
         {
-            await Feeds();
+            await Uploads();
         }
     }
 }

@@ -16,12 +16,12 @@ namespace Mako.Engines.Implements
 
         public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new RecommendIllustratorAsyncEnumerator(this, MakoApiKind.AppApi, MakoClient)!;
+            return new RecommendIllustratorAsyncEnumerator(this, MakoApiKind.AppApi)!;
         }
 
         private class RecommendIllustratorAsyncEnumerator : RecursivePixivAsyncEnumerator<User, PixivUserResponse, RecommendIllustratorEngine>
         {
-            public RecommendIllustratorAsyncEnumerator([NotNull] RecommendIllustratorEngine pixivFetchEngine, MakoApiKind makoApiKind, [NotNull] MakoClient makoClient) : base(pixivFetchEngine, makoApiKind, makoClient)
+            public RecommendIllustratorAsyncEnumerator([NotNull] RecommendIllustratorEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
             {
             }
 
