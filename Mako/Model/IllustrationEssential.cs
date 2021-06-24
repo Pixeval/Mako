@@ -7,7 +7,7 @@ namespace Mako.Model
 {
     public static class IllustrationEssential
     {
-        public class Illust
+        public record Illust
         {
             [JsonPropertyName("id")]
             public long Id { get; set; }

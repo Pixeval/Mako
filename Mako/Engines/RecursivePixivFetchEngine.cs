@@ -75,10 +75,10 @@ namespace Mako.Engines
                 var first = InitialUrl();
                 switch (await GetJsonResponse(first))
                 {
-                    case Result.Success<TRawEntity> (var raw):
+                    case Result<TRawEntity>.Success (var raw):
                         Update(raw);
                         break;
-                    case Result.Failure (var exception):
+                    case Result<TRawEntity>.Failure (var exception):
                         if (exception is { } e)
                         {
                             throw e;
@@ -100,7 +100,7 @@ namespace Mako.Engines
                 return false;
             }
 
-            if (await GetJsonResponse(NextUrl(Entity)!) is Result.Success<TRawEntity> (var value)) // Else request a new page
+            if (await GetJsonResponse(NextUrl(Entity)!) is Result<TRawEntity>.Success (var value)) // Else request a new page
             {
                 Update(value);
                 TryCacheCurrent();

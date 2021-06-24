@@ -16,6 +16,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Mako.Model;
+using Mako.Util;
 using Microsoft.Web.WebView2.Core;
 
 namespace Mako.Authenticator
@@ -30,7 +32,7 @@ namespace Mako.Authenticator
             InitializeComponent();
         }
 
-        private static byte[] HashBytes<T>(string str, Encoding encoding = null) where T : HashAlgorithm, new()
+        private static byte[] HashBytes<T>(string str, Encoding? encoding = null) where T : HashAlgorithm, new()
         {
             using var crypt = new T();
             var hashBytes = crypt.ComputeHash((encoding ?? Encoding.UTF8).GetBytes(str));
@@ -65,7 +67,7 @@ namespace Mako.Authenticator
 
         private static string AsString(IEnumerable<CoreWebView2Cookie> cookies)
         {
-            return cookies?.Aggregate("", (s, cookie) => s + $"{cookie.Name}={cookie.Value};");
+            return cookies.Aggregate("", (s, cookie) => s + $"{cookie.Name}={cookie.Value};");
         }
         
         private async void LoginWebView_OnNavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e)
@@ -82,22 +84,25 @@ namespace Mako.Authenticator
             var verifier = GetCodeVerify();
             LoginWebView.Source = new Uri(GenerateWebPageUrl(verifier));
 
-            var (url, _) = await _webViewLoginCompletion.Task;
+            var (url, cookie) = await _webViewLoginCompletion.Task;
             var code = HttpUtility.ParseQueryString(new Uri(url).Query)["code"];
 
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
             var responseMessage = await httpClient.PostAsync("https://oauth.secure.pixiv.net/auth/token", new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string>("code", code),
+                new KeyValuePair<string, string>("code", code!),
                 new KeyValuePair<string, string>("code_verifier", verifier),
                 new KeyValuePair<string, string>("client_id", "MOBrBDS8blbauoSck0ZfDbtuzpyT"),
                 new KeyValuePair<string, string>("client_secret", "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"),
                 new KeyValuePair<string, string>("grant_type", "authorization_code"),
                 new KeyValuePair<string, string>("include_policy", "true"),
                 new KeyValuePair<string, string>("redirect_uri", "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback")
-            }));
-            Clipboard.SetText(await responseMessage.Content.ReadAsStringAsync());
+            }!));
+            var session = (await responseMessage.Content.ReadAsStringAsync())
+                .FromJson<TokenResponse>()!
+                .ToSession("123456", cookie);
+            Clipboard.SetText((await session!.ToJsonAsync())!);
             Close();
         }
     }

@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Mako",
+    "\\Mako\\Engines",
+    "\\Mako\\Engines\\Implements",
+    "\\Mako\\Model",
+    "\\Mako\\Net",
+    "\\Mako\\Net\\Protocol",
+    "\\Mako\\Net\\Request",
+    "\\Mako\\Net\\Response",
+    "\\Mako\\Util"
+  ],
+  "SelectedNode": "\\Mako\\Engines\\Implements\\UserFeedsEngine.cs",
+  "PreviewInSolutionExplorer": false
+}

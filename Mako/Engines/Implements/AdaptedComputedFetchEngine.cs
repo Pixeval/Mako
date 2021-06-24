@@ -12,7 +12,7 @@ namespace Mako.Engines.Implements
         public MakoClient MakoClient => throw new NotSupportedException();
         
         // The 'AdaptedFetchEngine' is specialized for an "already computed" 'IFetchEngine'
-        // which means its lifetime has ended but computation result is cached into this
+        // which means its lifetime had been ended but computation result is cached into this
         // class, so the 'EngineHandle' that is used to track its lifetime is useless here
         public EngineHandle EngineHandle => throw new NotSupportedException();
         

@@ -199,6 +199,11 @@ namespace Mako
             return new SpotlightArticleEngine(this, new EngineHandle(CancelInstance));
         }
 
+        public IFetchEngine<Feed> Feeds()
+        {
+            return new UserFeedsEngine(this, new EngineHandle(CancelInstance));
+        }
+
         public IFetchEngine<T>? GetByHandle<T>(EngineHandle handle)
         {
             return _runningInstances.FirstOrDefault(h => h.EngineHandle == handle) as IFetchEngine<T>;

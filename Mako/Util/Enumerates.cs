@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -55,6 +54,21 @@ namespace Mako.Util
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNotNullOrEmpty<T>(this IEnumerable<T>? enumerable) => enumerable is not null && enumerable.Any();
+
+        // https://stackoverflow.com/a/15407252/10439146 FirstOrDefault on value types
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T? FirstOrNull<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate) where T : struct
+        {
+            var matches = enumerable.Where(predicate).Take(1).ToArray();
+            return matches.Any() ? matches[0] : null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T? FirstOrNull<T>(this IEnumerable<T> enumerable) where T : struct
+        {
+            var matches = enumerable.Take(1).ToArray();
+            return matches.Any() ? matches[0] : null;
+        }
     }
 
     [PublicAPI]

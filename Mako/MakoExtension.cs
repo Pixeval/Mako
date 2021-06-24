@@ -52,7 +52,7 @@ namespace Mako
         /// <param name="includeTags">必须包含的tag</param>
         /// <param name="minBookmarks">最低收藏数</param>
         /// <returns>作品是否符合以上条件</returns>
-        public static bool Satisfies(this Illustration illustration, IEnumerable<string> excludeTags, IEnumerable<string> includeTags, int minBookmarks)
+        public static bool Satisfies(this Illustration illustration, IEnumerable<string>? excludeTags, IEnumerable<string>? includeTags, int minBookmarks)
         {
             if (illustration.Bookmarks <= minBookmarks)
             {
@@ -62,12 +62,12 @@ namespace Mako
             if (illustration.Tags is { } tags)
             {
                 var tagArr = tags as Tag[] ?? tags.ToArray();
-                if (excludeTags.Intersect(tagArr.Select(t => t.Name).WhereNotNull(), Objects.CaseIgnoredComparer).Any())
+                if (excludeTags is not null && excludeTags.Intersect(tagArr.Select(t => t.Name).WhereNotNull(), Objects.CaseIgnoredComparer).Any())
                 {
                     return false;
                 }
 
-                if (!includeTags.SequenceEquals(tagArr.Select(t => t.Name).WhereNotNull(), SequenceComparison.Unordered, Objects.CaseIgnoredComparer))
+                if (includeTags is not null && !includeTags.SequenceEquals(tagArr.Select(t => t.Name).WhereNotNull(), SequenceComparison.Unordered, Objects.CaseIgnoredComparer))
                 {
                     return false;
                 }
@@ -159,6 +159,14 @@ namespace Mako
                 RefreshToken = newSession.RefreshToken,
                 Password = newSession.Password,
                 Name = newSession.Name
+            };
+        }
+
+        public static Session ToSession(this TokenResponse tokenResponse, string password, string cookie)
+        {
+            return tokenResponse.ToSession(password) with
+            {
+                Cookie = cookie
             };
         }
     }

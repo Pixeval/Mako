@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Mako.Net;
 using Mako.Util;
@@ -107,25 +105,25 @@ namespace Mako.Engines
         /// <param name="url">要请求的URL</param>
         /// <returns>标志着请求结果的<see cref="Task{TResult}"/></returns>
         /// <exception cref="MakoNetworkException">如果请求过程中抛出<see cref="HttpRequestException"/>或者响应码标志着请求失败</exception>
-        protected async Task<Result> GetJsonResponse(string url)
+        protected async Task<Result<TRawEntity>> GetJsonResponse(string url)
         {
             try
             {
                 var responseMessage = await MakoClient.ResolveKeyed<HttpClient>(ApiKind).GetAsync(url);
                 if (!responseMessage.IsSuccessStatusCode)
                 {
-                    return Result.OfFailure(new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, await responseMessage.Content.ReadAsStringAsync()));
+                    return Result<TRawEntity>.OfFailure(new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, await responseMessage.Content.ReadAsStringAsync()));
                 }
 
                 var result = (await responseMessage.Content.ReadAsStringAsync()).FromJson<TRawEntity>();
-                if (result is null) return Result.OfFailure();
+                if (result is null) return Result<TRawEntity>.OfFailure();
                 return ValidateResponse(result)
-                    ? Result.OfSuccess<TRawEntity>(result)
-                    : Result.OfFailure();
+                    ? Result<TRawEntity>.OfSuccess(result)
+                    : Result<TRawEntity>.OfFailure();
             }
             catch (HttpRequestException e)
             {
-                return Result.OfFailure(new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, e.Message));
+                return Result<TRawEntity>.OfFailure(new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, e.Message));
             }
         }
         

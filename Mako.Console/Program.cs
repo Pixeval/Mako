@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text.Json;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Model;
@@ -15,8 +16,7 @@ namespace Mako.Console
     public static class Program
     {
         private static readonly Session Session = ""
-            .FromJson<TokenResponse>(option => option.IgnoreNullValues = true)!
-            .ToSession("123456")
+            .FromJson<Session>()!
             .UseBypass()
             .UseCache();
 
@@ -51,6 +51,21 @@ namespace Mako.Console
                 if (i != null)
                 {
                     System.Console.WriteLine(i.Title);
+                }
+            }
+        }
+
+        private static async Task PrintFeeds(IAsyncEnumerable<Feed> feeds)
+        {
+            await foreach (var i in feeds)
+            {
+                if (i != null)
+                {
+                    System.Console.WriteLine(JsonSerializer.Serialize(i, new JsonSerializerOptions
+                    {
+                        WriteIndented = true,
+                        IgnoreNullValues = true
+                    }));
                 }
             }
         }
@@ -90,10 +105,16 @@ namespace Mako.Console
             var spotlights = MakoClient.Spotlights();
             await PrintSpotlight(spotlights);
         }
+
+        private static async Task Feeds()
+        {
+            var feeds = MakoClient.Feeds();
+            await PrintFeeds(feeds);
+        }
         
         public static async Task Main()
         {
-            await Spotlights();
+            await Feeds();
         }
     }
 }

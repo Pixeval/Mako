@@ -86,7 +86,7 @@ namespace Mako.Util
         {
             if (obj is null) return null;
             await using var memoryStream = new MemoryStream();
-            await JsonSerializer.SerializeAsync<TEntity>(memoryStream, obj, new JsonSerializerOptions().Apply(option => serializerOptionConfigure?.Invoke(option)));
+            await JsonSerializer.SerializeAsync(memoryStream, obj, new JsonSerializerOptions().Apply(option => serializerOptionConfigure?.Invoke(option)));
             return memoryStream.ToArray().GetString();
         }
 
@@ -146,6 +146,56 @@ namespace Mako.Util
             var realKey = $"{regionName}::{key}";
             return objectCache.Get(realKey);
         }
+
+        public static IEnumerable<JsonProperty> EnumerateObjectOrEmpty(this JsonElement? element)
+        {
+            return element?.EnumerateObject() as IEnumerable<JsonProperty> ?? Array.Empty<JsonProperty>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static JsonElement GetProperty(this JsonProperty jsonElement, string prop) => jsonElement.Value.GetProperty(prop);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static JsonElement? GetPropertyOrNull(this JsonElement element, string prop)
+        {
+            return element.TryGetProperty(prop, out var result) ? result : null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static JsonElement? GetPropertyOrNull(this JsonProperty property, string prop)
+        {
+            return property.Value.TryGetProperty(prop, out var result) ? result : null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string? GetPropertyString(this JsonElement jsonElement) => jsonElement.ToString();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string? GetPropertyString(this JsonElement jsonElement, string prop) => jsonElement.GetProperty(prop).ToString();
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string? GetPropertyString(this JsonProperty jsonProperty) => jsonProperty.Value.ToString();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string? GetPropertyString(this JsonProperty jsonProperty, string prop) => jsonProperty.Value.GetProperty(prop).ToString();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long GetPropertyLong(this JsonProperty jsonProperty, string prop) => jsonProperty.Value.GetProperty(prop).GetInt64();
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long GetPropertyLong(this JsonElement jsonElement, string prop) => jsonElement.GetProperty(prop).GetInt64();
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DateTimeOffset GetPropertyDateTimeOffset(this JsonProperty jsonProperty) => jsonProperty.Value.GetDateTimeOffset();
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DateTimeOffset GetPropertyDateTimeOffset(this JsonProperty jsonProperty, string prop) => jsonProperty.Value.GetProperty(prop).GetDateTimeOffset();
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DateTime GetPropertyDateTime(this JsonProperty jsonProperty) => jsonProperty.Value.GetDateTime();
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static DateTime GetPropertyDateTime(this JsonProperty jsonProperty, string prop) => jsonProperty.Value.GetProperty(prop).GetDateTime();
 
         public static readonly IEqualityComparer<string> CaseIgnoredComparer = new CaseIgnoredStringComparer();
 

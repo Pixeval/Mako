@@ -5,7 +5,7 @@ namespace Mako.Model
 {
     public static class UserEssential
     {
-        public class User
+        public record User
         {
             [JsonPropertyName("user")]
             public UserInfo? UserInfo { get; set; }

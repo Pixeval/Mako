@@ -21,9 +21,9 @@ namespace Mako.Net
         {
             return await Functions.RetryAsync(() => _delegatedHandler.SendAsync(request, cancellationToken), 2, MakoClient!.Session.ConnectionTimeout) switch
             {
-                Result.Success<HttpResponseMessage> (var response) => response,
-                Result.Failure failure => throw failure.Cause ?? new HttpRequestException(),
-                _ => throw new InvalidOperationException("Unexpected case")
+                Result<HttpResponseMessage>.Success (var response) => response,
+                Result<HttpResponseMessage>.Failure failure        => throw failure.Cause ?? new HttpRequestException(),
+                _                                                  => throw new InvalidOperationException("Unexpected case")
             };
         }
     }

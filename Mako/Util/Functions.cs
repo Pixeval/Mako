@@ -35,19 +35,19 @@ namespace Mako.Util
         }
         
 
-        public static async Task<Result> WithTimeout<TResult>(Task<TResult> task, int timeoutMills)
+        public static async Task<Result<TResult>> WithTimeout<TResult>(Task<TResult> task, int timeoutMills)
         {
             using var cancellationToken = new CancellationTokenSource();
             if (await Task.WhenAny(task, Task.Delay(timeoutMills, cancellationToken.Token)) == task)
             {
                 cancellationToken.Cancel();
-                return Result.OfSuccess(task.Result);
+                return Result<TResult>.OfSuccess(task.Result);
             }
 
-            return Result.OfFailure();
+            return Result<TResult>.OfFailure();
         }
         
-        public static async Task<Result> RetryAsync<TResult>(Func<Task<TResult>> body, int attempts = 3, int timeoutMills = 0)
+        public static async Task<Result<TResult>> RetryAsync<TResult>(Func<Task<TResult>> body, int attempts = 3, int timeoutMills = 0)
         {
             var counter = 0;
             Exception? cause = null;
@@ -57,7 +57,7 @@ namespace Mako.Util
                 using var cancellationToken = new CancellationTokenSource();
                 try
                 {
-                    if (await WithTimeout(task, timeoutMills) is Result.Success<TResult> result)
+                    if (await WithTimeout(task, timeoutMills) is Result<TResult>.Success result)
                     {
                         return result;
                     }
@@ -67,7 +67,7 @@ namespace Mako.Util
                     cause = e;
                 }
             }
-            return Result.OfFailure(cause);
+            return Result<TResult>.OfFailure(cause);
         }
     }
 }

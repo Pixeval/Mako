@@ -5,7 +5,7 @@ namespace Mako.Model
 {
     // 这个类型比较特殊，并非网络请求的响应类型，因此放到Model而非Response目录中
     [PublicAPI]
-    public class TokenResponse
+    public record TokenResponse
     {
         [JsonPropertyName("access_token")]
         public string? AccessToken { get; set; }
