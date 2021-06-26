@@ -13,8 +13,9 @@ namespace Mako.Engines.Implements
     internal class SearchEngine : AbstractPixivFetchEngine<Illustration>
     {
         private readonly SearchTagMatchOption _matchOption;
-        private readonly IllustrationSortOption? _sortOption;
+        private readonly IllustrationSortOption _sortOption;
         private readonly SearchDuration? _searchDuration;
+        private readonly TargetFilter _targetFilter;
         private readonly DateTime? _startDate;
         private readonly DateTime? _endDate;
         private readonly string _tag;
@@ -34,6 +35,7 @@ namespace Mako.Engines.Implements
         /// <param name="searchDuration">搜索时间区间</param>
         /// <param name="startDate">日期区间开始</param>
         /// <param name="endDate">日期区间结束</param>
+        /// <param name="targetFilter"></param>
         public SearchEngine(
             MakoClient makoClient, 
             EngineHandle? engineHandle,
@@ -44,16 +46,18 @@ namespace Mako.Engines.Implements
             IllustrationSortOption? sortOption, 
             SearchDuration? searchDuration, 
             DateTime? startDate,
-            DateTime? endDate) : base(makoClient, engineHandle)
+            DateTime? endDate, 
+            TargetFilter? targetFilter) : base(makoClient, engineHandle)
         {
             _matchOption = matchOption;
             _tag = tag;
             _current = start;
             _pages = pages;
-            _sortOption = sortOption;
+            _sortOption = sortOption ?? IllustrationSortOption.PublishDateDescending;
             _searchDuration = searchDuration;
             _startDate = startDate;
             _endDate = endDate;
+            _targetFilter = targetFilter ?? TargetFilter.ForAndroid;
         }
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
@@ -84,18 +88,11 @@ namespace Mako.Engines.Implements
             private string GetSearchUrl()
             {
                 PixivFetchEngine._current++;
-                var isPremium = PixivFetchEngine.MakoClient.Session.IsPremium;
                 var match = PixivFetchEngine._matchOption.GetDescription();
-                var sortSegment = PixivFetchEngine._sortOption switch
-                {
-                    IllustrationSortOption.Popularity when isPremium => "&sort=popular_desc",
-                    IllustrationSortOption.PublishDate               => "&sort=date_desc",
-                    _                                                => null
-                };
                 var startDateSegment = PixivFetchEngine._startDate?.Let(dn => $"&start_date={dn:yyyy-MM-dd}");
                 var endDateSegment = PixivFetchEngine._endDate?.Let(dn => $"&start_date={dn:yyyy-MM-dd}");
                 var durationSegment = PixivFetchEngine._searchDuration?.Let(du => $"&duration={du.GetDescription()}");
-                return $"/v1/search/illust?search_target={match}&word={PixivFetchEngine._tag}&filter=for_android&offset={PixivFetchEngine._current}{sortSegment}{startDateSegment}{endDateSegment}{durationSegment}";
+                return $"/v1/search/illust?search_target={match}&word={PixivFetchEngine._tag}&filter={PixivFetchEngine._targetFilter.GetDescription()}&offset={PixivFetchEngine._current}&sort={PixivFetchEngine._sortOption.GetDescription()}{startDateSegment}{endDateSegment}{durationSegment}";
             }
             
             protected override IEnumerator<Illustration>? GetNewEnumerator(PixivResponse? rawEntity)

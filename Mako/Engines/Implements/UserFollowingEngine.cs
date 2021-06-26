@@ -8,23 +8,25 @@ using Mako.Util;
 
 namespace Mako.Engines.Implements
 {
-    internal class RecommendIllustratorEngine : AbstractPixivFetchEngine<User>
+    internal class UserFollowingEngine : AbstractPixivFetchEngine<User>
     {
-        private readonly TargetFilter _targetFilter;
-
-        public RecommendIllustratorEngine(MakoClient makoClient, TargetFilter targetFilter, EngineHandle? engineHandle) : base(makoClient, engineHandle)
+        private readonly PrivacyPolicy _privacyPolicy;
+        private readonly string _uid;
+        
+        public UserFollowingEngine([NotNull] MakoClient makoClient, PrivacyPolicy privacyPolicy, string uid, EngineHandle? engineHandle) : base(makoClient, engineHandle)
         {
-            _targetFilter = targetFilter;
+            _privacyPolicy = privacyPolicy;
+            _uid = uid;
         }
 
         public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new RecommendIllustratorAsyncEnumerator(this, MakoApiKind.AppApi)!;
+            return new UserFollowingAsyncEnumerator(this, MakoApiKind.AppApi)!;
         }
 
-        private class RecommendIllustratorAsyncEnumerator : RecursivePixivAsyncEnumerator<User, PixivUserResponse, RecommendIllustratorEngine>
+        private class UserFollowingAsyncEnumerator : RecursivePixivAsyncEnumerator<User, PixivUserResponse, UserFollowingEngine>
         {
-            public RecommendIllustratorAsyncEnumerator([NotNull] RecommendIllustratorEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
+            public UserFollowingAsyncEnumerator([NotNull] UserFollowingEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
             {
             }
 
@@ -40,7 +42,7 @@ namespace Mako.Engines.Implements
 
             protected override string InitialUrl()
             {
-                return $"/v1/user/recommended?filter={PixivFetchEngine._targetFilter.GetDescription()}";
+                return $"/v1/user/following?user_id={PixivFetchEngine._uid}&restrict={PixivFetchEngine._privacyPolicy.GetDescription()}";
             }
 
             protected override IEnumerator<User>? GetNewEnumerator(PixivUserResponse? rawEntity)

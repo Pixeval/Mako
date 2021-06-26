@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Model;
+using Mako.Net;
+using Mako.Net.Protocol;
+using Mako.Net.Request;
+using Mako.Net.Response;
 using Mako.Util;
 
 namespace Mako
@@ -82,10 +88,10 @@ namespace Mako
             {
                 Bookmarks = illust.TotalBookmarks,
                 Id = illust.Id.ToString(),
-                IsLiked = illust.IsBookmarked,
+                IsBookmarked = illust.IsBookmarked,
                 IsManga = illust.PageCount != 1,
                 IsUgoira = illust.Type == "ugoira",
-                OriginalUrl = illust.MetaSinglePage?.OriginalImageUrl,
+                OriginalUrl = illust.ImageUrls?.Original ?? illust.MetaSinglePage?.OriginalImageUrl,
                 LargeUrl = illust.ImageUrls?.Large,
                 Tags = illust.Tags?.Select(t => new Tag {Name = t.Name, TranslatedName = t.TranslatedName}),
                 ThumbnailUrl = illust.ImageUrls?.Medium.IsNullOrEmpty() ?? true ? illust.ImageUrls?.SquareMedium : illust.ImageUrls.Medium,
@@ -169,5 +175,50 @@ namespace Mako
                 Cookie = cookie
             };
         }
+
+        #region MakoClient Extensions
+
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+        public static async Task<Illustration> GetIllustrationFromIdAsync(this MakoClient makoClient, string id)
+        {
+            var result = await makoClient.ResolveKeyed<HttpClient>(MakoApiKind.AppApi).GetStringResultAsync($"/v1/illust/detail&illust_id={id}",
+                message => MakoNetworkException.FromHttpResponseMessage(message, makoClient.Session.Bypass));
+            var response = result switch
+            {
+                Result<string>.Success (var content) => content.FromJson<PixivSingleIllustResponse>()!.Illust,
+                Result<string>.Failure (var cause)   => throw cause!,
+                _                                    => throw new ArgumentOutOfRangeException(nameof(result), result, null)
+            };
+            return response.ToIllustration();
+        }
+#pragma warning restore CA2208
+        
+        public static Task PostBookmarkAsync(this MakoClient makoClient, Illustration illustration, PrivacyPolicy privacyPolicy)
+        {
+            illustration.SetBookmark();
+            return makoClient.Resolve<IAppApiProtocol>().AddBookmark(new AddBookmarkRequest(privacyPolicy.GetDescription(), illustration.Id!));
+        }
+
+        public static Task RemoveBookmarkAsync(this MakoClient makoClient, Illustration illustration)
+        {
+            illustration.UnsetBookmark();
+            return makoClient.Resolve<IAppApiProtocol>().RemoveBookmark(new RemoveBookmarkRequest(illustration.Id!));
+        }
+
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+        public static async Task<Illustration[]> GetSpotlightIllustrationsAsync(this MakoClient makoClient, int spotlightId)
+        {
+            var result = await makoClient.ResolveKeyed<HttpClient>(MakoApiKind.WebApi).GetStringResultAsync($"/ajax/showcase/article?article_id={spotlightId}",
+                message => MakoNetworkException.FromHttpResponseMessage(message, makoClient.Session.Bypass));
+            return result switch
+            {
+                Result<string>.Success (var content) => await (content.FromJson<PixivSpotlightDetailResponse>().Let(
+                    response => response?.ResponseBody?.First().Illusts?.SelectNotNull(illust => Task.Run(() => GetIllustrationFromIdAsync(makoClient, illust.IllustId.ToString()))))?.WhenAll() ?? Task.FromResult(Array.Empty<Illustration>())),
+                Result<string>.Failure (var cause) => throw cause!,
+                _                                  => throw new ArgumentOutOfRangeException(nameof(result), result, null)
+            };
+        }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
+        #endregion
     }
 }

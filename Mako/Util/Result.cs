@@ -44,5 +44,15 @@ namespace Mako.Util
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<T> OfFailure(Exception? cause = null) => new Failure(cause);
+
+        public static Result<R?> Wrap<R>(Result<T> result) where R : class
+        {
+            return result switch
+            {
+                Success (var content) => Result<R?>.OfSuccess(content as R),
+                Failure (var cause)   => Result<R?>.OfFailure(cause),
+                _                     => throw new ArgumentOutOfRangeException(nameof(result), result, null)
+            };
+        }
     }
 }

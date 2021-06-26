@@ -112,7 +112,7 @@ namespace Mako.Engines
                 var responseMessage = await MakoClient.ResolveKeyed<HttpClient>(ApiKind).GetAsync(url);
                 if (!responseMessage.IsSuccessStatusCode)
                 {
-                    return Result<TRawEntity>.OfFailure(new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, await responseMessage.Content.ReadAsStringAsync()));
+                    return Result<TRawEntity>.OfFailure(await MakoNetworkException.FromHttpResponseMessage(responseMessage, MakoClient.Session.Bypass));
                 }
 
                 var result = (await responseMessage.Content.ReadAsStringAsync()).FromJson<TRawEntity>();
@@ -123,7 +123,7 @@ namespace Mako.Engines
             }
             catch (HttpRequestException e)
             {
-                return Result<TRawEntity>.OfFailure(new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, e.Message));
+                return Result<TRawEntity>.OfFailure(new MakoNetworkException(url, MakoClient.Session.Bypass, e.Message, (int?) e.StatusCode ?? -1));
             }
         }
         

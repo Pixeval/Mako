@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Model;
 
@@ -30,16 +32,21 @@ namespace Mako
     {
         public string Url { get; set; }
         
-        public int Pages { get; set; }
-        
         public bool Bypass { get; set; }
+        public int StatusCode { get; }
 
-        public MakoNetworkException(string url, int pages, bool bypass, string? extraMsg)
-            : base($"Current Requesting Url: {url}. Current Page Requested: {pages}. {extraMsg} Bypassing: {bypass}")
+        public MakoNetworkException(string url, bool bypass, string? extraMsg, int statusCode)
+            : base($"Network error while requesting URL: {url}:\n {extraMsg}\n Bypassing: {bypass}")
         {
             Url = url;
-            Pages = pages;
             Bypass = bypass;
+            StatusCode = statusCode;
+        }
+
+        // We use Task<Exception> instead of Task<MakoNetworkException> to compromise with the generic variance
+        public static async Task<Exception> FromHttpResponseMessage(HttpResponseMessage message, bool bypass)
+        {
+            return new MakoNetworkException(message.RequestMessage?.RequestUri?.ToString() ?? string.Empty, bypass, await message.Content.ReadAsStringAsync(), (int) message.StatusCode);
         }
     }
     
@@ -88,6 +95,58 @@ namespace Mako
         }
 
         public RankingDateOutOfRangeException([CanBeNull] string? message, [CanBeNull] Exception? innerException) : base(message, innerException)
+        {
+        }
+    }
+
+    /// <summary>
+    /// When a <see cref="PrivacyPolicy"/> is set to <see cref="PrivacyPolicy.Private"/> while the uid is not equivalent to the <see cref="MakoClient.Session"/>
+    /// </summary>
+    [PublicAPI]
+    public class IllegalPrivatePolicyException : MakoException
+    {
+        public string Uid { get; }
+
+        public IllegalPrivatePolicyException(string uid)
+        {
+            Uid = uid;
+        }
+
+        protected IllegalPrivatePolicyException([NotNull] SerializationInfo info, StreamingContext context, string uid) : base(info, context)
+        {
+            Uid = uid;
+        }
+
+        public IllegalPrivatePolicyException([CanBeNull] string? message, string uid) : base(message)
+        {
+            Uid = uid;
+        }
+
+        public IllegalPrivatePolicyException([CanBeNull] string? message, [CanBeNull] Exception? innerException, string uid) : base(message, innerException)
+        {
+            Uid = uid;
+        }
+    }
+
+    /// <summary>
+    /// Raised if you're trying to set the sort option to popular_desc without a premium access
+    /// </summary>
+    [PublicAPI]
+    public class IllegalSortOptionException : MakoException
+    {
+        public IllegalSortOptionException()
+        {
+        }
+
+        protected IllegalSortOptionException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+
+        public IllegalSortOptionException([CanBeNull] string? message) : base(message)
+        {
+        }
+
+        public IllegalSortOptionException([CanBeNull] string? message, [CanBeNull] Exception? innerException) : base(message, innerException)
         {
         }
     }

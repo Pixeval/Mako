@@ -13,7 +13,7 @@ using Mako.Util;
 
 namespace Mako.Engines.Implements
 {
-    public class UserFeedEngine : AbstractPixivFetchEngine<Feed>
+    internal class UserFeedEngine : AbstractPixivFetchEngine<Feed>
     {
         public UserFeedEngine([NotNull] MakoClient makoClient, EngineHandle? engineHandle) : base(makoClient, engineHandle)
         {
@@ -266,18 +266,11 @@ namespace Mako.Engines.Implements
             {
                 try
                 {
-                    var responseMessage = await MakoClient.ResolveKeyed<HttpClient>(MakoApiKind.WebApi).GetAsync(url);
-                    if (!responseMessage.IsSuccessStatusCode)
-                    {
-                        return Result<string>.OfFailure(new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, await responseMessage.Content.ReadAsStringAsync()));
-                    }
-
-                    var result = await responseMessage.Content.ReadAsStringAsync();
-                    return Result<string>.OfSuccess(result);
+                    return await MakoClient.ResolveKeyed<HttpClient>(MakoApiKind.WebApi).GetStringResultAsync(url, async responseMessage => new MakoNetworkException(url, MakoClient.Session.Bypass, await responseMessage.Content.ReadAsStringAsync(), (int) responseMessage.StatusCode));
                 }
                 catch (HttpRequestException e)
                 {
-                    return Result<string>.OfFailure(new MakoNetworkException(url, PixivFetchEngine.RequestedPages, MakoClient.Session.Bypass, e.Message));
+                    return Result<string>.OfFailure(new MakoNetworkException(url, MakoClient.Session.Bypass, e.Message, (int?) e.StatusCode ?? -1));
                 }
             }
         }

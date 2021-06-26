@@ -5,6 +5,8 @@ using JetBrains.Annotations;
 
 namespace Mako.Model
 {
+    
+    // ReSharper disable UnusedAutoPropertyAccessor.Global
     public static class IllustrationEssential
     {
         public record Illust
@@ -31,10 +33,10 @@ namespace Mako.Model
             public User? User { get; set; }
 
             [JsonPropertyName("tags")]
-            public List<Tag>? Tags { get; set; }
+            public IEnumerable<Tag>? Tags { get; set; }
 
             [JsonPropertyName("tools")]
-            public List<string>? Tools { get; set; }
+            public IEnumerable<string>? Tools { get; set; }
 
             [JsonPropertyName("create_date")]
             public DateTimeOffset CreateDate { get; set; }
@@ -58,7 +60,7 @@ namespace Mako.Model
             public MetaSinglePage? MetaSinglePage { get; set; }
 
             [JsonPropertyName("meta_pages")]
-            public List<MetaPage>? MetaPages { get; set; }
+            public IEnumerable<MetaPage>? MetaPages { get; set; }
 
             [JsonPropertyName("total_view")]
             public int TotalView { get; set; }

@@ -7,7 +7,13 @@ namespace Mako.Net.Protocol
 {
     internal interface IAppApiProtocol
     {
-        [Get("/v1/user/recommended?filter=for_android")]
-        Task<PixivUserResponse> GetRecommendIllustrators(RecommendIllustratorRequest request);
+        [Post("/v2/illust/bookmark/add")]
+        Task AddBookmark([Body(BodySerializationMethod.UrlEncoded)] AddBookmarkRequest request);
+
+        [Post("/v1/illust/bookmark/delete")]
+        Task RemoveBookmark([Body(BodySerializationMethod.UrlEncoded)] RemoveBookmarkRequest request);
+        
+        [Get("/v1/illust/detail")]
+        Task<PixivSingleIllustResponse> GetSingle([AliasAs("illust_id")] string id);
     }
 }

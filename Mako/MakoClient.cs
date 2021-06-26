@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.Caching;
+using System.Threading.Tasks;
 using Autofac;
 using JetBrains.Annotations;
 using Mako.Engines;
@@ -12,6 +13,7 @@ using Mako.Engines.Implements;
 using Mako.Model;
 using Mako.Net;
 using Mako.Net.Protocol;
+using Mako.Net.Request;
 using Mako.Util;
 using Refit;
 
@@ -144,10 +146,14 @@ namespace Mako
             }
         }
 
-        public IFetchEngine<Illustration> Bookmarks(string uid, PrivacyPolicy privacyPolicy)
+        public IFetchEngine<Illustration> Bookmarks(string uid, PrivacyPolicy privacyPolicy, TargetFilter targetFilter = TargetFilter.ForAndroid)
         {
+            if (!CheckPrivacyPolicy(uid, privacyPolicy))
+            {
+                throw new IllegalPrivatePolicyException(uid);
+            }
             return (IFetchEngine<Illustration>?) GetCached<AdaptedComputedFetchEngine<Illustration>>(CacheType.Bookmarks, Caches.CreateBookmarkCacheKey(uid))
-                   ?? new BookmarkEngine(this, uid, privacyPolicy, new EngineHandle(handle =>
+                   ?? new BookmarkEngine(this, uid, privacyPolicy, targetFilter, new EngineHandle(handle =>
                    {
                        CancelInstance(handle);
                        TryCache(CacheType.Bookmarks, handle.Cache.Cast<Illustration>(), Caches.CreateBookmarkCacheKey(uid));
@@ -161,14 +167,19 @@ namespace Mako
             SearchTagMatchOption matchOption = SearchTagMatchOption.TitleAndCaption,
             IllustrationSortOption? sortOption = null,
             SearchDuration? searchDuration = null,
+            TargetFilter? targetFilter = null,
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
+            if (sortOption == IllustrationSortOption.PopularityDescending && !Session.IsPremium)
+            {
+                throw new IllegalSortOptionException();
+            }
             // Search function is inadequate for caching
-            return new SearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, start, pages, sortOption, searchDuration, startDate, endDate);
+            return new SearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, start, pages, sortOption, searchDuration, startDate, endDate, targetFilter);
         }
 
-        public IFetchEngine<Illustration> Ranking(RankOption rankOption, DateTime dateTime)
+        public IFetchEngine<Illustration> Ranking(RankOption rankOption, DateTime dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
         {
             if (DateTime.Today - dateTime.Date > TimeSpan.FromDays(2))
             {
@@ -177,21 +188,30 @@ namespace Mako
 
             var key = Caches.CreateRankingCacheKey(rankOption, dateTime);
             return (IFetchEngine<Illustration>?) GetCached<AdaptedComputedFetchEngine<Illustration>>(CacheType.Ranking, key)
-                   ?? new RankingEngine(this, rankOption, dateTime, new EngineHandle(handle =>
+                   ?? new RankingEngine(this, rankOption, dateTime, targetFilter, new EngineHandle(handle =>
                    {
                        CancelInstance(handle);
                        TryCache(CacheType.Ranking, handle.Cache.Cast<Illustration>(), key);
                    }));
         }
 
-        public IFetchEngine<Illustration> Recommends()
+        public IFetchEngine<Illustration> Recommends(
+            RecommendContentType recommendContentType = RecommendContentType.Illust, 
+            TargetFilter targetFilter = TargetFilter.ForAndroid, 
+            uint? maxBookmarkIdForRecommend = null,
+            uint? maxBookmarkIdForRecentIllust = null)
         {
-            return new RecommendsEngine(this, new EngineHandle(CancelInstance));
+            return new RecommendEngine(this, recommendContentType, targetFilter, maxBookmarkIdForRecommend, maxBookmarkIdForRecentIllust, new EngineHandle(CancelInstance));
         }
 
-        public IFetchEngine<User> RecommendIllustrators()
+        /// <summary>
+        /// Only <see cref="User.Avatar"/>, <see cref="User.Id"/>, <see cref="User.Name"/> and <see cref="User.Thumbnails"/>
+        /// are set when using this method
+        /// </summary>
+        /// <returns></returns>
+        public IFetchEngine<User> RecommendIllustratorsIncomplete(TargetFilter targetFilter = TargetFilter.ForAndroid)
         {
-            return new RecommendIllustratorEngine(this, new EngineHandle(CancelInstance));
+            return new RecommendIllustratorEngine(this, targetFilter, new EngineHandle(CancelInstance));
         }
 
         public IFetchEngine<SpotlightArticle> Spotlights()
@@ -208,7 +228,42 @@ namespace Mako
         {
             return new UserUploadEngine(this, uid, new EngineHandle(CancelInstance));
         }
+
+        /// <summary>
+        /// Only <see cref="User.Avatar"/>, <see cref="User.Id"/>, <see cref="User.Name"/> and <see cref="User.Thumbnails"/>
+        /// are set when using this method
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <param name="privacyPolicy"></param>
+        /// <returns></returns>
+        public IFetchEngine<User> FollowingIncomplete(string uid, PrivacyPolicy privacyPolicy)
+        {
+            if (!CheckPrivacyPolicy(uid, privacyPolicy))
+            {
+                throw new IllegalPrivatePolicyException(uid);
+            }
+            return new UserFollowingEngine(this, privacyPolicy, uid, new EngineHandle(CancelInstance));
+        }
+
+        public IFetchEngine<User> SearchUserIncomplete(
+            string keyword,
+            UserSortOption userSortOption = UserSortOption.DateDescending, 
+            TargetFilter targetFilter = TargetFilter.ForAndroid)
+        {
+            return new UserSearchEngine(this, targetFilter, userSortOption, keyword, new EngineHandle(CancelInstance));
+        }
+
+        public IFetchEngine<Illustration> Updates(PrivacyPolicy privacyPolicy)
+        {
+            return new UserUpdateEngine(this, privacyPolicy, new EngineHandle(CancelInstance));
+        }
         
+        // PrivacyPolicy.Private is only allowed when the uid is pointing to yourself
+        private bool CheckPrivacyPolicy(string uid, PrivacyPolicy privacyPolicy)
+        {
+            return !(privacyPolicy == PrivacyPolicy.Private && Session.Id! != uid);
+        }
+
         public IFetchEngine<T>? GetByHandle<T>(EngineHandle handle)
         {
             return _runningInstances.FirstOrDefault(h => h.EngineHandle == handle) as IFetchEngine<T>;

@@ -22,7 +22,7 @@ namespace Mako.Model
 
         public int Bookmarks { get; set; }
 
-        public bool IsLiked { get; set; }
+        public bool IsBookmarked { get; set; }
 
         public bool IsManga { get; set; }
 
@@ -50,5 +50,15 @@ namespace Mako.Model
         public IEnumerable<Tag>? Tags { get; set; }
 
         public bool IsR18 => Tags?.Any(x => Regex.IsMatch(x.Name ?? string.Empty, "[Rr][-]?18[Gg]?") || Regex.IsMatch(x.TranslatedName ?? string.Empty, "[Rr][-]?18[Gg]?")) ?? false;
+
+        public void SetBookmark()
+        {
+            IsBookmarked = true;
+        }
+
+        public void UnsetBookmark()
+        {
+            IsBookmarked = false;
+        }
     }
 }

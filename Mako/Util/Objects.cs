@@ -197,6 +197,25 @@ namespace Mako.Util
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DateTime GetPropertyDateTime(this JsonProperty jsonProperty, string prop) => jsonProperty.Value.GetProperty(prop).GetDateTime();
 
+        
+        /// <summary>
+        /// Returns <see cref="Result{T}.Failure"/> if the status code does not indicating success
+        /// </summary>
+        /// <param name="httpClient"></param>
+        /// <param name="url"></param>
+        /// <param name="exceptionSelector"></param>
+        /// <returns></returns>
+        public static async Task<Result<string>> GetStringResultAsync(this HttpClient httpClient, string url, Func<HttpResponseMessage, Task<Exception>>? exceptionSelector = null)
+        {
+            var responseMessage = await httpClient.GetAsync(url);
+            return !responseMessage.IsSuccessStatusCode ? Result<string>.OfFailure(exceptionSelector is { } selector ? await selector.Invoke(responseMessage) : null) : Result<string>.OfSuccess(await responseMessage.Content.ReadAsStringAsync());
+        }
+
+        public static Task<TResult[]> WhenAll<TResult>(this IEnumerable<Task<TResult>> tasks)
+        {
+            return Task.WhenAll(tasks);
+        }
+
         public static readonly IEqualityComparer<string> CaseIgnoredComparer = new CaseIgnoredStringComparer();
 
         private class CaseIgnoredStringComparer : IEqualityComparer<string>

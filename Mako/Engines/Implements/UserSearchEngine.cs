@@ -8,23 +8,27 @@ using Mako.Util;
 
 namespace Mako.Engines.Implements
 {
-    internal class RecommendIllustratorEngine : AbstractPixivFetchEngine<User>
+    public class UserSearchEngine : AbstractPixivFetchEngine<User>
     {
+        private readonly string _keyword;
         private readonly TargetFilter _targetFilter;
-
-        public RecommendIllustratorEngine(MakoClient makoClient, TargetFilter targetFilter, EngineHandle? engineHandle) : base(makoClient, engineHandle)
+        private readonly UserSortOption _userSortOption;
+        
+        public UserSearchEngine([NotNull] MakoClient makoClient, TargetFilter targetFilter, UserSortOption? userSortOption, string keyword, EngineHandle? engineHandle) : base(makoClient, engineHandle)
         {
+            _keyword = keyword;
             _targetFilter = targetFilter;
+            _userSortOption = userSortOption ?? UserSortOption.DateDescending;
         }
 
         public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new RecommendIllustratorAsyncEnumerator(this, MakoApiKind.AppApi)!;
+            return new UserSearchAsyncEnumerator(this, MakoApiKind.AppApi)!;
         }
 
-        private class RecommendIllustratorAsyncEnumerator : RecursivePixivAsyncEnumerator<User, PixivUserResponse, RecommendIllustratorEngine>
+        private class UserSearchAsyncEnumerator : RecursivePixivAsyncEnumerator<User, PixivUserResponse, UserSearchEngine>
         {
-            public RecommendIllustratorAsyncEnumerator([NotNull] RecommendIllustratorEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
+            public UserSearchAsyncEnumerator([NotNull] UserSearchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
             {
             }
 
@@ -40,7 +44,7 @@ namespace Mako.Engines.Implements
 
             protected override string InitialUrl()
             {
-                return $"/v1/user/recommended?filter={PixivFetchEngine._targetFilter.GetDescription()}";
+                return $"https://app-api.pixiv.net/v1/search/user?filter={PixivFetchEngine._targetFilter.GetDescription()}&word={PixivFetchEngine._keyword}&sort={PixivFetchEngine._userSortOption.GetDescription()}";
             }
 
             protected override IEnumerator<User>? GetNewEnumerator(PixivUserResponse? rawEntity)

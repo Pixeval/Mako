@@ -4,6 +4,7 @@ using Mako.Model;
 
 namespace Mako.Net.Response
 {
+    // ReSharper disable UnusedAutoPropertyAccessor.Global
     internal class PixivSpotlightResponse
     {
         [JsonPropertyName("spotlight_articles")]

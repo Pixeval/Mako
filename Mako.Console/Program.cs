@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Model;
@@ -32,51 +34,67 @@ namespace Mako.Console
         
         private static async Task PrintIllusts(IAsyncEnumerable<Illustration> illustrations)
         {
+            var cnt = 0;
             await foreach (var i in illustrations)
             {
                 if (i != null)
                 {
+                    cnt++;
                     System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
             }
+            
+            System.Console.WriteLine($"Count: {cnt}");
         }
         
         private static async Task PrintUser(IAsyncEnumerable<User> users)
         {
+            var cnt = 0;
             await foreach (var i in users)
             {
                 if (i != null)
                 {
+                    cnt++;
                     System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
             }
+
+            System.Console.WriteLine($"Count: {cnt}");
         }
         
         private static async Task PrintSpotlight(IAsyncEnumerable<SpotlightArticle> articles)
         {
+            var cnt = 0;
             await foreach (var i in articles)
             {
                 if (i != null)
                 {
+                    cnt++;
                     System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
             }
+            
+            System.Console.WriteLine($"Count: {cnt}");
         }
 
         private static async Task PrintFeeds(IAsyncEnumerable<Feed> feeds)
         {
+            var cnt = 0;
             await foreach (var i in feeds)
             {
                 if (i != null)
                 {
+                    cnt++;
                     System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
             }
+
+            System.Console.WriteLine($"Count: {cnt}");
         }
 
         private static async Task Recommend()
         {
-            var recommend = MakoClient.Recommends();
+            var recommend = MakoClient.Recommends(RecommendContentType.Manga);
             await PrintIllusts(recommend);
         }
         
@@ -94,13 +112,13 @@ namespace Mako.Console
 
         private static async Task Search()
         {
-            var search = MakoClient.Search("東方project", pages: 6, sortOption: IllustrationSortOption.Popularity);
+            var search = MakoClient.Search("東方project", pages: 6, sortOption: IllustrationSortOption.PopularityDescending);
             await PrintIllusts(search);
         }
         
         private static async Task RecommendIllustrators()
         {
-            var illustrators = MakoClient.RecommendIllustrators();
+            var illustrators = MakoClient.RecommendIllustratorsIncomplete();
             await PrintUser(illustrators);
         }
         
@@ -121,10 +139,29 @@ namespace Mako.Console
             var uploads = MakoClient.Uploads("333556");
             await PrintIllusts(uploads);
         }
+
+        private static async Task Following()
+        {
+            var follows = MakoClient.FollowingIncomplete("333556", PrivacyPolicy.Private);
+            await PrintUser(follows);
+        }
+
+        private static async Task SearchUser()
+        {
+            var users = MakoClient.SearchUserIncomplete("ideolo");
+            await PrintUser(users);
+        }
+        
+        private static async Task Updates()
+        {
+            var updates = MakoClient.Updates(PrivacyPolicy.Public);
+            await PrintIllusts(updates);
+        }
+
         
         public static async Task Main()
         {
-            await Uploads();
+            
         }
     }
 }

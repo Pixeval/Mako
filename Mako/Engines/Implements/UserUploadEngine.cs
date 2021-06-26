@@ -8,7 +8,7 @@ using Mako.Util;
 
 namespace Mako.Engines.Implements
 {
-    public class UserUploadEngine : AbstractPixivFetchEngine<Illustration>
+    internal class UserUploadEngine : AbstractPixivFetchEngine<Illustration>
     {
         private readonly string _uid;
         
