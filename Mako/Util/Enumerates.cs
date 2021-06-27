@@ -33,11 +33,23 @@ namespace Mako.Util
         {
             return enumerable.Where(i => i is not null)!;
         }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> enumerable, Func<T, object?> keySelector)
+        {
+            return enumerable.Where(i => i is not null && keySelector(i) is not null)!;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TResult> SelectNotNull<T, TResult>(this IEnumerable<T> src, Func<T, TResult> selector)
         {
             return src.WhereNotNull().Select(selector);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IEnumerable<TResult> SelectNotNull<T, TResult>(this IEnumerable<T> src, Func<T, object?> keySelector, Func<T, TResult> selector)
+        {
+            return src.WhereNotNull(keySelector).Select(selector);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -69,6 +81,11 @@ namespace Mako.Util
             var matches = enumerable.Take(1).ToArray();
             return matches.Any() ? matches[0] : null;
         }
+
+        public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> source)
+        {
+            return new AdaptedAsyncEnumerable<T>(source);
+        }
     }
 
     [PublicAPI]
@@ -76,6 +93,14 @@ namespace Mako.Util
     {
         public static readonly IEnumerator<T> Sync = new List<T>().GetEnumerator();
 
-        public static readonly IAsyncEnumerator<T> Async = new AdaptedAsyncEnumerator<T>(new List<T>().GetEnumerator());
+        public static readonly IAsyncEnumerator<T> Async = new AdaptedAsyncEnumerator<T>(Sync);
+    }
+    
+    [PublicAPI]
+    public static class EmptyEnumerable<T>
+    {
+        public static readonly IEnumerable<T> Sync = new List<T>();
+
+        public static readonly IAsyncEnumerable<T> Async = Sync.ToAsyncEnumerable();
     }
 }

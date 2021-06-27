@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Model;
 using Mako.Net;
@@ -33,10 +35,10 @@ namespace Mako.Engines.Implements
             protected override string? NextUrl(PixivSpotlightResponse? rawEntity) => rawEntity?.NextUrl;
 
             protected override string InitialUrl() => "/v1/spotlight/articles?category=all";
-
-            protected override IEnumerator<SpotlightArticle>? GetNewEnumerator(PixivSpotlightResponse? rawEntity)
+            
+            protected override Task<IEnumerator<SpotlightArticle>> GetNewEnumeratorAsync(PixivSpotlightResponse? rawEntity)
             {
-                return rawEntity?.SpotlightArticles?.GetEnumerator();
+                return Task.FromResult((rawEntity?.SpotlightArticles ?? Enumerable.Empty<SpotlightArticle>()).GetEnumerator());
             }
         }
     }

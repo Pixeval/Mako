@@ -4,12 +4,19 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
+using Mako.Engines;
+using Mako.Util;
 
 namespace Mako.Model
 {
     [PublicAPI]
     public record Illustration
     {
+        private Illustration()
+        {
+            
+        }
+        
         public string? Id { get; set; }
 
         public bool IsUgoira { get; set; }
@@ -41,10 +48,6 @@ namespace Mako.Model
 
         public int TotalViews { get; set; }
 
-        public int TotalComments { get; set; }
-
-        public IEnumerable<string>? Comments { get; set; }
-
         public Resolution? Resolution { get; set; }
         
         public IEnumerable<Tag>? Tags { get; set; }
@@ -59,6 +62,27 @@ namespace Mako.Model
         public void UnsetBookmark()
         {
             IsBookmarked = false;
+        }
+
+        /// <summary>
+        /// Instantiate and tries to cache an <see cref="Illustration"/> to <see cref="MakoClient"/>'s cache,
+        /// if the cache entry already exists, this method will returns the cached instance
+        /// </summary>
+        /// <remarks>
+        /// !!! This is the ONLY way to directly instantiate an <see cref="Illustration"/> !!!
+        /// You cannot instantiate <see cref="Illustration"/> at anywhere else because we need
+        /// something like an unique registration to simplify the caching system
+        /// </remarks>
+        /// <param name="id">The ID here is used as the cache key</param>
+        /// <param name="makoClient">The <see cref="MakoClient"/> that owns the cache</param>
+        /// <param name="instantiationConfiguration">Used to configure the newly instantiated <see cref="Illustration"/></param>
+        internal static Illustration GetOrInstantiateAndConfigureIllustrationFromCache(string id, MakoClient makoClient, Action<Illustration> instantiationConfiguration)
+        {
+            return makoClient.GetCached<Illustration>(CacheType.Illustration, id) ?? new Illustration().Apply(i =>
+            {
+                instantiationConfiguration(i);
+                makoClient.Cache(CacheType.Illustration, id, i);
+            });
         }
     }
 }

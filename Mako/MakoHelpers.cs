@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Model;
-using Mako.Net;
-using Mako.Net.Protocol;
-using Mako.Net.Request;
-using Mako.Net.Response;
 using Mako.Util;
 
 namespace Mako
 {
     [PublicAPI]
-    public static class MakoExtension
+    public static class MakoHelpers
     {
         /// <summary>
         /// 检测一个<see cref="Illustration"/>是否符合指定的某些条件
@@ -38,7 +32,7 @@ namespace Mako
         {
             return item is not null && collection.All(i => i.Id != item.Id) && item.Satisfies(session.ExcludeTags, session.IncludeTags, session.MinBookmark);
         }
-        
+
         /// <summary>
         /// 检测一个<see cref="Illustration"/>是否符合指定的某些条件
         /// <list type="number">
@@ -64,7 +58,7 @@ namespace Mako
             {
                 return false;
             }
-            
+
             if (illustration.Tags is { } tags)
             {
                 var tagArr = tags as Tag[] ?? tags.ToArray();
@@ -82,26 +76,26 @@ namespace Mako
             return illustration.Bookmarks >= minBookmarks;
         }
 
-        public static Illustration ToIllustration(this IllustrationEssential.Illust illust)
+        internal static Illustration ToIllustration(this IllustrationEssential.Illust illust, MakoClient cacheProvider)
         {
-            var illustration = new Illustration
+            var illustration = Illustration.GetOrInstantiateAndConfigureIllustrationFromCache(illust.Id.ToString(), cacheProvider, i =>
             {
-                Bookmarks = illust.TotalBookmarks,
-                Id = illust.Id.ToString(),
-                IsBookmarked = illust.IsBookmarked,
-                IsManga = illust.PageCount != 1,
-                IsUgoira = illust.Type == "ugoira",
-                OriginalUrl = illust.ImageUrls?.Original ?? illust.MetaSinglePage?.OriginalImageUrl,
-                LargeUrl = illust.ImageUrls?.Large,
-                Tags = illust.Tags?.Select(t => new Tag {Name = t.Name, TranslatedName = t.TranslatedName}),
-                ThumbnailUrl = illust.ImageUrls?.Medium.IsNullOrEmpty() ?? true ? illust.ImageUrls?.SquareMedium : illust.ImageUrls.Medium,
-                Title = illust.Title,
-                ArtistId = illust.User?.Id.ToString(),
-                ArtistName = illust.User?.Name,
-                Resolution = new Resolution(illust.Width, illust.Height),
-                TotalViews = illust.TotalView,
-                PublishDate = illust.CreateDate
-            };
+                i.Bookmarks = illust.TotalBookmarks;
+                i.Id = illust.Id.ToString();
+                i.IsBookmarked = illust.IsBookmarked;
+                i.IsManga = illust.PageCount != 1;
+                i.IsUgoira = illust.Type == "ugoira";
+                i.OriginalUrl = illust.ImageUrls?.Original ?? illust.MetaSinglePage?.OriginalImageUrl;
+                i.LargeUrl = illust.ImageUrls?.Large;
+                i.Tags = illust.Tags?.Select(t => new Tag {Name = t.Name, TranslatedName = t.TranslatedName});
+                i.ThumbnailUrl = illust.ImageUrls?.Medium.IsNullOrEmpty() ?? true ? illust.ImageUrls?.SquareMedium : illust.ImageUrls.Medium;
+                i.Title = illust.Title;
+                i.ArtistId = illust.User?.Id.ToString();
+                i.ArtistName = illust.User?.Name;
+                i.Resolution = new Resolution(illust.Width, illust.Height);
+                i.TotalViews = illust.TotalView;
+                i.PublishDate = illust.CreateDate;
+            });
             if (illustration.IsManga)
             {
                 illustration.MangaMetadata = illust.MetaPages?.Select(mp => illustration with
@@ -115,7 +109,7 @@ namespace Mako
                 {
                     throw new MangaPagesNotFoundException(illustration);
                 }
-                
+
                 foreach (var i in illustration.MangaMetadata!)
                 {
                     i.MangaMetadata = illustration.MangaMetadata;
@@ -125,17 +119,6 @@ namespace Mako
             return illustration;
         }
 
-        public static User ToUserIncomplete(this UserEssential.User user)
-        {
-            return new()
-            {
-                Avatar = user.UserInfo?.ProfileImageUrls?.Medium,
-                Id = user.UserInfo?.Id.ToString(),
-                Name = user.UserInfo?.Name,
-                Thumbnails = user.Illusts?.Take(5).SelectNotNull(ToIllustration)
-            };
-        }
-        
         public static Session ToSession(this TokenResponse tokenResponse, string password)
         {
             return Session.Default with
@@ -151,7 +134,7 @@ namespace Mako
                 Name = tokenResponse.User?.Name
             };
         }
-        
+
         public static Session ComposeSession(this Session oldSession, Session newSession)
         {
             return oldSession with
@@ -175,50 +158,5 @@ namespace Mako
                 Cookie = cookie
             };
         }
-
-        #region MakoClient Extensions
-
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
-        public static async Task<Illustration> GetIllustrationFromIdAsync(this MakoClient makoClient, string id)
-        {
-            var result = await makoClient.ResolveKeyed<HttpClient>(MakoApiKind.AppApi).GetStringResultAsync($"/v1/illust/detail&illust_id={id}",
-                message => MakoNetworkException.FromHttpResponseMessage(message, makoClient.Session.Bypass));
-            var response = result switch
-            {
-                Result<string>.Success (var content) => content.FromJson<PixivSingleIllustResponse>()!.Illust,
-                Result<string>.Failure (var cause)   => throw cause!,
-                _                                    => throw new ArgumentOutOfRangeException(nameof(result), result, null)
-            };
-            return response.ToIllustration();
-        }
-#pragma warning restore CA2208
-        
-        public static Task PostBookmarkAsync(this MakoClient makoClient, Illustration illustration, PrivacyPolicy privacyPolicy)
-        {
-            illustration.SetBookmark();
-            return makoClient.Resolve<IAppApiProtocol>().AddBookmark(new AddBookmarkRequest(privacyPolicy.GetDescription(), illustration.Id!));
-        }
-
-        public static Task RemoveBookmarkAsync(this MakoClient makoClient, Illustration illustration)
-        {
-            illustration.UnsetBookmark();
-            return makoClient.Resolve<IAppApiProtocol>().RemoveBookmark(new RemoveBookmarkRequest(illustration.Id!));
-        }
-
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
-        public static async Task<Illustration[]> GetSpotlightIllustrationsAsync(this MakoClient makoClient, int spotlightId)
-        {
-            var result = await makoClient.ResolveKeyed<HttpClient>(MakoApiKind.WebApi).GetStringResultAsync($"/ajax/showcase/article?article_id={spotlightId}",
-                message => MakoNetworkException.FromHttpResponseMessage(message, makoClient.Session.Bypass));
-            return result switch
-            {
-                Result<string>.Success (var content) => await (content.FromJson<PixivSpotlightDetailResponse>().Let(
-                    response => response?.ResponseBody?.First().Illusts?.SelectNotNull(illust => Task.Run(() => GetIllustrationFromIdAsync(makoClient, illust.IllustId.ToString()))))?.WhenAll() ?? Task.FromResult(Array.Empty<Illustration>())),
-                Result<string>.Failure (var cause) => throw cause!,
-                _                                  => throw new ArgumentOutOfRangeException(nameof(result), result, null)
-            };
-        }
-#pragma warning restore CA2208 // Instantiate argument exceptions correctly
-        #endregion
     }
 }

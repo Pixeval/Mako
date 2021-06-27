@@ -36,7 +36,7 @@ namespace Mako
         public int StatusCode { get; }
 
         public MakoNetworkException(string url, bool bypass, string? extraMsg, int statusCode)
-            : base($"Network error while requesting URL: {url}:\n {extraMsg}\n Bypassing: {bypass}")
+            : base($"Network error while requesting URL: {url}:\n {extraMsg}\n Bypassing: {bypass}\n Status code: {statusCode}")
         {
             Url = url;
             Bypass = bypass;

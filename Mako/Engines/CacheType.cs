@@ -2,8 +2,7 @@
 {
     internal enum CacheType
     {
-        Bookmarks,
-        Ranking,
-        User
+        User,
+        Illustration,
     }
 }

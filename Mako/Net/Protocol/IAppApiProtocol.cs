@@ -15,5 +15,14 @@ namespace Mako.Net.Protocol
         
         [Get("/v1/illust/detail")]
         Task<PixivSingleIllustResponse> GetSingle([AliasAs("illust_id")] string id);
+
+        [Get("/v1/user/detail")]
+        Task<PixivSingleUserResponse> GetSingleUser(SingleUserRequest request);
+
+        [Post("/v1/user/follow/add")]
+        Task FollowUser([Body(BodySerializationMethod.UrlEncoded)] FollowUserRequest request);
+
+        [Post("/v1/user/follow/delete")]
+        Task RemoveFollowUser([Body(BodySerializationMethod.Serialized)] RemoveFollowUserRequest request);
     }
 }

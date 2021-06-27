@@ -31,7 +31,7 @@ namespace Mako.Net.Response
             public IEnumerable<Tag>? Tags { get; set; }
 
             [JsonPropertyName("thumbnailUrl")]
-            public Uri? ThumbnailUrl { get; set; }
+            public string? ThumbnailUrl { get; set; }
 
             [JsonPropertyName("title")]
             public string? Title { get; set; }
@@ -112,7 +112,7 @@ namespace Mako.Net.Response
             public IEnumerable<Tag>? Tags { get; set; }
 
             [JsonPropertyName("article_url")]
-            public Uri? ArticleUrl { get; set; }
+            public string? ArticleUrl { get; set; }
 
             [JsonPropertyName("intro")]
             public string? Intro { get; set; }
@@ -199,10 +199,10 @@ namespace Mako.Net.Response
             public string? IllustXRestrict { get; set; }
 
             [JsonPropertyName("illust_create_date")]
-            public DateTimeOffset IllustCreateDate { get; set; }
+            public string? IllustCreateDate { get; set; }
 
             [JsonPropertyName("illust_upload_date")]
-            public DateTimeOffset IllustUploadDate { get; set; }
+            public string? IllustUploadDate { get; set; }
 
             [JsonPropertyName("illust_server_id")]
             public string? IllustServerId { get; set; }
@@ -220,7 +220,7 @@ namespace Mako.Net.Response
             public string? IllustPageCount { get; set; }
 
             [JsonPropertyName("illust_custom_thumbnail_upload_datetime")]
-            public DateTimeOffset? IllustCustomThumbnailUploadDatetime { get; set; }
+            public string? IllustCustomThumbnailUploadDatetime { get; set; }
 
             [JsonPropertyName("illust_comment")]
             public string? IllustComment { get; set; }

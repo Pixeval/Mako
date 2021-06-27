@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Threading;
+using JetBrains.Annotations;
 
 namespace Mako.Engines
 {
@@ -8,6 +9,6 @@ namespace Mako.Engines
     [PublicAPI]
     public interface ICancellable
     {
-        bool IsCanceled { get; set; }
+        CancellationTokenSource CancellationTokenSource { get; set; }
     }
 }

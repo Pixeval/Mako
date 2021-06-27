@@ -2,7 +2,9 @@
 
 namespace Mako.Net.Request
 {
-    public record RemoveBookmarkRequest
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    // ReSharper disable once MemberCanBePrivate.Global
+    internal class RemoveBookmarkRequest
     {
         [AliasAs("illust_id")]
         public string IllustId { get; }

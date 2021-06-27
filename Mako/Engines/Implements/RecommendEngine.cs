@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Annotations;
 using Mako.Model;
 using Mako.Net;
-using Mako.Net.Response;
 using Mako.Util;
 
 namespace Mako.Engines.Implements
@@ -30,29 +28,17 @@ namespace Mako.Engines.Implements
             return new RecommendAsyncEnumerator(this, MakoApiKind.AppApi)!;
         }
 
-        private class RecommendAsyncEnumerator : RecursivePixivAsyncEnumerator<Illustration, PixivResponse, RecommendEngine>
+        private class RecommendAsyncEnumerator : RecursivePixivAsyncEnumerators.Illustration<RecommendEngine>
         {
             public RecommendAsyncEnumerator([NotNull] RecommendEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
             {
             }
-
-            protected override bool ValidateResponse(PixivResponse rawEntity)
-            {
-                return rawEntity.Illusts.IsNotNullOrEmpty();
-            }
-
-            protected override string? NextUrl(PixivResponse? rawEntity) => rawEntity?.NextUrl;
-
+            
             protected override string InitialUrl()
             {
                 var maxBookmarkIdForRecommend = PixivFetchEngine._maxBookmarkIdForRecommend?.Let(static s => $"&max_bookmark_id_for_recommend={s}") ?? string.Empty;
                 var maxBookmarkIdForRecentIllust = PixivFetchEngine._minBookmarkIdForRecentIllust.Let(static s => $"&min_bookmark_id_for_recent_illust={s}") ?? string.Empty;
                 return $"/v1/illust/recommended?filter={PixivFetchEngine._filter.GetDescription()}&content_type={PixivFetchEngine._recommendContentType.GetDescription()}{maxBookmarkIdForRecommend}{maxBookmarkIdForRecentIllust}";
-            }
-
-            protected override IEnumerator<Illustration>? GetNewEnumerator(PixivResponse? rawEntity)
-            {
-                return rawEntity?.Illusts?.SelectNotNull(MakoExtension.ToIllustration).GetEnumerator();
             }
         }
     }

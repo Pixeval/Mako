@@ -13,9 +13,6 @@ namespace Mako.Model
         [JsonPropertyName("title")]
         public string? Title { get; set; }
 
-        [JsonPropertyName("pure_title")]
-        public string? PureTitle { get; set; }
-
         [JsonPropertyName("thumbnail")]
         public string? Thumbnail { get; set; }
 
@@ -24,11 +21,5 @@ namespace Mako.Model
 
         [JsonPropertyName("publish_date")]
         public DateTimeOffset PublishDate { get; set; }
-
-        [JsonPropertyName("category")]
-        public string? Category { get; set; }
-
-        [JsonPropertyName("subcategory_label")]
-        public string? SubcategoryLabel { get; set; }
     }
 }

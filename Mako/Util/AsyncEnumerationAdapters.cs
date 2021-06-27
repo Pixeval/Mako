@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -24,6 +25,7 @@ namespace Mako.Util
         public ValueTask DisposeAsync()
         {
             _outerEnumerator.Dispose();
+            GC.SuppressFinalize(this);
             return ValueTask.CompletedTask;
         }
 
@@ -33,5 +35,21 @@ namespace Mako.Util
         }
 
         public T Current => _outerEnumerator.Current;
+    }
+
+    [PublicAPI]
+    public class AdaptedAsyncEnumerable<T> : IAsyncEnumerable<T>
+    {
+        private readonly IEnumerable<T> _sync;
+
+        public AdaptedAsyncEnumerable(IEnumerable<T> sync)
+        {
+            _sync = sync;
+        }
+
+        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = new())
+        {
+            return new AdaptedAsyncEnumerator<T>(_sync.GetEnumerator());
+        }
     }
 }

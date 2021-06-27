@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using JetBrains.Annotations;
 using Mako.Model;
 using Mako.Net;
-using Mako.Net.Response;
 using Mako.Util;
 
 namespace Mako.Engines.Implements
@@ -20,7 +18,7 @@ namespace Mako.Engines.Implements
         private readonly DateTime? _endDate;
         private readonly string _tag;
         private readonly int _pages;
-        private int _current;
+        private readonly int _current;
 
         /// <summary>
         /// 实例化一个<see cref="SearchEngine"/>
@@ -65,19 +63,12 @@ namespace Mako.Engines.Implements
             return new SearchAsyncEnumerator(this, MakoApiKind.AppApi)!;
         }
 
-        private class SearchAsyncEnumerator : RecursivePixivAsyncEnumerator<Illustration, PixivResponse, SearchEngine>
+        private class SearchAsyncEnumerator : RecursivePixivAsyncEnumerators.Illustration<SearchEngine>
         {
             public SearchAsyncEnumerator([NotNull] SearchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
             {
             }
-
-            protected override bool ValidateResponse(PixivResponse rawEntity)
-            {
-                return rawEntity.Illusts.IsNotNullOrEmpty();
-            }
-
-            protected override string NextUrl(PixivResponse? rawEntity) => GetSearchUrl();
-
+            
             protected override string InitialUrl() => GetSearchUrl();
 
             protected override bool HasNextPage()
@@ -87,17 +78,11 @@ namespace Mako.Engines.Implements
 
             private string GetSearchUrl()
             {
-                PixivFetchEngine._current++;
                 var match = PixivFetchEngine._matchOption.GetDescription();
                 var startDateSegment = PixivFetchEngine._startDate?.Let(dn => $"&start_date={dn:yyyy-MM-dd}");
                 var endDateSegment = PixivFetchEngine._endDate?.Let(dn => $"&start_date={dn:yyyy-MM-dd}");
                 var durationSegment = PixivFetchEngine._searchDuration?.Let(du => $"&duration={du.GetDescription()}");
                 return $"/v1/search/illust?search_target={match}&word={PixivFetchEngine._tag}&filter={PixivFetchEngine._targetFilter.GetDescription()}&offset={PixivFetchEngine._current}&sort={PixivFetchEngine._sortOption.GetDescription()}{startDateSegment}{endDateSegment}{durationSegment}";
-            }
-            
-            protected override IEnumerator<Illustration>? GetNewEnumerator(PixivResponse? rawEntity)
-            {
-                return rawEntity?.Illusts?.SelectNotNull(MakoExtension.ToIllustration).GetEnumerator();
             }
         }
     }

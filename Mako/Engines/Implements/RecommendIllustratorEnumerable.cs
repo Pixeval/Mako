@@ -22,30 +22,15 @@ namespace Mako.Engines.Implements
             return new RecommendIllustratorAsyncEnumerator(this, MakoApiKind.AppApi)!;
         }
 
-        private class RecommendIllustratorAsyncEnumerator : RecursivePixivAsyncEnumerator<User, PixivUserResponse, RecommendIllustratorEngine>
+        private class RecommendIllustratorAsyncEnumerator : RecursivePixivAsyncEnumerators.User<RecommendIllustratorEngine>
         {
             public RecommendIllustratorAsyncEnumerator([NotNull] RecommendIllustratorEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
             {
             }
 
-            protected override bool ValidateResponse(PixivUserResponse rawEntity)
-            {
-                return rawEntity.Users.IsNotNullOrEmpty();
-            }
-
-            protected override string? NextUrl(PixivUserResponse? rawEntity)
-            {
-                return rawEntity?.NextUrl;
-            }
-
             protected override string InitialUrl()
             {
                 return $"/v1/user/recommended?filter={PixivFetchEngine._targetFilter.GetDescription()}";
-            }
-
-            protected override IEnumerator<User>? GetNewEnumerator(PixivUserResponse? rawEntity)
-            {
-                return rawEntity?.Users?.SelectNotNull(MakoExtension.ToUserIncomplete).GetEnumerator();
             }
         }
     }

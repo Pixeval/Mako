@@ -4,18 +4,18 @@ namespace Mako.Net.Request
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global
     // ReSharper disable MemberCanBePrivate.Global
-    internal class AddBookmarkRequest
+    internal class FollowUserRequest
     {
-        [AliasAs("restrict")]
-        public string Restrict { get; }
-        
-        [AliasAs("illust_id")]
+        [AliasAs("user_id")]
         public string Id { get; }
 
-        public AddBookmarkRequest(string restrict, string id)
+        [AliasAs("restrict")]
+        public string Restrict { get; }
+
+        public FollowUserRequest(string id, string restrict)
         {
-            Restrict = restrict;
             Id = id;
+            Restrict = restrict;
         }
     }
 }

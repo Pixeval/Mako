@@ -3,7 +3,6 @@ using System.Threading;
 using JetBrains.Annotations;
 using Mako.Model;
 using Mako.Net;
-using Mako.Net.Response;
 using Mako.Util;
 
 namespace Mako.Engines.Implements
@@ -24,30 +23,15 @@ namespace Mako.Engines.Implements
             return new UserFollowingAsyncEnumerator(this, MakoApiKind.AppApi)!;
         }
 
-        private class UserFollowingAsyncEnumerator : RecursivePixivAsyncEnumerator<User, PixivUserResponse, UserFollowingEngine>
+        private class UserFollowingAsyncEnumerator : RecursivePixivAsyncEnumerators.User<UserFollowingEngine>
         {
             public UserFollowingAsyncEnumerator([NotNull] UserFollowingEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
             {
             }
-
-            protected override bool ValidateResponse(PixivUserResponse rawEntity)
-            {
-                return rawEntity.Users.IsNotNullOrEmpty();
-            }
-
-            protected override string? NextUrl(PixivUserResponse? rawEntity)
-            {
-                return rawEntity?.NextUrl;
-            }
-
+            
             protected override string InitialUrl()
             {
                 return $"/v1/user/following?user_id={PixivFetchEngine._uid}&restrict={PixivFetchEngine._privacyPolicy.GetDescription()}";
-            }
-
-            protected override IEnumerator<User>? GetNewEnumerator(PixivUserResponse? rawEntity)
-            {
-                return rawEntity?.Users?.SelectNotNull(MakoExtension.ToUserIncomplete).GetEnumerator();
             }
         }
     }

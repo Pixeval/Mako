@@ -11,6 +11,7 @@
       <PackageReference Include="JetBrains.Annotations" Version="2021.2.0-eap2" />
       <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="7.0.2" />
       <PackageReference Include="Refit" Version="6.0.38" />
+      <PackageReference Include="System.Linq.Async" Version="5.0.0" />
       <PackageReference Include="System.Runtime.Caching" Version="5.0.0" />
     </ItemGroup>
 

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Model;
 using Mako.Net;
+using Mako.Net.Response;
 using Mako.Util;
 
 namespace Mako.Engines
@@ -17,7 +19,7 @@ namespace Mako.Engines
         where TEntity : class?
         where TFetchEngine : class, IFetchEngine<TEntity>
     {
-        protected TRawEntity? Entity { get; private set; }
+        private TRawEntity? Entity { get; set; }
 
         protected RecursivePixivAsyncEnumerator(TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind)
             : base(pixivFetchEngine, makoApiKind)
@@ -40,7 +42,7 @@ namespace Mako.Engines
         /// 从新页面的返回结果中获取该页面的所有搜索结果的迭代器
         /// </summary>
         /// <returns>所有搜索结果的迭代器</returns>
-        protected abstract IEnumerator<TEntity>? GetNewEnumerator(TRawEntity? rawEntity);
+        protected abstract Task<IEnumerator<TEntity>> GetNewEnumeratorAsync(TRawEntity? rawEntity);
 
         /// <summary>
         /// 指示是否还有下一页
@@ -76,7 +78,7 @@ namespace Mako.Engines
                 switch (await GetJsonResponse(first))
                 {
                     case Result<TRawEntity>.Success (var raw):
-                        Update(raw);
+                        await Update(raw);
                         break;
                     case Result<TRawEntity>.Failure (var exception):
                         if (exception is { } e)
@@ -102,7 +104,7 @@ namespace Mako.Engines
 
             if (await GetJsonResponse(NextUrl(Entity)!) is Result<TRawEntity>.Success (var value)) // Else request a new page
             {
-                Update(value);
+                await Update(value);
                 TryCacheCurrent();
                 return true;
             }
@@ -123,11 +125,70 @@ namespace Mako.Engines
         /// 每申请一个新的页面后负责更新迭代器，实体对象和页数
         /// </summary>
         /// <param name="rawEntity">新页面的请求结果</param>
-        protected override void Update(TRawEntity rawEntity)
+        private async Task Update(TRawEntity rawEntity)
         {
             Entity = rawEntity;
-            CurrentEntityEnumerator = GetNewEnumerator(rawEntity) ?? EmptyEnumerators<TEntity>.Sync;
+            CurrentEntityEnumerator = await GetNewEnumeratorAsync(rawEntity);
             PixivFetchEngine!.RequestedPages++;
+        }
+    }
+
+    internal class RecursivePixivAsyncEnumerators
+    {
+        public abstract class User<TFetchEngine> : RecursivePixivAsyncEnumerator<User, PixivUserResponse, TFetchEngine> 
+            where TFetchEngine : class, IFetchEngine<User>
+        {
+            protected User([NotNull] TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
+            {
+            }
+
+            protected override bool ValidateResponse(PixivUserResponse rawEntity)
+            {
+                return rawEntity.Users.IsNotNullOrEmpty();
+            }
+
+            protected override string? NextUrl(PixivUserResponse? rawEntity)
+            {
+                return rawEntity?.NextUrl;
+            }
+
+            protected abstract override string InitialUrl();
+
+            protected override async Task<IEnumerator<User>> GetNewEnumeratorAsync(PixivUserResponse? rawEntity)
+            {
+                var tasks = rawEntity?.Users?.SelectNotNull( // wow... tough code :) 
+                    u => u.UserInfo,
+                    async u => await MakoClient.GetUserFromIdAsync(u.UserInfo!.Id.ToString()) with
+                    {
+                        Thumbnails = u.Illusts?.Take(3).Select(illust => illust.ToIllustration(MakoClient))
+                    });
+                return (await Task.WhenAll(tasks ?? Enumerable.Empty<Task<User>>()) as IEnumerable<User>).GetEnumerator();
+            }
+        }
+
+        public abstract class Illustration<TFetchEngine> : RecursivePixivAsyncEnumerator<Illustration, PixivResponse, TFetchEngine>
+            where TFetchEngine : class, IFetchEngine<Illustration>
+        {
+            protected Illustration([NotNull] TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
+            {
+            }
+            
+            protected override bool ValidateResponse(PixivResponse rawEntity)
+            {
+                return rawEntity.Illusts.IsNotNullOrEmpty();
+            }
+
+            protected override string? NextUrl(PixivResponse? rawEntity)
+            {
+                return rawEntity?.NextUrl;
+            }
+
+            protected abstract override string InitialUrl();
+
+            protected override Task<IEnumerator<Illustration>> GetNewEnumeratorAsync(PixivResponse? rawEntity)
+            {
+                return Task.FromResult((rawEntity?.Illusts?.SelectNotNull(illust => illust.ToIllustration(MakoClient)) ?? Enumerable.Empty<Illustration>()).GetEnumerator());
+            }
         }
     }
 }

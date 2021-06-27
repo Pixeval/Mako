@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Model;
@@ -18,7 +16,7 @@ namespace Mako.Console
     [PublicAPI]
     public static class Program
     {
-        private static readonly Session Session = ""
+        private static readonly Session Session = "{\"Name\":\"December0730\",\"ExpireIn\":\"2021-06-28T04:48:35.9526347+08:00\",\"ConnectionTimeout\":5000,\"AccessToken\":\"fMh7H7Yg0MUccgDr5bsFVb4_sBOGTQZoegkocvOyqdo\",\"RefreshToken\":\"5QOHeUpB-cFNjrXmqOU0YFv2QLnlnKHmJ4RJF4YSSQI\",\"AvatarUrl\":\"https://i.pximg.net/user-profile/img/2019/01/13/21/00/08/15255001_2f78dcb00cc01551c55586280352571a_170.jpg\",\"Id\":\"17861677\",\"Account\":\"2653221698\",\"Password\":\"123456\",\"IsPremium\":false,\"Cookie\":\"__cf_bm=f0e58891ca78eb5120e98a615b93f4a19e54f3c7-1624823423-1800-AQxRUQM3QcHhmsgqRdPtxLgocDfsBVvnuKQXyJLVorilkCjFtF6X82EbDXtL33kGccmhFFBQ/K71zAOFvSxlz01jqk0XL1bzojG6DImc1RE8HVD/WC/YSquXeH0sJGPaeww31sInw1Ip7OjN1u4XcdXHqOWfwF3HNI1KR2S\\u002BBGEFn\\u002BcoiYpbIhkXh9lbXzbgfw==;b_type=1;privacy_policy_agreement=0;device_token=a799b12b2bae4cd02e715c273314030d;_gat=1;c_type=21;PHPSESSID=17861677_JQgKd8M21Nkbp82KCrBnsdbPK4Hxnvni;p_ab_id_2=8;_gid=GA1.2.253427416.1624744622;privacy_policy_notification=0;_ga=GA1.2.1567916307.1623632304;a_type=0;p_ab_d_id=626740158;d_type=1;p_ab_id=5;\",\"Bypass\":false,\"MirrorHost\":null,\"ExcludeTags\":null,\"IncludeTags\":null,\"MinBookmark\":0,\"AllowCache\":false}"
             .FromJson<Session>()!
             .UseBypass()
             .UseCache();
@@ -118,7 +116,7 @@ namespace Mako.Console
         
         private static async Task RecommendIllustrators()
         {
-            var illustrators = MakoClient.RecommendIllustratorsIncomplete();
+            var illustrators = MakoClient.RecommendIllustrators();
             await PrintUser(illustrators);
         }
         
@@ -142,13 +140,13 @@ namespace Mako.Console
 
         private static async Task Following()
         {
-            var follows = MakoClient.FollowingIncomplete("333556", PrivacyPolicy.Private);
+            var follows = MakoClient.Following("333556", PrivacyPolicy.Private);
             await PrintUser(follows);
         }
 
         private static async Task SearchUser()
         {
-            var users = MakoClient.SearchUserIncomplete("ideolo");
+            var users = MakoClient.SearchUser("ideolo");
             await PrintUser(users);
         }
         
@@ -158,10 +156,15 @@ namespace Mako.Console
             await PrintIllusts(updates);
         }
 
+        private static async Task GetSpotlightIllustrations(string id)
+        {
+            var spotlightDetail = await MakoClient.GetSpotlightDetailAsync(id);
+            await PrintIllusts(spotlightDetail!.Illustrations.ToAsyncEnumerable());
+        }
         
         public static async Task Main()
         {
-            
+            await SearchUser();
         }
     }
 }

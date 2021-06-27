@@ -245,7 +245,7 @@ namespace Mako.Engines.Implements
                 PixivFetchEngine.RequestedPages++;
             }
 
-            protected override void Update(string rawEntity)
+            protected virtual void Update(string rawEntity)
             {
                 throw new NotSupportedException();
             }

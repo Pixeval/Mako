@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using JetBrains.Annotations;
 using Mako.Util;
 
@@ -20,7 +21,7 @@ namespace Mako.Engines
 
         public bool Equals(EngineHandle other)
         {
-            return Id == other.Id && IsCanceled == other.IsCanceled && IsCompleted == other.IsCompleted;
+            return Id == other.Id && CancellationTokenSource.IsCancellationRequested == other.CancellationTokenSource.IsCancellationRequested && IsCompleted == other.IsCompleted;
         }
 
         /// <summary>
@@ -31,12 +32,11 @@ namespace Mako.Engines
         /// <summary>
         /// 指示该句柄对应的搜索引擎是否已经被取消
         /// </summary>
-        public bool IsCanceled { get; set; }
+        public CancellationTokenSource CancellationTokenSource { get; set; }
         
         /// <summary>
         /// 指示该句柄对应的搜索引擎是否已经结束运行
         /// </summary>
-        
         public bool IsCompleted { get; set; }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Mako.Engines
             _onCompletion = onCompletion;
             _cache = new List<object>();
             Id = id;
-            IsCanceled = false;
+            CancellationTokenSource = new CancellationTokenSource();
             IsCompleted = false;
         }
         
@@ -58,14 +58,14 @@ namespace Mako.Engines
             _onCompletion = onCompletion;
             _cache = new List<object>();
             Id = Guid.NewGuid();
-            IsCanceled = false;
+            CancellationTokenSource = new CancellationTokenSource();
             IsCompleted = false;
         }
 
         /// <summary>
         /// 取消该句柄对应的搜索引擎的运行
         /// </summary>
-        public void Cancel() => IsCanceled = true;
+        public void Cancel() => CancellationTokenSource.Cancel(true);
 
         /// <summary>
         /// 设置该句柄对应的搜索引擎的状态为已完成，并执行注册的结束回调
@@ -80,7 +80,7 @@ namespace Mako.Engines
 
         public static bool operator ==(EngineHandle lhs, EngineHandle rhs)
         {
-            return lhs.Id == rhs.Id && lhs.IsCanceled == rhs.IsCanceled && lhs.IsCompleted == rhs.IsCompleted;
+            return lhs.Id == rhs.Id && lhs.CancellationTokenSource.IsCancellationRequested == rhs.CancellationTokenSource.IsCancellationRequested && lhs.IsCompleted == rhs.IsCompleted;
         }
 
         public static bool operator !=(EngineHandle lhs, EngineHandle rhs)

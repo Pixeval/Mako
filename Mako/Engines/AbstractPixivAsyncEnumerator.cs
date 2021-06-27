@@ -75,7 +75,7 @@ namespace Mako.Engines
         /// <remarks>
         /// 如果<see cref="PixivFetchEngine"/>是<c>null</c>，则直接返回<c>true</c>来中断任务执行
         /// </remarks>
-        protected bool IsCancellationRequested => PixivFetchEngine.EngineHandle.IsCanceled;
+        protected bool IsCancellationRequested => PixivFetchEngine.EngineHandle.CancellationTokenSource.IsCancellationRequested;
 
         protected AbstractPixivAsyncEnumerator(TFetchEngine pixivFetchEngine, MakoApiKind apiKind)
         {
@@ -85,12 +85,6 @@ namespace Mako.Engines
         }
 
         public abstract ValueTask<bool> MoveNextAsync();
-
-        /// <summary>
-        /// 通过<paramref name="rawEntity"/>更新<see cref="CurrentEntityEnumerator"/>
-        /// </summary>
-        /// <param name="rawEntity">要使用到的<typeparamref name="TRawEntity"/></param>
-        protected abstract void Update(TRawEntity rawEntity);
 
         /// <summary>
         /// 测试对应的JSON实体对象是否合法，比如，是否是<c>null</c>，是否缺失关键字段
