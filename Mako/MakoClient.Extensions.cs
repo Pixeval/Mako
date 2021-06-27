@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace Mako
             return result!.ToIllustration(this);
         }
 
-        public async Task<User> GetUserFromIdAsync(string id, TargetFilter targetFilter = TargetFilter.ForAndroid)
+        public async Task<User> GetUserFromIdAsync(string id, TargetFilter targetFilter)
         {
             var result = await Resolve<IAppApiProtocol>().GetSingleUser(new SingleUserRequest(id, targetFilter.GetDescription()));
             var entity = result.UserEntity;
@@ -124,6 +125,16 @@ namespace Mako
         public Task RemoveFollowUserAsync(string id)
         {
             return Resolve<IAppApiProtocol>().RemoveFollowUser(new RemoveFollowUserRequest(id));
+        }
+
+        public async Task<IEnumerable<TrendingTag>> GetTrendingTagsAsync(TargetFilter targetFilter)
+        {
+            return ((await Resolve<IAppApiProtocol>().GetTrendingTags(targetFilter.GetDescription())).TrendTags ?? Enumerable.Empty<TrendingTagResponse.TrendTag>()).Select(t => new TrendingTag
+            {
+                Tag = t.TagStr,
+                Translation = t.TranslatedName,
+                Illustration = t.Illust?.ToIllustration(this)
+            });
         }
     }
 }

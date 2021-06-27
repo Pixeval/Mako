@@ -23,6 +23,9 @@ namespace Mako.Net.Protocol
         Task FollowUser([Body(BodySerializationMethod.UrlEncoded)] FollowUserRequest request);
 
         [Post("/v1/user/follow/delete")]
-        Task RemoveFollowUser([Body(BodySerializationMethod.Serialized)] RemoveFollowUserRequest request);
+        Task RemoveFollowUser([Body(BodySerializationMethod.UrlEncoded)] RemoveFollowUserRequest request);
+
+        [Get("/v1/trending-tags/illust")]
+        Task<TrendingTagResponse> GetTrendingTags([AliasAs("filter")] string filter);
     }
 }

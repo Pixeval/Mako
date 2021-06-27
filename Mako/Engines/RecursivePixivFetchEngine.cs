@@ -158,7 +158,7 @@ namespace Mako.Engines
             {
                 var tasks = rawEntity?.Users?.SelectNotNull( // wow... tough code :) 
                     u => u.UserInfo,
-                    async u => await MakoClient.GetUserFromIdAsync(u.UserInfo!.Id.ToString()) with
+                    async u => await MakoClient.GetUserFromIdAsync(u.UserInfo!.Id.ToString(), TargetFilter.ForAndroid) with
                     {
                         Thumbnails = u.Illusts?.Take(3).Select(illust => illust.ToIllustration(MakoClient))
                     });
