@@ -167,5 +167,15 @@ namespace Mako
         {
             return _runningInstances.FirstOrDefault(h => h.EngineHandle == handle) as IFetchEngine<T>;
         }
+
+        /// <summary>
+        /// Acquires a configured <see cref="HttpClient"/> for the network traffics
+        /// </summary>
+        /// <param name="makoApiKind"></param>
+        /// <returns></returns>
+        public HttpClient GetMakoHttpClient(MakoApiKind makoApiKind)
+        {
+            return ResolveKeyed<HttpClient>(makoApiKind);
+        }
     }
 }
