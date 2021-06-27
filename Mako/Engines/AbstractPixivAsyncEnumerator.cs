@@ -106,7 +106,7 @@ namespace Mako.Engines
                 var responseMessage = await MakoClient.ResolveKeyed<HttpClient>(ApiKind).GetAsync(url);
                 if (!responseMessage.IsSuccessStatusCode)
                 {
-                    return Result<TRawEntity>.OfFailure(await MakoNetworkException.FromHttpResponseMessage(responseMessage, MakoClient.Session.Bypass));
+                    return Result<TRawEntity>.OfFailure(await MakoNetworkException.FromHttpResponseMessage(responseMessage, MakoClient.Configuration.Bypass));
                 }
 
                 var result = (await responseMessage.Content.ReadAsStringAsync()).FromJson<TRawEntity>();
@@ -117,7 +117,7 @@ namespace Mako.Engines
             }
             catch (HttpRequestException e)
             {
-                return Result<TRawEntity>.OfFailure(new MakoNetworkException(url, MakoClient.Session.Bypass, e.Message, (int?) e.StatusCode ?? -1));
+                return Result<TRawEntity>.OfFailure(new MakoNetworkException(url, MakoClient.Configuration.Bypass, e.Message, (int?) e.StatusCode ?? -1));
             }
         }
         

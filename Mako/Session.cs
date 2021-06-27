@@ -5,17 +5,12 @@ using Mako.Util;
 
 namespace Mako
 {
+    /// <summary>
+    /// Contains all the user configurable
+    /// </summary>
     [PublicAPI]
     public record Session
     {
-        public static readonly Session Default = new()
-        {
-            ConnectionTimeout = 5000,
-            Bypass = false,
-            MinBookmark = 0,
-            AllowCache = false
-        };
-        
         /// <summary>
         /// User name
         /// </summary>
@@ -25,8 +20,6 @@ namespace Mako
         /// Token expiration
         /// </summary>
         public DateTimeOffset ExpireIn { get; set; }
-
-        public int ConnectionTimeout { get; set; }
 
         /// <summary>
         /// Current access token
@@ -68,48 +61,6 @@ namespace Mako
         /// </summary>
         public string? Cookie { get; set; }
 
-        /// <summary>
-        /// Automatically bypass GFW or not, default is set to true.
-        /// If you are currently living in China Mainland, turn it on to make sure
-        /// you can use Mako without using any kind of proxy, otherwise you will
-        /// need a proper proxy server to bypass the GFW
-        /// </summary>
-        public bool Bypass { get; set; }
-
-        /// <summary>
-        /// Mirror server's host of image downloading
-        /// </summary>
-        public string? MirrorHost { get; set; }
-
-        /// <summary>
-        /// Indicates which tags should be strictly exclude when performing a query operation
-        /// </summary>
-        public ISet<string>? ExcludeTags { get; }
-
-        /// <summary>
-        /// Indicates which tags should be strictly include when performing a query operation
-        /// </summary>
-        public ISet<string>? IncludeTags { get; }
-
-        /// <summary>
-        /// Any illust with less bookmarks will be filtered out
-        /// </summary>
-        public int MinBookmark { get; set; }
-        
-        public bool AllowCache { get; set; }
-
-        public Session UseCache()
-        {
-            AllowCache = true;
-            return this;
-        }
-
-        public Session UseBypass()
-        {
-            Bypass = true;
-            return this;
-        }
-        
         public override string? ToString()
         {
             return this.ToJson();

@@ -266,11 +266,11 @@ namespace Mako.Engines.Implements
             {
                 try
                 {
-                    return await MakoClient.ResolveKeyed<HttpClient>(MakoApiKind.WebApi).GetStringResultAsync(url, async responseMessage => new MakoNetworkException(url, MakoClient.Session.Bypass, await responseMessage.Content.ReadAsStringAsync(), (int) responseMessage.StatusCode));
+                    return await MakoClient.ResolveKeyed<HttpClient>(MakoApiKind.WebApi).GetStringResultAsync(url, async responseMessage => new MakoNetworkException(url, MakoClient.Configuration.Bypass, await responseMessage.Content.ReadAsStringAsync(), (int) responseMessage.StatusCode));
                 }
                 catch (HttpRequestException e)
                 {
-                    return Result<string>.OfFailure(new MakoNetworkException(url, MakoClient.Session.Bypass, e.Message, (int?) e.StatusCode ?? -1));
+                    return Result<string>.OfFailure(new MakoNetworkException(url, MakoClient.Configuration.Bypass, e.Message, (int?) e.StatusCode ?? -1));
                 }
             }
         }

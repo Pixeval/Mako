@@ -92,7 +92,7 @@ namespace Mako
         public async Task<SpotlightDetail?> GetSpotlightDetailAsync(string spotlightId)
         {
             var result = (await ResolveKeyed<HttpClient>(MakoApiKind.WebApi).GetStringResultAsync($"/ajax/showcase/article?article_id={spotlightId}",
-                message => MakoNetworkException.FromHttpResponseMessage(message, Session.Bypass))).GetOrThrow().FromJson<PixivSpotlightDetailResponse>();
+                message => MakoNetworkException.FromHttpResponseMessage(message, Configuration.Bypass))).GetOrThrow().FromJson<PixivSpotlightDetailResponse>();
             if (result?.ResponseBody is null) return null;
             var illustrations = await (result.ResponseBody.First().Illusts?.SelectNotNull(illust => Task.Run(() => GetIllustrationFromIdAsync(illust.IllustId.ToString()))).WhenAll() ?? Task.FromResult(Array.Empty<Illustration>()));
             var entry = result.ResponseBody.First().Entry;

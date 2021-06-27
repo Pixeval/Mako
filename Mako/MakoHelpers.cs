@@ -26,11 +26,11 @@ namespace Mako
         /// </summary>
         /// <param name="item"></param>
         /// <param name="collection"></param>
-        /// <param name="session"></param>
+        /// <param name="makoClient"></param>
         /// <returns></returns>
-        public static bool Satisfies(this Illustration? item, IEnumerable<Illustration> collection, Session session)
+        public static bool Satisfies(this Illustration? item, IEnumerable<Illustration> collection, MakoClient makoClient)
         {
-            return item is not null && collection.All(i => i.Id != item.Id) && item.Satisfies(session.ExcludeTags, session.IncludeTags, session.MinBookmark);
+            return item is not null && collection.All(i => i.Id != item.Id) && item.Satisfies(makoClient.Configuration.ExcludeTags, makoClient.Configuration.IncludeTags, makoClient.Configuration.MinBookmark);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Mako
 
         public static Session ToSession(this TokenResponse tokenResponse, string password)
         {
-            return Session.Default with
+            return new()
             {
                 AccessToken = tokenResponse.AccessToken,
                 Account = tokenResponse.User?.Account,

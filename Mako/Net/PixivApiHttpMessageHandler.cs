@@ -20,7 +20,7 @@ namespace Mako.Net
             var headers = request.Headers;
             var host = request.RequestUri!.Host; // the 'RequestUri' is guaranteed to be nonnull here, because the 'HttpClient' will set it to 'BaseAddress' if its null
 
-            headers.TryAddWithoutValidation("Accept-Language", MakoClient.ClientCulture.Name);
+            headers.TryAddWithoutValidation("Accept-Language", MakoClient.Configuration.CultureInfo.Name);
 
             var session = MakoClient.Session;
 
@@ -34,7 +34,7 @@ namespace Mako.Net
                     break;
             }
 
-            INameResolver resolver = MakoHttpOptions.BypassRequiredHost.IsMatch(host) && session.Bypass
+            INameResolver resolver = MakoHttpOptions.BypassRequiredHost.IsMatch(host) && MakoClient.Configuration.Bypass
                 ? MakoClient.Resolve<PixivApiNameResolver>()
                 : MakoClient.Resolve<LocalMachineNameResolver>();
             return await MakoHttpOptions.CreateHttpMessageInvoker(resolver)

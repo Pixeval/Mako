@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.Caching;
@@ -22,15 +21,25 @@ namespace Mako
     {
         static MakoClient()
         {
-            CacheLimitsInMegabytes = 50;
-            MemoryCache = new MemoryCache("MakoCache", new NameValueCollection {["cacheMemoryLimitMegabytes"] = CacheLimitsInMegabytes.ToString()});
+            MemoryCache = new MemoryCache("MakoCache", new NameValueCollection {["cacheMemoryLimitMegabytes"] = "50"});
         }
         
-        public MakoClient(Session session, CultureInfo clientCulture)
+        public MakoClient(Session session, MakoClientConfiguration configuration)
         {
             Session = session;
             MakoServices = BuildContainer();
-            ClientCulture = clientCulture;
+            Configuration = configuration;
+            CancellationTokenSource = new CancellationTokenSource();
+            // each running instance has its own 'CancellationTokenSource', because we want to have the ability to cancel a particular instance
+            // while also be able to cancel all of them from 'MakoClient'
+            CancellationTokenSource.Token.Register(() => _runningInstances.ForEach(instance => instance.EngineHandle.Cancel()));
+        }
+        
+        public MakoClient(Session session)
+        {
+            Session = session;
+            MakoServices = BuildContainer();
+            Configuration = new MakoClientConfiguration();
             CancellationTokenSource = new CancellationTokenSource();
             // each running instance has its own 'CancellationTokenSource', because we want to have the ability to cancel a particular instance
             // while also be able to cancel all of them from 'MakoClient'
@@ -91,7 +100,7 @@ namespace Mako
                 var context = c.Resolve<IComponentContext>(); // or a System.ObjectDisposedException will thrown because the 'c' cannot be hold
                 return RestService.For<IAppApiProtocol>(c.ResolveKeyed<HttpClient>(MakoApiKind.AppApi), new RefitSettings
                 {
-                    ExceptionFactory = async message => !message.IsSuccessStatusCode ? await MakoNetworkException.FromHttpResponseMessage(message, context.Resolve<MakoClient>().Session.Bypass) : null
+                    ExceptionFactory = async message => !message.IsSuccessStatusCode ? await MakoNetworkException.FromHttpResponseMessage(message, context.Resolve<MakoClient>().Configuration.Bypass) : null
                 });
             });
             return builder.Build();
@@ -127,7 +136,7 @@ namespace Mako
             
             MemoryCache.AddWithRegionName(key, item, new CacheItemPolicy
             {
-                SlidingExpiration = TimeSpan.FromSeconds(5)
+                SlidingExpiration = Configuration.CacheEntrySlidingExpiration
             }, CreateCacheRegionForCurrent(type.ToString()));
         }
         
@@ -142,7 +151,7 @@ namespace Mako
 
         private void TryCache<T>(CacheType type, IEnumerable<T> enumerable, string key)
         {
-            if (Session.AllowCache)
+            if (Configuration.AllowCache)
             {
                 Cache(type, key, new AdaptedComputedFetchEngine<T>(enumerable));
             }

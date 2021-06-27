@@ -115,7 +115,7 @@ namespace Mako.Engines
 
         private void TryCacheCurrent()
         {
-            if (PixivFetchEngine.MakoClient.Session.AllowCache)
+            if (PixivFetchEngine.MakoClient.Configuration.AllowCache)
             {
                 PixivFetchEngine.EngineHandle.CacheValue(Current);
             }

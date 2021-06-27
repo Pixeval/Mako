@@ -8,6 +8,7 @@ namespace Mako.Net
 {
     internal class RetryHttpClientHandler : HttpMessageHandler, IMakoClientSupport
     {
+        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global ! Dependency Injected
         public MakoClient MakoClient { get; set; } = null!;
 
         private readonly HttpMessageInvoker _delegatedHandler;
@@ -19,7 +20,7 @@ namespace Mako.Net
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            return await Functions.RetryAsync(() => _delegatedHandler.SendAsync(request, cancellationToken), 2, MakoClient!.Session.ConnectionTimeout) switch
+            return await Functions.RetryAsync(() => _delegatedHandler.SendAsync(request, cancellationToken), 2, MakoClient!.Configuration.ConnectionTimeout) switch
             {
                 Result<HttpResponseMessage>.Success (var response) => response,
                 Result<HttpResponseMessage>.Failure failure        => throw failure.Cause ?? new HttpRequestException(),

@@ -21,7 +21,7 @@ namespace Mako.Net
             var requestUri = request.RequestUri!;
             if (requestUri.Host == MakoHttpOptions.ImageHost)
             {
-                if (MakoClient.Session.MirrorHost is { } mirror && mirror.IsNotNullOrBlank())
+                if (MakoClient.Configuration.MirrorHost is { } mirror && mirror.IsNotNullOrBlank())
                 {
                     request.RequestUri = mirror switch
                     {
@@ -32,7 +32,7 @@ namespace Mako.Net
                 }
             }
 
-            INameResolver resolver = MakoClient.Session.Bypass
+            INameResolver resolver = MakoClient.Configuration.Bypass
                 ? MakoClient.Resolve<PixivImageNameResolver>()
                 : MakoClient.Resolve<LocalMachineNameResolver>();
             return MakoHttpOptions.CreateHttpMessageInvoker(resolver).SendAsync(request, cancellationToken);
