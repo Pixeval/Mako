@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -133,7 +134,7 @@ namespace Mako.Engines
         }
     }
 
-    internal class RecursivePixivAsyncEnumerators
+    internal static class RecursivePixivAsyncEnumerators
     {
         public abstract class User<TFetchEngine> : RecursivePixivAsyncEnumerator<User, PixivUserResponse, TFetchEngine> 
             where TFetchEngine : class, IFetchEngine<User>
@@ -164,6 +165,27 @@ namespace Mako.Engines
                     });
                 return (await Task.WhenAll(tasks ?? Enumerable.Empty<Task<User>>()) as IEnumerable<User>).GetEnumerator();
             }
+
+            public static User<TFetchEngine> WithInitialUrl(TFetchEngine engine, MakoApiKind kind, Func<TFetchEngine, string> initialUrlFactory)
+            {
+                return new UserImpl<TFetchEngine>(engine, kind, initialUrlFactory);
+            }
+        }
+
+        private class UserImpl<TFetchEngine> : User<TFetchEngine> 
+            where TFetchEngine : class, IFetchEngine<User>
+        {
+            private readonly Func<TFetchEngine, string> _initialUrlFactory;
+            
+            public UserImpl([NotNull] TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind, Func<TFetchEngine, string> initialUrlFactory) : base(pixivFetchEngine, makoApiKind)
+            {
+                _initialUrlFactory = initialUrlFactory;
+            }
+
+            protected override string InitialUrl()
+            {
+                return _initialUrlFactory(PixivFetchEngine);
+            }
         }
 
         public abstract class Illustration<TFetchEngine> : RecursivePixivAsyncEnumerator<Illustration, PixivResponse, TFetchEngine>
@@ -188,6 +210,27 @@ namespace Mako.Engines
             protected override Task<IEnumerator<Illustration>> GetNewEnumeratorAsync(PixivResponse? rawEntity)
             {
                 return Task.FromResult((rawEntity?.Illusts?.SelectNotNull(illust => illust.ToIllustration(MakoClient)) ?? Enumerable.Empty<Illustration>()).GetEnumerator());
+            }
+            
+            public static Illustration<TFetchEngine> WithInitialUrl(TFetchEngine engine, MakoApiKind kind, Func<TFetchEngine, string> initialUrlFactory)
+            {
+                return new IllustrationImpl<TFetchEngine>(engine, kind, initialUrlFactory);
+            }
+        }
+
+        private class IllustrationImpl<TFetchEngine> : Illustration<TFetchEngine>
+            where TFetchEngine : class, IFetchEngine<Illustration>
+        {
+            private readonly Func<TFetchEngine, string> _initialUrlFactory;
+            
+            public IllustrationImpl([NotNull] TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind, Func<TFetchEngine, string> initialUrlFactory) : base(pixivFetchEngine, makoApiKind)
+            {
+                _initialUrlFactory = initialUrlFactory;
+            }
+
+            protected override string InitialUrl()
+            {
+                return _initialUrlFactory(PixivFetchEngine);
             }
         }
     }

@@ -20,19 +20,7 @@ namespace Mako.Engines.Implements
 
         public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new UserFollowingAsyncEnumerator(this, MakoApiKind.AppApi)!;
-        }
-
-        private class UserFollowingAsyncEnumerator : RecursivePixivAsyncEnumerators.User<UserFollowingEngine>
-        {
-            public UserFollowingAsyncEnumerator([NotNull] UserFollowingEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
-            {
-            }
-            
-            protected override string InitialUrl()
-            {
-                return $"/v1/user/following?user_id={PixivFetchEngine._uid}&restrict={PixivFetchEngine._privacyPolicy.GetDescription()}";
-            }
+            return RecursivePixivAsyncEnumerators.User<UserFollowingEngine>.WithInitialUrl(this, MakoApiKind.AppApi, engine => $"/v1/user/following?user_id={engine._uid}&restrict={engine._privacyPolicy.GetDescription()}")!;
         }
     }
 }

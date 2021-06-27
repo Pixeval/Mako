@@ -18,19 +18,7 @@ namespace Mako.Engines.Implements
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new UserUpdateAsyncEnumerator(this, MakoApiKind.AppApi)!;
-        }
-
-        private class UserUpdateAsyncEnumerator : RecursivePixivAsyncEnumerators.Illustration<UserUpdateEngine>
-        {
-            public UserUpdateAsyncEnumerator([NotNull] UserUpdateEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
-            {
-            }
-
-            protected override string InitialUrl()
-            {
-                return $"/v2/illust/follow?restrict={PixivFetchEngine._privacyPolicy.GetDescription()}";
-            }
+            return RecursivePixivAsyncEnumerators.Illustration<UserUpdateEngine>.WithInitialUrl(this, MakoApiKind.AppApi, engine => $"/v2/illust/follow?restrict={engine._privacyPolicy.GetDescription()}")!;
         }
     }
 }

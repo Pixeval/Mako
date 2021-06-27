@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using JetBrains.Annotations;
 using Mako.Model;
 using Mako.Net;
 using Mako.Util;
@@ -28,16 +27,8 @@ namespace Mako.Engines.Implements
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new RankingAsyncEnumerator(this, MakoApiKind.AppApi)!;
-        }
-
-        private class RankingAsyncEnumerator : RecursivePixivAsyncEnumerators.Illustration<RankingEngine>
-        {
-            public RankingAsyncEnumerator([NotNull] RankingEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
-            {
-            }
-
-            protected override string InitialUrl() => $"/v1/illust/ranking?filter={PixivFetchEngine._targetFilter.GetDescription()}&mode={PixivFetchEngine._rankOption.GetDescription()}&date={PixivFetchEngine._dateTime:yyyy-MM-dd}";
+            return RecursivePixivAsyncEnumerators.Illustration<RankingEngine>.WithInitialUrl(this, MakoApiKind.AppApi, 
+                engine => $"/v1/illust/ranking?filter={engine._targetFilter.GetDescription()}&mode={engine._rankOption.GetDescription()}&date={engine._dateTime:yyyy-MM-dd}")!;
         }
     }
 }

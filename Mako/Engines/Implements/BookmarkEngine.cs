@@ -37,20 +37,8 @@ namespace Mako.Engines.Implements
         
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new BookmarkAsyncEnumerator(this)!;
-        }
-
-        private class BookmarkAsyncEnumerator : RecursivePixivAsyncEnumerators.Illustration<BookmarkEngine>
-        {
-            public BookmarkAsyncEnumerator(BookmarkEngine pixivFetchEngine) 
-                : base(pixivFetchEngine, MakoApiKind.AppApi)
-            {
-            }
-            
-            protected override string InitialUrl()
-            {
-                return $"/v1/user/bookmarks/illust?user_id={PixivFetchEngine._uid}&restrict={PixivFetchEngine._privacyPolicy.GetDescription()}&filter={PixivFetchEngine._targetFilter.GetDescription()}";
-            }
+            return RecursivePixivAsyncEnumerators.Illustration<BookmarkEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
+                engine => $"/v1/user/bookmarks/illust?user_id={engine._uid}&restrict={engine._privacyPolicy.GetDescription()}&filter={engine._targetFilter.GetDescription()}")!;
         }
     }
 }

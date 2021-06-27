@@ -19,19 +19,7 @@ namespace Mako.Engines.Implements
 
         public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new RecommendIllustratorAsyncEnumerator(this, MakoApiKind.AppApi)!;
-        }
-
-        private class RecommendIllustratorAsyncEnumerator : RecursivePixivAsyncEnumerators.User<RecommendIllustratorEngine>
-        {
-            public RecommendIllustratorAsyncEnumerator([NotNull] RecommendIllustratorEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
-            {
-            }
-
-            protected override string InitialUrl()
-            {
-                return $"/v1/user/recommended?filter={PixivFetchEngine._targetFilter.GetDescription()}";
-            }
+            return RecursivePixivAsyncEnumerators.User<RecommendIllustratorEngine>.WithInitialUrl(this, MakoApiKind.AppApi, engine => $"/v1/user/recommended?filter={engine._targetFilter.GetDescription()}")!;
         }
     }
 }

@@ -22,19 +22,8 @@ namespace Mako.Engines.Implements
 
         public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new UserSearchAsyncEnumerator(this, MakoApiKind.AppApi)!;
-        }
-
-        private class UserSearchAsyncEnumerator : RecursivePixivAsyncEnumerators.User<UserSearchEngine>
-        {
-            public UserSearchAsyncEnumerator([NotNull] UserSearchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
-            {
-            }
-
-            protected override string InitialUrl()
-            {
-                return $"https://app-api.pixiv.net/v1/search/user?filter={PixivFetchEngine._targetFilter.GetDescription()}&word={PixivFetchEngine._keyword}&sort={PixivFetchEngine._userSortOption.GetDescription()}";
-            }
+            return RecursivePixivAsyncEnumerators.User<UserSearchEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
+                engine => $"https://app-api.pixiv.net/v1/search/user?filter={engine._targetFilter.GetDescription()}&word={engine._keyword}&sort={engine._userSortOption.GetDescription()}")!;
         }
     }
 }

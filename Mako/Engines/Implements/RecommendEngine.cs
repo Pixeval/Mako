@@ -25,21 +25,13 @@ namespace Mako.Engines.Implements
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return new RecommendAsyncEnumerator(this, MakoApiKind.AppApi)!;
-        }
-
-        private class RecommendAsyncEnumerator : RecursivePixivAsyncEnumerators.Illustration<RecommendEngine>
-        {
-            public RecommendAsyncEnumerator([NotNull] RecommendEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
-            {
-            }
-            
-            protected override string InitialUrl()
-            {
-                var maxBookmarkIdForRecommend = PixivFetchEngine._maxBookmarkIdForRecommend?.Let(static s => $"&max_bookmark_id_for_recommend={s}") ?? string.Empty;
-                var maxBookmarkIdForRecentIllust = PixivFetchEngine._minBookmarkIdForRecentIllust.Let(static s => $"&min_bookmark_id_for_recent_illust={s}") ?? string.Empty;
-                return $"/v1/illust/recommended?filter={PixivFetchEngine._filter.GetDescription()}&content_type={PixivFetchEngine._recommendContentType.GetDescription()}{maxBookmarkIdForRecommend}{maxBookmarkIdForRecentIllust}";
-            }
+            return RecursivePixivAsyncEnumerators.Illustration<RecommendEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
+                engine =>
+                {
+                    var maxBookmarkIdForRecommend = engine._maxBookmarkIdForRecommend?.Let(static s => $"&max_bookmark_id_for_recommend={s}") ?? string.Empty;
+                    var maxBookmarkIdForRecentIllust = engine._minBookmarkIdForRecentIllust.Let(static s => $"&min_bookmark_id_for_recent_illust={s}") ?? string.Empty;
+                    return $"/v1/illust/recommended?filter={engine._filter.GetDescription()}&content_type={engine._recommendContentType.GetDescription()}{maxBookmarkIdForRecommend}{maxBookmarkIdForRecentIllust}";
+                })!;
         }
     }
 }
