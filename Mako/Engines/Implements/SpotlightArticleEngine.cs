@@ -36,9 +36,9 @@ namespace Mako.Engines.Implements
 
             protected override string InitialUrl() => "/v1/spotlight/articles?category=all";
             
-            protected override Task<IEnumerator<SpotlightArticle>> GetNewEnumeratorAsync(PixivSpotlightResponse? rawEntity)
+            protected override Task<IEnumerator<SpotlightArticle>?> GetNewEnumeratorAsync(PixivSpotlightResponse? rawEntity)
             {
-                return Task.FromResult((rawEntity?.SpotlightArticles ?? Enumerable.Empty<SpotlightArticle>()).GetEnumerator());
+                return Task.FromResult(rawEntity?.SpotlightArticles?.GetEnumerator());
             }
         }
     }

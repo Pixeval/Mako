@@ -103,7 +103,7 @@ namespace Mako.Engines
         {
             try
             {
-                var responseMessage = await MakoClient.ResolveKeyed<HttpClient>(ApiKind).GetAsync(url);
+                var responseMessage = await MakoClient.GetMakoHttpClient(ApiKind).GetAsync(url);
                 if (!responseMessage.IsSuccessStatusCode)
                 {
                     return Result<TRawEntity>.OfFailure(await MakoNetworkException.FromHttpResponseMessage(responseMessage, MakoClient.Configuration.Bypass));

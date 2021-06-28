@@ -8,6 +8,12 @@ namespace Mako
 {
     public partial class MakoClient
     {
+        // --------------------------------------------------
+        // This part contains all APIs that depend on the
+        // IFetchEngine, however, the uniqueness of the inner
+        // elements is not guaranteed, call Distinct() if you
+        // are care about the uniqueness of the results
+        // --------------------------------------------------
         private void EnsureNotCancelled()
         {
             if (CancellationTokenSource.IsCancellationRequested)
@@ -115,6 +121,21 @@ namespace Mako
         {
             EnsureNotCancelled();
             return new UserUpdateEngine(this, privacyPolicy, new EngineHandle(CancelInstance));
+        }
+
+        /// <summary>
+        /// This function is intended to be cooperated with <see cref="GetUserSpecifiedBookmarkTags"/>, because
+        /// it requires an untranslated tag, for example, "未分類" is the untranslated name for "uncategorized",
+        /// and the API only recognizes the former one, while the latter one is usually works as the display
+        /// name
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <param name="tagWithOriginalName"></param>
+        /// <returns></returns>
+        public IFetchEngine<string> UserTaggedBookmarksId(string uid, string tagWithOriginalName)
+        {
+            EnsureNotCancelled();
+            return new TaggedBookmarksIdEngine(this, new EngineHandle(CancelInstance), uid, tagWithOriginalName);
         }
     }
 }

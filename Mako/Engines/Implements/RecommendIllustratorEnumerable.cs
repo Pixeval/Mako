@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using JetBrains.Annotations;
 using Mako.Model;
 using Mako.Net;
-using Mako.Net.Response;
 using Mako.Util;
 
 namespace Mako.Engines.Implements

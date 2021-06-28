@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using JetBrains.Annotations;
 using Mako.Model;
 using Mako.Net;
 using Mako.Util;

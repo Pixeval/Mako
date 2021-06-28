@@ -43,7 +43,7 @@ namespace Mako.Engines
         /// 从新页面的返回结果中获取该页面的所有搜索结果的迭代器
         /// </summary>
         /// <returns>所有搜索结果的迭代器</returns>
-        protected abstract Task<IEnumerator<TEntity>> GetNewEnumeratorAsync(TRawEntity? rawEntity);
+        protected abstract Task<IEnumerator<TEntity>?> GetNewEnumeratorAsync(TRawEntity? rawEntity);
 
         /// <summary>
         /// 指示是否还有下一页
@@ -129,7 +129,7 @@ namespace Mako.Engines
         private async Task Update(TRawEntity rawEntity)
         {
             Entity = rawEntity;
-            CurrentEntityEnumerator = await GetNewEnumeratorAsync(rawEntity);
+            CurrentEntityEnumerator = await GetNewEnumeratorAsync(rawEntity) ?? EmptyEnumerators<TEntity>.Sync;
             PixivFetchEngine!.RequestedPages++;
         }
     }
@@ -155,7 +155,7 @@ namespace Mako.Engines
 
             protected abstract override string InitialUrl();
 
-            protected override async Task<IEnumerator<User>> GetNewEnumeratorAsync(PixivUserResponse? rawEntity)
+            protected override async Task<IEnumerator<User>?> GetNewEnumeratorAsync(PixivUserResponse? rawEntity)
             {
                 var tasks = rawEntity?.Users?.SelectNotNull( // wow... tough code :) 
                     u => u.UserInfo,
@@ -207,9 +207,9 @@ namespace Mako.Engines
 
             protected abstract override string InitialUrl();
 
-            protected override Task<IEnumerator<Illustration>> GetNewEnumeratorAsync(PixivResponse? rawEntity)
+            protected override Task<IEnumerator<Illustration>?> GetNewEnumeratorAsync(PixivResponse? rawEntity)
             {
-                return Task.FromResult((rawEntity?.Illusts?.SelectNotNull(illust => illust.ToIllustration(MakoClient)) ?? Enumerable.Empty<Illustration>()).GetEnumerator());
+                return Task.FromResult(rawEntity?.Illusts?.SelectNotNull(illust => illust.ToIllustration(MakoClient)).GetEnumerator());
             }
             
             public static Illustration<TFetchEngine> WithInitialUrl(TFetchEngine engine, MakoApiKind kind, Func<TFetchEngine, string> initialUrlFactory)

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -17,6 +19,11 @@ namespace Mako.Console
     [PublicAPI]
     public static class Program
     {
+        static Program()
+        {
+            System.Console.OutputEncoding = Encoding.UTF8;
+        }
+        
         private static readonly Session Session = ""
             .FromJson<Session>()!;
 
@@ -178,7 +185,7 @@ namespace Mako.Console
         private static async Task GetSpotlightIllustrations(string id)
         {
             var spotlightDetail = await MakoClient.GetSpotlightDetailAsync(id);
-            await PrintIllusts(spotlightDetail!.Illustrations.ToAsyncEnumerable());
+            await PrintIllusts(Enumerates.ToAsyncEnumerable(spotlightDetail!.Illustrations));
         }
 
         private static async Task TrendingTags()
@@ -187,9 +194,28 @@ namespace Mako.Console
             PrintTrendingTags(tags);
         }
         
+        private static async Task UserTaggedBookmarksId()
+        {
+            var tags = await MakoClient.GetUserSpecifiedBookmarkTags("333556");
+            if (!tags.Any())
+            {
+                System.Console.WriteLine("Empty tags!");
+            }
+            var (tag, _) = tags.Aggregate(tags.First(), (lhs, rhs) => lhs.Key.Count > rhs.Key.Count ? lhs : rhs);
+            var ids = MakoClient.UserTaggedBookmarksId("333556", tag.Tag.Name!).Distinct();
+            var cnt = 0;
+            await foreach (var id in ids)
+            {
+                System.Console.WriteLine(id);
+                cnt++;
+            }
+
+            System.Console.WriteLine($"Count: {cnt}");
+        }
+        
         public static async Task Main()
         {
-            await TrendingTags();
+            await UserTaggedBookmarksId();
         }
     }
 }

@@ -92,7 +92,7 @@ namespace Mako
         /// <returns>A <see cref="Task{TResult}"/> contains the result of the operation</returns>
         public async Task<SpotlightDetail?> GetSpotlightDetailAsync(string spotlightId)
         {
-            var result = (await ResolveKeyed<HttpClient>(MakoApiKind.WebApi).GetStringResultAsync($"/ajax/showcase/article?article_id={spotlightId}",
+            var result = (await GetMakoHttpClient(MakoApiKind.WebApi).GetStringResultAsync($"/ajax/showcase/article?article_id={spotlightId}",
                 message => MakoNetworkException.FromHttpResponseMessage(message, Configuration.Bypass))).GetOrThrow().FromJson<PixivSpotlightDetailResponse>();
             if (result?.ResponseBody is null) return null;
             var illustrations = await (result.ResponseBody.First().Illusts?.SelectNotNull(illust => Task.Run(() => GetIllustrationFromIdAsync(illust.IllustId.ToString()))).WhenAll() ?? Task.FromResult(Array.Empty<Illustration>()));
@@ -135,6 +135,36 @@ namespace Mako
                 Translation = t.TranslatedName,
                 Illustration = t.Illust?.ToIllustration(this)
             });
+        }
+
+        /// <summary>
+        /// Get the tags that are created by users to classify their bookmarks
+        /// </summary>
+        /// <example>
+        /// <a href="https://www.pixiv.net/en/users/333556/bookmarks/artworks">A user's bookmarks page</a>. 
+        /// There is a list of tags atop of the illustrations
+        /// </example>
+        /// <returns>
+        /// An <see cref="IReadOnlyDictionary{TKey,TValue}"/> representing the results, where the keys are
+        /// tags and values are the privacy of the key
+        /// </returns>
+        /// <param name="uid">The user id that you want to </param>
+        public async Task<IReadOnlyDictionary<CountedTag, PrivacyPolicy>> GetUserSpecifiedBookmarkTags(string uid)
+        {
+            var tags = (await GetMakoHttpClient(MakoApiKind.WebApi).GetStringResultAsync($"/ajax/user/{uid}/illusts/bookmark/tags?lang={Configuration.CultureInfo.TwoLetterISOLanguageName}"))
+                .GetOrThrow()
+                .FromJson<UserSpecifiedBookmarkTagResponse>();
+            var dic = new Dictionary<CountedTag, PrivacyPolicy>();
+            if (tags?.ResponseBody?.Public is { } publicTags)
+            {
+                publicTags.ForEach(tag => dic[new CountedTag(new Tag {Name = tag.Name}, tag.Count)] = PrivacyPolicy.Public);
+            }
+            if (tags?.ResponseBody?.Private is { } privateTags)
+            {
+                privateTags.ForEach(tag => dic[new CountedTag(new Tag {Name = tag.Name}, tag.Count)] = PrivacyPolicy.Private);
+            }
+
+            return dic;
         }
     }
 }
