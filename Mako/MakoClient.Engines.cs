@@ -137,5 +137,11 @@ namespace Mako
             EnsureNotCancelled();
             return new TaggedBookmarksIdEngine(this, new EngineHandle(CancelInstance), uid, tagWithOriginalName);
         }
+        
+        public IFetchEngine<Illustration> UserTaggedBookmarks(string uid, string tagWithOriginalName)
+        {
+            EnsureNotCancelled();
+            return new FetchEngineSelector<string, Illustration>(new TaggedBookmarksIdEngine(this, new EngineHandle(CancelInstance), uid, tagWithOriginalName), GetIllustrationFromIdAsync);
+        }
     }
 }

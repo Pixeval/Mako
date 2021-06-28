@@ -213,9 +213,22 @@ namespace Mako.Console
             System.Console.WriteLine($"Count: {cnt}");
         }
         
+        private static async Task UserTaggedBookmarks()
+        {
+            var tags = await MakoClient.GetUserSpecifiedBookmarkTags("333556");
+            if (!tags.Any())
+            {
+                System.Console.WriteLine("Empty tags!");
+            }
+
+            var (tag, _) = tags.ToList()[new Random().Next(0, tags.Count)];
+            var ids = MakoClient.UserTaggedBookmarks("333556", tag.Tag.Name!).Distinct();
+            await PrintIllusts(ids);
+        }
+        
         public static async Task Main()
         {
-            await UserTaggedBookmarksId();
+            await UserTaggedBookmarks();
         }
     }
 }

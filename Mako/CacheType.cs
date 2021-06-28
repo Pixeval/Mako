@@ -1,8 +1,9 @@
-﻿namespace Mako.Engines
+﻿namespace Mako
 {
     internal enum CacheType
     {
         User,
         Illustration,
+        SpotlightDetail
     }
 }

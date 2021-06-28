@@ -11,48 +11,11 @@ namespace Mako
     [PublicAPI]
     public static class MakoHelpers
     {
-        /// <summary>
-        /// 检测一个<see cref="Illustration"/>是否符合指定的某些条件
-        /// <list type="number">
-        ///         <item>
-        ///         <description>检测<paramref name="item"/>是否是<c>null</c></description>
-        ///     </item>
-        ///     <item>
-        ///         <description>检测<paramref name="collection"/>是否不包含<paramref name="item"/></description>
-        ///     </item>
-        ///     <item>
-        ///         <description>检查<paramref name="item"/>是否符合<see cref="Satisfies(Mako.Model.Illustration,System.Collections.Generic.IEnumerable{string},System.Collections.Generic.IEnumerable{string},int)"/></description>
-        ///     </item>
-        /// </list>
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="collection"></param>
-        /// <param name="makoClient"></param>
-        /// <returns></returns>
         public static bool Satisfies(this Illustration? item, IEnumerable<Illustration> collection, MakoClient makoClient)
         {
             return item is not null && collection.All(i => i.Id != item.Id) && item.Satisfies(makoClient.Configuration.ExcludeTags, makoClient.Configuration.IncludeTags, makoClient.Configuration.MinBookmark);
         }
-
-        /// <summary>
-        /// 检测一个<see cref="Illustration"/>是否符合指定的某些条件
-        /// <list type="number">
-        ///     <item>
-        ///         <description>检测是否不包含任何<paramref name="excludeTags"/>中的tag</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>检测是否包含<paramref name="includeTags"/>中的所有tag</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>检测收藏数是否大于<paramref name="minBookmarks"/></description>
-        ///     </item>
-        /// </list>
-        /// </summary>
-        /// <param name="illustration">作品</param>
-        /// <param name="excludeTags">不能包含的tag</param>
-        /// <param name="includeTags">必须包含的tag</param>
-        /// <param name="minBookmarks">最低收藏数</param>
-        /// <returns>作品是否符合以上条件</returns>
+        
         public static bool Satisfies(this Illustration illustration, IEnumerable<string>? excludeTags, IEnumerable<string>? includeTags, int minBookmarks)
         {
             if (illustration.Bookmarks <= minBookmarks)
