@@ -7,7 +7,7 @@ namespace Mako.Engines
     /// </summary>
     [PublicAPI]
     public interface INotifyCompletion
-    {
-        public bool IsCompleted { get; set; }
+    { 
+        bool IsCompleted { get; set; }
     }
 }

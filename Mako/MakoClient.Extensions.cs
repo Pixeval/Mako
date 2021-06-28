@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Mako.Model;
 using Mako.Net;
-using Mako.Net.Protocol;
+using Mako.Net.EndPoints;
 using Mako.Net.Request;
 using Mako.Net.Response;
 using Mako.Util;
@@ -21,13 +21,13 @@ namespace Mako
         /// <returns></returns>
         public async Task<Illustration> GetIllustrationFromIdAsync(string id)
         {
-            var result = (await Resolve<IAppApiProtocol>().GetSingle(id)).Illust;
+            var result = (await Resolve<IAppApiEndPoint>().GetSingle(id)).Illust;
             return result!.ToIllustration(this);
         }
 
         public async Task<User> GetUserFromIdAsync(string id, TargetFilter targetFilter)
         {
-            var result = await Resolve<IAppApiProtocol>().GetSingleUser(new SingleUserRequest(id, targetFilter.GetDescription()));
+            var result = await Resolve<IAppApiEndPoint>().GetSingleUser(new SingleUserRequest(id, targetFilter.GetDescription()));
             var entity = result.UserEntity;
             return User.GetOrInstantiateAndConfigureUserFromCache(id, this, user =>
             {
@@ -72,7 +72,7 @@ namespace Mako
         /// <returns>A <see cref="Task"/> represents the operation</returns>
         public Task PostBookmarkAsync(string id, PrivacyPolicy privacyPolicy)
         {
-            return Resolve<IAppApiProtocol>().AddBookmark(new AddBookmarkRequest(privacyPolicy.GetDescription(), id));
+            return Resolve<IAppApiEndPoint>().AddBookmark(new AddBookmarkRequest(privacyPolicy.GetDescription(), id));
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Mako
         /// <returns>A <see cref="Task"/> represents the operation</returns>
         public Task RemoveBookmarkAsync(string id)
         {
-            return Resolve<IAppApiProtocol>().RemoveBookmark(new RemoveBookmarkRequest(id));
+            return Resolve<IAppApiEndPoint>().RemoveBookmark(new RemoveBookmarkRequest(id));
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Mako
 
         public Task PostFollowUserAsync(string id, PrivacyPolicy privacyPolicy)
         {
-            return Resolve<IAppApiProtocol>().FollowUser(new FollowUserRequest(id, privacyPolicy.GetDescription()));
+            return Resolve<IAppApiEndPoint>().FollowUser(new FollowUserRequest(id, privacyPolicy.GetDescription()));
         }
 
         public Task RemoveFollowUserAsync(User user)
@@ -124,12 +124,12 @@ namespace Mako
 
         public Task RemoveFollowUserAsync(string id)
         {
-            return Resolve<IAppApiProtocol>().RemoveFollowUser(new RemoveFollowUserRequest(id));
+            return Resolve<IAppApiEndPoint>().RemoveFollowUser(new RemoveFollowUserRequest(id));
         }
 
         public async Task<IEnumerable<TrendingTag>> GetTrendingTagsAsync(TargetFilter targetFilter)
         {
-            return ((await Resolve<IAppApiProtocol>().GetTrendingTags(targetFilter.GetDescription())).TrendTags ?? Enumerable.Empty<TrendingTagResponse.TrendTag>()).Select(t => new TrendingTag
+            return ((await Resolve<IAppApiEndPoint>().GetTrendingTags(targetFilter.GetDescription())).TrendTags ?? Enumerable.Empty<TrendingTagResponse.TrendTag>()).Select(t => new TrendingTag
             {
                 Tag = t.TagStr,
                 Translation = t.TranslatedName,

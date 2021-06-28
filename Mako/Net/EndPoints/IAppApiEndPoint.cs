@@ -3,9 +3,9 @@ using Mako.Net.Request;
 using Mako.Net.Response;
 using Refit;
 
-namespace Mako.Net.Protocol
+namespace Mako.Net.EndPoints
 {
-    internal interface IAppApiProtocol
+    internal interface IAppApiEndPoint
     {
         [Post("/v2/illust/bookmark/add")]
         Task AddBookmark([Body(BodySerializationMethod.UrlEncoded)] AddBookmarkRequest request);

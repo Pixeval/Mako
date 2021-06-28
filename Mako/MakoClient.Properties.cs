@@ -4,6 +4,7 @@ using System.Runtime.Caching;
 using System.Threading;
 using Autofac;
 using Mako.Engines;
+using Mako.Preference;
 
 namespace Mako
 {
@@ -22,8 +23,10 @@ namespace Mako
 
         public CancellationTokenSource CancellationTokenSource { get; set; }
         
-        internal IContainer MakoServices { get; init; }
+        internal ISessionUpdate SessionUpdater { get; }
         
+        internal IContainer MakoServices { get; init; }
+
         internal static MemoryCache MemoryCache { get; }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using JetBrains.Annotations;
 
-namespace Mako
+namespace Mako.Preference
 {
     /// <summary>
     /// Contains all the user-configurable keys

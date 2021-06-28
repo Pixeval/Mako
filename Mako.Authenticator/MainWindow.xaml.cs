@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -8,14 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Mako.Model;
 using Mako.Util;
 using Microsoft.Web.WebView2.Core;
@@ -101,7 +92,10 @@ namespace Mako.Authenticator
             }!));
             var session = (await responseMessage.Content.ReadAsStringAsync())
                 .FromJson<TokenResponse>()!
-                .ToSession("123456", cookie);
+                .ToSession() with
+                {
+                    Cookie = cookie
+                };
             Clipboard.SetText((await session!.ToJsonAsync())!);
             Close();
         }

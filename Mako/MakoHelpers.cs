@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Mako.Model;
+using Mako.Preference;
 using Mako.Util;
 
 namespace Mako
@@ -119,7 +120,7 @@ namespace Mako
             return illustration;
         }
 
-        public static Session ToSession(this TokenResponse tokenResponse, string password)
+        public static Session ToSession(this TokenResponse tokenResponse)
         {
             return new()
             {
@@ -130,32 +131,7 @@ namespace Mako
                 Id = tokenResponse.User?.Id,
                 IsPremium = tokenResponse.User?.IsPremium ?? false,
                 RefreshToken = tokenResponse.RefreshToken,
-                Password = password,
                 Name = tokenResponse.User?.Name
-            };
-        }
-
-        public static Session ComposeSession(this Session oldSession, Session newSession)
-        {
-            return oldSession with
-            {
-                AccessToken = newSession.AccessToken,
-                Account = newSession.Account,
-                AvatarUrl = newSession.AvatarUrl,
-                ExpireIn = newSession.ExpireIn,
-                Id = newSession.Id,
-                IsPremium = newSession.IsPremium,
-                RefreshToken = newSession.RefreshToken,
-                Password = newSession.Password,
-                Name = newSession.Name
-            };
-        }
-
-        public static Session ToSession(this TokenResponse tokenResponse, string password, string cookie)
-        {
-            return tokenResponse.ToSession(password) with
-            {
-                Cookie = cookie
             };
         }
     }

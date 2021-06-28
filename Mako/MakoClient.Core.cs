@@ -5,12 +5,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Runtime.Caching;
 using System.Threading;
+using System.Threading.Tasks;
 using Autofac;
 using JetBrains.Annotations;
 using Mako.Engines;
 using Mako.Engines.Implements;
 using Mako.Net;
-using Mako.Net.Protocol;
+using Mako.Net.EndPoints;
+using Mako.Preference;
 using Mako.Util;
 using Refit;
 
@@ -24,8 +26,20 @@ namespace Mako
             MemoryCache = new MemoryCache("MakoCache", new NameValueCollection {["cacheMemoryLimitMegabytes"] = "50"});
         }
         
-        public MakoClient(Session session, MakoClientConfiguration configuration)
+        /// <summary>
+        /// Create an new <see cref="MakoClient"/> based on given <paramref name="configuration"/> and <paramref name="session"/>
+        /// </summary>
+        /// <remarks>
+        /// The <see cref="MakoClient"/> is not responsible for the <see cref="Session"/>'s refreshment, you need to check the
+        /// <see cref="P:Session.Expire"/> and call <see cref="RefreshSession(Mako.Preference.Session)"/> or <see cref="RefreshSession()"/>
+        /// periodically
+        /// </remarks>
+        /// <param name="session"></param>
+        /// <param name="configuration"></param>
+        /// <param name="sessionUpdater"></param>
+        public MakoClient(Session session, MakoClientConfiguration configuration, ISessionUpdate? sessionUpdater = null)
         {
+            SessionUpdater = sessionUpdater ?? new RefreshTokenSessionUpdate();
             Session = session;
             MakoServices = BuildContainer();
             Configuration = configuration;
@@ -35,8 +49,9 @@ namespace Mako
             CancellationTokenSource.Token.Register(() => _runningInstances.ForEach(instance => instance.EngineHandle.Cancel()));
         }
         
-        public MakoClient(Session session)
+        public MakoClient(Session session, ISessionUpdate? sessionUpdater = null)
         {
+            SessionUpdater = sessionUpdater ?? new RefreshTokenSessionUpdate();
             Session = session;
             MakoServices = BuildContainer();
             Configuration = new MakoClientConfiguration();
@@ -98,7 +113,7 @@ namespace Mako
             builder.Register(static c =>
             {
                 var context = c.Resolve<IComponentContext>(); // or a System.ObjectDisposedException will thrown because the 'c' cannot be hold
-                return RestService.For<IAppApiProtocol>(c.ResolveKeyed<HttpClient>(MakoApiKind.AppApi), new RefitSettings
+                return RestService.For<IAppApiEndPoint>(c.ResolveKeyed<HttpClient>(MakoApiKind.AppApi), new RefitSettings
                 {
                     ExceptionFactory = async message => !message.IsSuccessStatusCode ? await MakoNetworkException.FromHttpResponseMessage(message, context.Resolve<MakoClient>().Configuration.Bypass) : null
                 });
@@ -176,6 +191,16 @@ namespace Mako
         public HttpClient GetMakoHttpClient(MakoApiKind makoApiKind)
         {
             return ResolveKeyed<HttpClient>(makoApiKind);
+        }
+
+        public void RefreshSession(Session newSession)
+        {
+            Session = newSession;
+        }
+        
+        public async Task RefreshSession()
+        {
+            Session = await SessionUpdater.Refresh(this);
         }
     }
 }

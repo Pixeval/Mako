@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using JetBrains.Annotations;
 using Mako.Util;
 
-namespace Mako
+namespace Mako.Preference
 {
     /// <summary>
     /// Contains all the user configurable
@@ -45,11 +44,6 @@ namespace Mako
         /// Account for login
         /// </summary>
         public string? Account { get; set; }
-
-        /// <summary>
-        /// Password for login
-        /// </summary>
-        public string? Password { get; set; }
 
         /// <summary>
         /// Indicates current user is Pixiv Premium or not

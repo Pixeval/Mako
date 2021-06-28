@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Model;
+using Mako.Preference;
 using Mako.Util;
 
 namespace Mako.Console

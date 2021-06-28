@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.Caching;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -216,6 +217,20 @@ namespace Mako.Util
             return Task.WhenAll(tasks);
         }
 
+        /// <summary>
+        /// Copy all the nonnull properties of <paramref name="@this"/> to the same properties of <paramref name="another"/>
+        /// </summary>
+        /// <param name="this"></param>
+        /// <param name="another"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T With<T>(this T @this, T another)
+        {
+            typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .ForEach(info => info.GetValue(@this)?.Let(o => info.SetValue(another, o)));
+            return another;
+        }
+        
         public static readonly IEqualityComparer<string> CaseIgnoredComparer = new CaseIgnoredStringComparer();
 
         private class CaseIgnoredStringComparer : IEqualityComparer<string>
