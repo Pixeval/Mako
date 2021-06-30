@@ -22,7 +22,7 @@ namespace Mako.Util
     public static class Objects
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Regex ToRegex(this string str) => new Regex(str);
+        public static Regex ToRegex(this string str) => new(str);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNotNullOrEmpty(this string? str) => !string.IsNullOrEmpty(str);

@@ -48,8 +48,13 @@ namespace Mako.Engines
 
             public async ValueTask<bool> MoveNextAsync()
             {
-                Current = await _selector(_delegateEnumerator.Current);
-                return await _delegateEnumerator.MoveNextAsync();
+                if (await _delegateEnumerator.MoveNextAsync())
+                {
+                    Current = await _selector(_delegateEnumerator.Current);
+                    return true;
+                }
+
+                return false;
             }
 
             public R? Current { get; private set; }

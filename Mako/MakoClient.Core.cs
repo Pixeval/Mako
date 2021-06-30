@@ -118,6 +118,15 @@ namespace Mako
                     ExceptionFactory = async message => !message.IsSuccessStatusCode ? await MakoNetworkException.FromHttpResponseMessage(message, context.Resolve<MakoClient>().Configuration.Bypass) : null
                 });
             });
+            
+            builder.Register(static c =>
+            {
+                var context = c.Resolve<IComponentContext>(); // or a System.ObjectDisposedException will thrown because the 'c' cannot be hold
+                return RestService.For<IAuthEndPoint>(c.ResolveKeyed<HttpClient>(MakoApiKind.AppApi), new RefitSettings
+                {
+                    ExceptionFactory = async message => !message.IsSuccessStatusCode ? await MakoNetworkException.FromHttpResponseMessage(message, context.Resolve<MakoClient>().Configuration.Bypass) : null
+                });
+            });
             return builder.Build();
         }
 
