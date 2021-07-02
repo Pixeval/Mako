@@ -54,7 +54,6 @@ namespace Mako.Util
             while (counter++ < attempts)
             {
                 var task = body();
-                using var cancellationToken = new CancellationTokenSource();
                 try
                 {
                     if (await WithTimeout(task, timeoutMills) is Result<TResult>.Success result)

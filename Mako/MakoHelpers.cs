@@ -11,35 +11,6 @@ namespace Mako
     [PublicAPI]
     public static class MakoHelpers
     {
-        public static bool Satisfies(this Illustration? item, IEnumerable<Illustration> collection, MakoClient makoClient)
-        {
-            return item is not null && collection.All(i => i.Id != item.Id) && item.Satisfies(makoClient.Configuration.ExcludeTags, makoClient.Configuration.IncludeTags, makoClient.Configuration.MinBookmark);
-        }
-        
-        public static bool Satisfies(this Illustration illustration, IEnumerable<string>? excludeTags, IEnumerable<string>? includeTags, int minBookmarks)
-        {
-            if (illustration.Bookmarks <= minBookmarks)
-            {
-                return false;
-            }
-
-            if (illustration.Tags is { } tags)
-            {
-                var tagArr = tags as Tag[] ?? tags.ToArray();
-                if (excludeTags is not null && excludeTags.Intersect(tagArr.Select(t => t.Name).WhereNotNull(), Objects.CaseIgnoredComparer).Any())
-                {
-                    return false;
-                }
-
-                if (includeTags is not null && !includeTags.SequenceEquals(tagArr.Select(t => t.Name).WhereNotNull(), SequenceComparison.Unordered, Objects.CaseIgnoredComparer))
-                {
-                    return false;
-                }
-            }
-
-            return illustration.Bookmarks >= minBookmarks;
-        }
-
         internal static Illustration ToIllustration(this IllustrationEssential.Illust illust, MakoClient cacheProvider)
         {
             var illustration = Illustration.GetOrInstantiateAndConfigureIllustrationFromCache(illust.Id.ToString(), cacheProvider, i =>
