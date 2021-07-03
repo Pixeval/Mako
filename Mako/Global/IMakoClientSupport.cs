@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/PrivacyPolicy.cs
+// Copyright (c) Pixeval 2021 Mako/IMakoClientSupport.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,21 +25,21 @@
 #endregion
 
 using JetBrains.Annotations;
-using Mako.Util;
 
-namespace Mako
+namespace Mako.Global
 {
     /// <summary>
-    ///     The privacy policy of Pixiv, be aware that the <see cref="Private" /> option
-    ///     is only permitted when the ID is pointing to yourself
+    ///     Indicates that the each of its implementation contains a <see cref="MakoClient" />
+    ///     that is to be used as a context provider, whereby "context provider" mostly refers to
+    ///     the properties that are required when performing some context-aware tasks, such as the
+    ///     access token while sending a request to app-api.pixiv.net
     /// </summary>
     [PublicAPI]
-    public enum PrivacyPolicy
+    public interface IMakoClientSupport
     {
-        [Description("public")]
-        Public,
-
-        [Description("private")]
-        Private
+        /// <summary>
+        ///     The <see cref="MakoClient" /> that tends to be used as a context provider
+        /// </summary>
+        MakoClient MakoClient { get; }
     }
 }

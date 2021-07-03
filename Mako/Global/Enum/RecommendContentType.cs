@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/TargetFilter.cs
+// Copyright (c) Pixeval 2021 Mako/RecommendContentType.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,16 @@
 
 #endregion
 
-using JetBrains.Annotations;
 using Mako.Util;
 
-namespace Mako
+namespace Mako.Global.Enum
 {
-    [PublicAPI]
-    public enum TargetFilter
+    public enum RecommendContentType
     {
-        [Description("for_android")]
-        ForAndroid,
+        [Description("illust")]
+        Illust,
 
-        [Description("for_ios")]
-        ForIos
+        [Description("manga")]
+        Manga
     }
 }

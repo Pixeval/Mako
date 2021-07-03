@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/SearchTagMatchOption.cs
+// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,23 @@
 
 #endregion
 
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
-using Mako.Util;
 
-namespace Mako
+namespace Mako.Global.Exception
 {
+    /// <summary>
+    ///     搜索榜单时设定的日期大于等于当前日期-2天
+    /// </summary>
     [PublicAPI]
-    public enum SearchTagMatchOption
+    public class RankingDateOutOfRangeException : MakoException
     {
-        [Description("partial_match_for_tags")]
-        PartialMatchForTags,
+        public RankingDateOutOfRangeException() { }
 
-        [Description("exact_match_for_tags")]
-        ExactMatchForTags,
+        protected RankingDateOutOfRangeException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context) { }
 
-        [Description("title_and_caption")]
-        TitleAndCaption
+        public RankingDateOutOfRangeException([CanBeNull] string? message) : base(message) { }
+
+        public RankingDateOutOfRangeException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException) { }
     }
 }

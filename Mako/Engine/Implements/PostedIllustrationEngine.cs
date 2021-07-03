@@ -43,7 +43,11 @@ namespace Mako.Engine.Implements
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return RecursivePixivAsyncEnumerators.Illustration<PostedIllustrationEngine>.WithInitialUrl(this, MakoApiKind.AppApi, engine => $"/v1/user/illusts?user_id={engine._uid}&filter=for_android&type=illust")!;
+            return RecursivePixivAsyncEnumerators.Illustration<PostedIllustrationEngine>
+                .WithInitialUrl(this, MakoApiKind.AppApi, engine => "/v1/user/illusts"
+                                                                    + $"?user_id={engine._uid}"
+                                                                    + "&filter=for_android"
+                                                                    + "&type=illust")!;
         }
     }
 }

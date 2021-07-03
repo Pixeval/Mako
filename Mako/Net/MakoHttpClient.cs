@@ -33,9 +33,7 @@ namespace Mako.Net
 {
     internal class MakoHttpClient : HttpClient
     {
-        private MakoHttpClient([NotNull] HttpMessageHandler handler) : base(handler)
-        {
-        }
+        private MakoHttpClient([NotNull] HttpMessageHandler handler) : base(handler) { }
 
         public static MakoHttpClient Create(HttpMessageHandler handler,
             Action<MakoHttpClient>? action = null)

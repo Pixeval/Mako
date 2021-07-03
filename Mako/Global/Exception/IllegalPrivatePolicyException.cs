@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/FollowingEngine.cs
+// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,39 @@
 
 #endregion
 
-using System.Collections.Generic;
-using System.Threading;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 using Mako.Global.Enum;
-using Mako.Util;
-using Mako.Model;
-using Mako.Net;
 
-namespace Mako.Engine.Implements
+namespace Mako.Global.Exception
 {
-    internal class FollowingEngine : AbstractPixivFetchEngine<User>
+    /// <summary>
+    ///     When a <see cref="PrivacyPolicy" /> is set to <see cref="PrivacyPolicy.Private" /> while the uid is not equivalent
+    ///     to the <see cref="MakoClient.Session" />
+    /// </summary>
+    [PublicAPI]
+    public class IllegalPrivatePolicyException : MakoException
     {
-        private readonly PrivacyPolicy _privacyPolicy;
-        private readonly string _uid;
-
-        public FollowingEngine([NotNull] MakoClient makoClient, PrivacyPolicy privacyPolicy, string uid, EngineHandle? engineHandle) : base(makoClient, engineHandle)
+        public IllegalPrivatePolicyException(string uid)
         {
-            _privacyPolicy = privacyPolicy;
-            _uid = uid;
+            Uid = uid;
         }
 
-        public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
+        protected IllegalPrivatePolicyException([NotNull] SerializationInfo info, StreamingContext context, string uid) : base(info, context)
         {
-            return RecursivePixivAsyncEnumerators.User<FollowingEngine>
-                .WithInitialUrl(this, MakoApiKind.AppApi, 
-                    engine => "/v1/user/following"
-                              + $"?user_id={engine._uid}"
-                              + $"&restrict={engine._privacyPolicy.GetDescription()}")!;
+            Uid = uid;
         }
+
+        public IllegalPrivatePolicyException([CanBeNull] string? message, string uid) : base(message)
+        {
+            Uid = uid;
+        }
+
+        public IllegalPrivatePolicyException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException, string uid) : base(message, innerException)
+        {
+            Uid = uid;
+        }
+
+        public string Uid { get; }
     }
 }

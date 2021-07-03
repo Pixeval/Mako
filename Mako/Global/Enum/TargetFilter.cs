@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/FollowingEngine.cs
+// Copyright (c) Pixeval 2021 Mako/TargetFilter.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,18 @@
 
 #endregion
 
-using System.Collections.Generic;
-using System.Threading;
 using JetBrains.Annotations;
-using Mako.Global.Enum;
 using Mako.Util;
-using Mako.Model;
-using Mako.Net;
 
-namespace Mako.Engine.Implements
+namespace Mako.Global.Enum
 {
-    internal class FollowingEngine : AbstractPixivFetchEngine<User>
+    [PublicAPI]
+    public enum TargetFilter
     {
-        private readonly PrivacyPolicy _privacyPolicy;
-        private readonly string _uid;
+        [Description("for_android")]
+        ForAndroid,
 
-        public FollowingEngine([NotNull] MakoClient makoClient, PrivacyPolicy privacyPolicy, string uid, EngineHandle? engineHandle) : base(makoClient, engineHandle)
-        {
-            _privacyPolicy = privacyPolicy;
-            _uid = uid;
-        }
-
-        public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
-        {
-            return RecursivePixivAsyncEnumerators.User<FollowingEngine>
-                .WithInitialUrl(this, MakoApiKind.AppApi, 
-                    engine => "/v1/user/following"
-                              + $"?user_id={engine._uid}"
-                              + $"&restrict={engine._privacyPolicy.GetDescription()}")!;
-        }
+        [Description("for_ios")]
+        ForIos
     }
 }

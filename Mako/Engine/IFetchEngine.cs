@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Mako.Global;
 
 namespace Mako.Engine
 {

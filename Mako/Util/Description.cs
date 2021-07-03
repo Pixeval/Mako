@@ -1,4 +1,4 @@
-﻿#region Copyright (c) Pixeval/Mako
+#region Copyright (c) Pixeval/Mako
 
 // MIT License
 // 

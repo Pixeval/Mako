@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/CacheType.cs
+// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +24,23 @@
 
 #endregion
 
-namespace Mako
+using System.Runtime.Serialization;
+using JetBrains.Annotations;
+
+namespace Mako.Global.Exception
 {
-    internal enum CacheType
+    /// <summary>
+    ///     Raised if you're trying to set the sort option to popular_desc without a premium access
+    /// </summary>
+    [PublicAPI]
+    public class IllegalSortOptionException : MakoException
     {
-        User,
-        Illustration,
-        SpotlightDetail
+        public IllegalSortOptionException() { }
+
+        protected IllegalSortOptionException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context) { }
+
+        public IllegalSortOptionException([CanBeNull] string? message) : base(message) { }
+
+        public IllegalSortOptionException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException) { }
     }
 }

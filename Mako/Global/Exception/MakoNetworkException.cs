@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/FollowingEngine.cs
+// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,32 @@
 
 #endregion
 
-using System.Collections.Generic;
-using System.Threading;
+using System.Net.Http;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Mako.Global.Enum;
-using Mako.Util;
-using Mako.Model;
-using Mako.Net;
 
-namespace Mako.Engine.Implements
+namespace Mako.Global.Exception
 {
-    internal class FollowingEngine : AbstractPixivFetchEngine<User>
+    [PublicAPI]
+    public class MakoNetworkException : MakoException
     {
-        private readonly PrivacyPolicy _privacyPolicy;
-        private readonly string _uid;
-
-        public FollowingEngine([NotNull] MakoClient makoClient, PrivacyPolicy privacyPolicy, string uid, EngineHandle? engineHandle) : base(makoClient, engineHandle)
+        public MakoNetworkException(string url, bool bypass, string? extraMsg, int statusCode)
+            : base($"Network error while requesting URL: {url}:\n {extraMsg}\n Bypassing: {bypass}\n Status code: {statusCode}")
         {
-            _privacyPolicy = privacyPolicy;
-            _uid = uid;
+            Url = url;
+            Bypass = bypass;
+            StatusCode = statusCode;
         }
 
-        public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
+        public string Url { get; set; }
+
+        public bool Bypass { get; set; }
+        public int StatusCode { get; }
+
+        // We use Task<Exception> instead of Task<MakoNetworkException> to compromise with the generic variance
+        public static async Task<System.Exception> FromHttpResponseMessageAsync(HttpResponseMessage message, bool bypass)
         {
-            return RecursivePixivAsyncEnumerators.User<FollowingEngine>
-                .WithInitialUrl(this, MakoApiKind.AppApi, 
-                    engine => "/v1/user/following"
-                              + $"?user_id={engine._uid}"
-                              + $"&restrict={engine._privacyPolicy.GetDescription()}")!;
+            return new MakoNetworkException(message.RequestMessage?.RequestUri?.ToString() ?? string.Empty, bypass, await message.Content.ReadAsStringAsync().ConfigureAwait(false), (int) message.StatusCode);
         }
     }
 }

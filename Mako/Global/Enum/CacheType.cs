@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/SearchDuration.cs
+// Copyright (c) Pixeval 2021 Mako/MakoClient.Core.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,12 @@
 
 #endregion
 
-using JetBrains.Annotations;
-using Mako.Util;
-
-namespace Mako
+namespace Mako.Global.Enum
 {
-    [PublicAPI]
-    public enum SearchDuration
+    internal enum CacheType
     {
-        [Description("within_last_day")]
-        WithinLastDay,
-
-        [Description("within_last_week")]
-        WithinLastWeek,
-
-        [Description("within_last_month")]
-        WithinLastMonth
+        User,
+        Illustration,
+        SpotlightDetail
     }
 }

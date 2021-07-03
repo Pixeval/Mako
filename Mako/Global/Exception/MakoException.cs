@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/RecommendContentType.cs
+// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,20 @@
 
 #endregion
 
-using Mako.Util;
+using System.Runtime.Serialization;
+using JetBrains.Annotations;
 
-namespace Mako
+namespace Mako.Global.Exception
 {
-    public enum RecommendContentType
+    [PublicAPI]
+    public class MakoException : System.Exception
     {
-        [Description("illust")]
-        Illust,
+        public MakoException() { }
 
-        [Description("manga")]
-        Manga
+        protected MakoException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context) { }
+
+        public MakoException([CanBeNull] string? message) : base(message) { }
+
+        public MakoException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException) { }
     }
 }

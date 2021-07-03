@@ -34,7 +34,7 @@ namespace Mako.Engine
 #pragma warning disable 660,661 // Object.Equals() and Object.GetHashCode() are not overwritten
     public struct EngineHandle : ICancellable, INotifyCompletion, ICompletionCallback<EngineHandle>
 #pragma warning restore 660,661
-    { 
+    {
         private readonly Action<EngineHandle>? _onCompletion;
 
         public bool Equals(EngineHandle other)

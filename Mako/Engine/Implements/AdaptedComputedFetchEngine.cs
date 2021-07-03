@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Annotations;
+using Mako.Preference;
 using Mako.Util;
 
 namespace Mako.Engine.Implements
@@ -38,7 +39,7 @@ namespace Mako.Engine.Implements
     ///     only supposed to be used by caching systems
     ///     <para>
     ///         It is integrated into Mako's caching system, the results of <see cref="IFetchEngine{E}" />
-    ///         should be cached if possible when <see cref="Mako.Preference.MakoClientConfiguration.AllowCache" />
+    ///         should be cached if possible when <see cref="MakoClientConfiguration.AllowCache" />
     ///         is set.
     ///     </para>
     /// </summary>

@@ -40,9 +40,7 @@ namespace Mako.Engine
         where TFetchEngine : class, IFetchEngine<TEntity>
     {
         protected RecursivePixivAsyncEnumerator(TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind)
-            : base(pixivFetchEngine, makoApiKind)
-        {
-        }
+            : base(pixivFetchEngine, makoApiKind) { }
 
         private TRawEntity? RawEntity { get; set; }
 
@@ -118,9 +116,7 @@ namespace Mako.Engine
         public abstract class User<TFetchEngine> : RecursivePixivAsyncEnumerator<User, PixivUserResponse, TFetchEngine>
             where TFetchEngine : class, IFetchEngine<User>
         {
-            protected User([NotNull] TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
-            {
-            }
+            protected User([NotNull] TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind) { }
 
             protected override bool ValidateResponse(PixivUserResponse rawEntity)
             {
@@ -165,9 +161,7 @@ namespace Mako.Engine
         public abstract class Illustration<TFetchEngine> : RecursivePixivAsyncEnumerator<Illustration, PixivResponse, TFetchEngine>
             where TFetchEngine : class, IFetchEngine<Illustration>
         {
-            protected Illustration([NotNull] TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
-            {
-            }
+            protected Illustration([NotNull] TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind) { }
 
             protected override bool ValidateResponse(PixivResponse rawEntity)
             {
@@ -211,9 +205,7 @@ namespace Mako.Engine
         public abstract class Novel<TFetchEngine> : RecursivePixivAsyncEnumerator<Novel, PixivNovelResponse, TFetchEngine>
             where TFetchEngine : class, IFetchEngine<Novel>
         {
-            protected Novel([NotNull] TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
-            {
-            }
+            protected Novel([NotNull] TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind) { }
 
             protected override bool ValidateResponse(PixivNovelResponse rawEntity)
             {

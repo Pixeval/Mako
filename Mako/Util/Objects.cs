@@ -165,90 +165,6 @@ namespace Mako.Util
             return objectCache.Get(realKey);
         }
 
-        public static IEnumerable<JsonProperty> EnumerateObjectOrEmpty(this JsonElement? element)
-        {
-            return element?.EnumerateObject() as IEnumerable<JsonProperty> ?? Array.Empty<JsonProperty>();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static JsonElement GetProperty(this JsonProperty jsonElement, string prop)
-        {
-            return jsonElement.Value.GetProperty(prop);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static JsonElement? GetPropertyOrNull(this JsonElement element, string prop)
-        {
-            return element.TryGetProperty(prop, out var result) ? result : null;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static JsonElement? GetPropertyOrNull(this JsonProperty property, string prop)
-        {
-            return property.Value.TryGetProperty(prop, out var result) ? result : null;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string? GetPropertyString(this JsonElement jsonElement)
-        {
-            return jsonElement.ToString();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string? GetPropertyString(this JsonElement jsonElement, string prop)
-        {
-            return jsonElement.GetProperty(prop).ToString();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string? GetPropertyString(this JsonProperty jsonProperty)
-        {
-            return jsonProperty.Value.ToString();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string? GetPropertyString(this JsonProperty jsonProperty, string prop)
-        {
-            return jsonProperty.Value.GetProperty(prop).ToString();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetPropertyLong(this JsonProperty jsonProperty, string prop)
-        {
-            return jsonProperty.Value.GetProperty(prop).GetInt64();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetPropertyLong(this JsonElement jsonElement, string prop)
-        {
-            return jsonElement.GetProperty(prop).GetInt64();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DateTimeOffset GetPropertyDateTimeOffset(this JsonProperty jsonProperty)
-        {
-            return jsonProperty.Value.GetDateTimeOffset();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DateTimeOffset GetPropertyDateTimeOffset(this JsonProperty jsonProperty, string prop)
-        {
-            return jsonProperty.Value.GetProperty(prop).GetDateTimeOffset();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DateTime GetPropertyDateTime(this JsonProperty jsonProperty)
-        {
-            return jsonProperty.Value.GetDateTime();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DateTime GetPropertyDateTime(this JsonProperty jsonProperty, string prop)
-        {
-            return jsonProperty.Value.GetProperty(prop).GetDateTime();
-        }
-
-
         /// <summary>
         ///     Returns <see cref="Result{T}.Failure" /> if the status code does not indicating success
         /// </summary>
@@ -256,7 +172,7 @@ namespace Mako.Util
         /// <param name="url"></param>
         /// <param name="exceptionSelector"></param>
         /// <returns></returns>
-        public static async Task<Result<string>> GetStringResultAsync(this HttpClient httpClient, string url, Func<HttpResponseMessage, Task<Exception>>? exceptionSelector = null)
+        public static async Task<Result<string>> GetStringResultAsync(this HttpClient httpClient, string url, Func<HttpResponseMessage, Task<System.Exception>>? exceptionSelector = null)
         {
             var responseMessage = await httpClient.GetAsync(url).ConfigureAwait(false);
             return !responseMessage.IsSuccessStatusCode ? Result<string>.OfFailure(exceptionSelector is { } selector ? await selector.Invoke(responseMessage).ConfigureAwait(false) : null) : Result<string>.OfSuccess(await responseMessage.Content.ReadAsStringAsync());
