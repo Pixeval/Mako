@@ -15,4 +15,16 @@
       <PackageReference Include="System.Runtime.Caching" Version="5.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="MakoClient.Engines.cs">
+        <DependentUpon>MakoClient.cs</DependentUpon>
+      </Compile>
+      <Compile Update="MakoClient.Extensions.cs">
+        <DependentUpon>MakoClient.cs</DependentUpon>
+      </Compile>
+      <Compile Update="MakoClient.Properties.cs">
+        <DependentUpon>MakoClient.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

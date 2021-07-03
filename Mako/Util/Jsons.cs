@@ -31,6 +31,9 @@ using System.Text.Json;
 
 namespace Mako.Util
 {
+    /// <summary>
+    ///     Ext methods for JsonProperty and JsonElement.
+    /// </summary>
     public static class Jsons
     {
         public static IEnumerable<JsonProperty> EnumerateObjectOrEmpty(this JsonElement? element)
