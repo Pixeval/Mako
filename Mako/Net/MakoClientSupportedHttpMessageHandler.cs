@@ -25,6 +25,7 @@
 #endregion
 
 using System.Net.Http;
+using Mako.Global;
 
 namespace Mako.Net
 {

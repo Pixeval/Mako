@@ -33,8 +33,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows;
-using Mako.Model;
 using Mako.Util;
+using Mako.Model;
 using Microsoft.Web.WebView2.Core;
 
 namespace Mako.Authenticator

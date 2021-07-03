@@ -27,18 +27,16 @@
 using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Annotations;
+using Mako.Util;
 using Mako.Model;
 using Mako.Net;
 using Mako.Net.Response;
-using Mako.Util;
 
 namespace Mako.Engine.Implements
 {
     internal class SpotlightArticleEngine : AbstractPixivFetchEngine<SpotlightArticle>
     {
-        public SpotlightArticleEngine([NotNull] MakoClient makoClient, EngineHandle? engineHandle) : base(makoClient, engineHandle)
-        {
-        }
+        public SpotlightArticleEngine([NotNull] MakoClient makoClient, EngineHandle? engineHandle) : base(makoClient, engineHandle) { }
 
         public override IAsyncEnumerator<SpotlightArticle> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
@@ -47,9 +45,7 @@ namespace Mako.Engine.Implements
 
         private class SpotlightArticleAsyncEnumerator : RecursivePixivAsyncEnumerator<SpotlightArticle, PixivSpotlightResponse, SpotlightArticleEngine>
         {
-            public SpotlightArticleAsyncEnumerator([NotNull] SpotlightArticleEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
-            {
-            }
+            public SpotlightArticleAsyncEnumerator([NotNull] SpotlightArticleEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind) { }
 
             protected override bool ValidateResponse(PixivSpotlightResponse rawEntity)
             {

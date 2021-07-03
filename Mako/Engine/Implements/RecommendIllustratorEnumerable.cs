@@ -26,9 +26,10 @@
 
 using System.Collections.Generic;
 using System.Threading;
+using Mako.Global.Enum;
+using Mako.Util;
 using Mako.Model;
 using Mako.Net;
-using Mako.Util;
 
 namespace Mako.Engine.Implements
 {
@@ -43,7 +44,9 @@ namespace Mako.Engine.Implements
 
         public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return RecursivePixivAsyncEnumerators.User<RecommendIllustratorEngine>.WithInitialUrl(this, MakoApiKind.AppApi, engine => $"/v1/user/recommended?filter={engine._targetFilter.GetDescription()}")!;
+            return RecursivePixivAsyncEnumerators.User<RecommendIllustratorEngine>
+                .WithInitialUrl(this, MakoApiKind.AppApi, engine => "/v1/user/recommended"
+                                                                    + $"?filter={engine._targetFilter.GetDescription()}")!;
         }
     }
 }

@@ -28,9 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Annotations;
+using Mako.Global.Enum;
+using Mako.Util;
 using Mako.Model;
 using Mako.Net;
-using Mako.Util;
 
 namespace Mako.Engine.Implements
 {
@@ -77,9 +78,7 @@ namespace Mako.Engine.Implements
 
         private class SearchAsyncEnumerator : RecursivePixivAsyncEnumerators.Illustration<SearchEngine>
         {
-            public SearchAsyncEnumerator([NotNull] SearchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
-            {
-            }
+            public SearchAsyncEnumerator([NotNull] SearchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind) { }
 
             protected override string InitialUrl()
             {
@@ -97,7 +96,12 @@ namespace Mako.Engine.Implements
                 var startDateSegment = PixivFetchEngine._startDate?.Let(dn => $"&start_date={dn:yyyy-MM-dd}");
                 var endDateSegment = PixivFetchEngine._endDate?.Let(dn => $"&start_date={dn:yyyy-MM-dd}");
                 var durationSegment = PixivFetchEngine._searchDuration?.Let(du => $"&duration={du.GetDescription()}");
-                return $"/v1/search/illust?search_target={match}&word={PixivFetchEngine._tag}&filter={PixivFetchEngine._targetFilter.GetDescription()}&offset={PixivFetchEngine._current}&sort={PixivFetchEngine._sortOption.GetDescription()}{startDateSegment}{endDateSegment}{durationSegment}";
+                return "/v1/search/illust"
+                       + $"?search_target={match}"
+                       + $"&word={PixivFetchEngine._tag}"
+                       + $"&filter={PixivFetchEngine._targetFilter.GetDescription()}"
+                       + $"&offset={PixivFetchEngine._current}"
+                       + $"&sort={PixivFetchEngine._sortOption.GetDescription()}{startDateSegment}{endDateSegment}{durationSegment}";
             }
         }
     }

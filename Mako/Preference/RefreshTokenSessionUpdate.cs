@@ -25,9 +25,9 @@
 #endregion
 
 using System.Threading.Tasks;
+using Mako.Util;
 using Mako.Net.EndPoints;
 using Mako.Net.Request;
-using Mako.Util;
 
 namespace Mako.Preference
 {

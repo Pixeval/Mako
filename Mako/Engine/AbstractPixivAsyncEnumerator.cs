@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Mako.Global.Exception;
 using Mako.Net;
 using Mako.Util;
 

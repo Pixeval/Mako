@@ -27,9 +27,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Annotations;
+using Mako.Global.Enum;
+using Mako.Util;
 using Mako.Model;
 using Mako.Net;
-using Mako.Util;
 
 namespace Mako.Engine.Implements
 {
@@ -54,7 +55,10 @@ namespace Mako.Engine.Implements
         public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
             return RecursivePixivAsyncEnumerators.Novel<NovelBookmarkEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
-                engine => $"/v1/user/bookmarks/novel?user_id={engine._uid}&restrict={engine._privacyPolicy.GetDescription()}&filter={engine._targetFilter.GetDescription()}")!;
+                engine => $"/v1/user/bookmarks/novel"
+                          + $"?user_id={engine._uid}"
+                          + $"&restrict={engine._privacyPolicy.GetDescription()}"
+                          + $"&filter={engine._targetFilter.GetDescription()}")!;
         }
     }
 }

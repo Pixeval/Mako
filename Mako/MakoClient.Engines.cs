@@ -27,8 +27,10 @@
 using System;
 using Mako.Engine;
 using Mako.Engine.Implements;
-using Mako.Model;
+using Mako.Global.Enum;
+using Mako.Global.Exception;
 using Mako.Util;
+using Mako.Model;
 
 namespace Mako
 {

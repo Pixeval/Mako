@@ -33,6 +33,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Mako.Global.Exception;
 using Mako.Model;
 using Mako.Net;
 using Mako.Util;
@@ -41,9 +42,7 @@ namespace Mako.Engine.Implements
 {
     internal class FeedEngine : AbstractPixivFetchEngine<Feed>
     {
-        public FeedEngine([NotNull] MakoClient makoClient, EngineHandle? engineHandle) : base(makoClient, engineHandle)
-        {
-        }
+        public FeedEngine([NotNull] MakoClient makoClient, EngineHandle? engineHandle) : base(makoClient, engineHandle) { }
 
         public override IAsyncEnumerator<Feed> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
@@ -56,9 +55,7 @@ namespace Mako.Engine.Implements
             private string? _tt;
 
 
-            public UserFeedsAsyncEnumerator([NotNull] FeedEngine pixivFetchEngine, MakoApiKind apiKind) : base(pixivFetchEngine, apiKind)
-            {
-            }
+            public UserFeedsAsyncEnumerator([NotNull] FeedEngine pixivFetchEngine, MakoApiKind apiKind) : base(pixivFetchEngine, apiKind) { }
 
             public override async ValueTask<bool> MoveNextAsync()
             {
@@ -283,7 +280,10 @@ namespace Mako.Engine.Implements
             {
                 return _feedRequestContext is null
                     ? "/stacc?mode=unify"
-                    : $"/stacc/my/home/all/activity/{_feedRequestContext.Sid}/.json?mode={_feedRequestContext.Mode}&unify_token={_feedRequestContext.UnifyToken}&tt={_tt}";
+                    : $"/stacc/my/home/all/activity/{_feedRequestContext.Sid}/.json"
+                      + $"?mode={_feedRequestContext.Mode}"
+                      + $"&unify_token={_feedRequestContext.UnifyToken}"
+                      + $"&tt={_tt}";
             }
 
             private async Task<Result<string>> GetResponseAsync(string url)

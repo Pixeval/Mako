@@ -33,6 +33,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Mako.Global.Enum;
 using Mako.Model;
 using Mako.Preference;
 using Mako.Util;

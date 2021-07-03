@@ -26,9 +26,10 @@
 
 using System.Collections.Generic;
 using System.Threading;
+using Mako.Global.Enum;
+using Mako.Util;
 using Mako.Model;
 using Mako.Net;
-using Mako.Util;
 
 namespace Mako.Engine.Implements
 {
@@ -55,7 +56,9 @@ namespace Mako.Engine.Implements
                 {
                     var maxBookmarkIdForRecommend = engine._maxBookmarkIdForRecommend?.Let(static s => $"&max_bookmark_id_for_recommend={s}") ?? string.Empty;
                     var maxBookmarkIdForRecentIllust = engine._minBookmarkIdForRecentIllust.Let(static s => $"&min_bookmark_id_for_recent_illust={s}") ?? string.Empty;
-                    return $"/v1/illust/recommended?filter={engine._filter.GetDescription()}&content_type={engine._recommendContentType.GetDescription()}{maxBookmarkIdForRecommend}{maxBookmarkIdForRecentIllust}";
+                    return "/v1/illust/recommended"
+                           + $"?filter={engine._filter.GetDescription()}"
+                           + $"&content_type={engine._recommendContentType.GetDescription()}{maxBookmarkIdForRecommend}{maxBookmarkIdForRecentIllust}";
                 })!;
         }
     }

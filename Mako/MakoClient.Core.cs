@@ -1,4 +1,4 @@
-﻿#region Copyright (c) Pixeval/Mako
+#region Copyright (c) Pixeval/Mako
 
 // MIT License
 // 
@@ -36,10 +36,12 @@ using Autofac;
 using JetBrains.Annotations;
 using Mako.Engine;
 using Mako.Engine.Implements;
+using Mako.Global.Enum;
+using Mako.Global.Exception;
+using Mako.Util;
 using Mako.Net;
 using Mako.Net.EndPoints;
 using Mako.Preference;
-using Mako.Util;
 using Refit;
 
 namespace Mako
