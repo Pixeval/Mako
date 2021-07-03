@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/PrivacyPolicy.cs
+// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,22 +24,23 @@
 
 #endregion
 
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
-using Mako.Util;
 
-namespace Mako
+namespace Mako.Global.Exception
 {
     /// <summary>
-    ///     The privacy policy of Pixiv, be aware that the <see cref="Private" /> option
-    ///     is only permitted when the ID is pointing to yourself
+    ///     搜索榜单时设定的日期大于等于当前日期-2天
     /// </summary>
     [PublicAPI]
-    public enum PrivacyPolicy
+    public class RankingDateOutOfRangeException : MakoException
     {
-        [Description("public")]
-        Public,
+        public RankingDateOutOfRangeException() { }
 
-        [Description("private")]
-        Private
+        protected RankingDateOutOfRangeException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context) { }
+
+        public RankingDateOutOfRangeException([CanBeNull] string? message) : base(message) { }
+
+        public RankingDateOutOfRangeException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException) { }
     }
 }

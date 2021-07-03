@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/TargetFilter.cs
+// Copyright (c) Pixeval 2021 Mako/SearchTagMatchOption.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,15 +27,18 @@
 using JetBrains.Annotations;
 using Mako.Util;
 
-namespace Mako
+namespace Mako.Global.Enum
 {
     [PublicAPI]
-    public enum TargetFilter
+    public enum SearchTagMatchOption
     {
-        [Description("for_android")]
-        ForAndroid,
+        [Description("partial_match_for_tags")]
+        PartialMatchForTags,
 
-        [Description("for_ios")]
-        ForIos
+        [Description("exact_match_for_tags")]
+        ExactMatchForTags,
+
+        [Description("title_and_caption")]
+        TitleAndCaption
     }
 }

@@ -27,7 +27,7 @@
 using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
-namespace Mako.Exception
+namespace Mako.Global.Exception
 {
     /// <summary>
     ///     Raised if you're trying to set the sort option to popular_desc without a premium access

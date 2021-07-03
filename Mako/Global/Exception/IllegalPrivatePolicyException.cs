@@ -26,21 +26,37 @@
 
 using System.Runtime.Serialization;
 using JetBrains.Annotations;
+using Mako.Global.Enum;
 
-namespace Mako.Exception
+namespace Mako.Global.Exception
 {
     /// <summary>
-    ///     搜索榜单时设定的日期大于等于当前日期-2天
+    ///     When a <see cref="PrivacyPolicy" /> is set to <see cref="PrivacyPolicy.Private" /> while the uid is not equivalent
+    ///     to the <see cref="MakoClient.Session" />
     /// </summary>
     [PublicAPI]
-    public class RankingDateOutOfRangeException : MakoException
+    public class IllegalPrivatePolicyException : MakoException
     {
-        public RankingDateOutOfRangeException() { }
+        public IllegalPrivatePolicyException(string uid)
+        {
+            Uid = uid;
+        }
 
-        protected RankingDateOutOfRangeException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context) { }
+        protected IllegalPrivatePolicyException([NotNull] SerializationInfo info, StreamingContext context, string uid) : base(info, context)
+        {
+            Uid = uid;
+        }
 
-        public RankingDateOutOfRangeException([CanBeNull] string? message) : base(message) { }
+        public IllegalPrivatePolicyException([CanBeNull] string? message, string uid) : base(message)
+        {
+            Uid = uid;
+        }
 
-        public RankingDateOutOfRangeException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException) { }
+        public IllegalPrivatePolicyException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException, string uid) : base(message, innerException)
+        {
+            Uid = uid;
+        }
+
+        public string Uid { get; }
     }
 }

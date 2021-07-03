@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
+// Copyright (c) Pixeval 2021 Mako/SearchDuration.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +24,21 @@
 
 #endregion
 
-using System.Runtime.Serialization;
 using JetBrains.Annotations;
+using Mako.Util;
 
-namespace Mako.Exception
+namespace Mako.Global.Enum
 {
-    /// <summary>
-    ///     When a <see cref="PrivacyPolicy" /> is set to <see cref="PrivacyPolicy.Private" /> while the uid is not equivalent
-    ///     to the <see cref="MakoClient.Session" />
-    /// </summary>
     [PublicAPI]
-    public class IllegalPrivatePolicyException : MakoException
+    public enum SearchDuration
     {
-        public IllegalPrivatePolicyException(string uid)
-        {
-            Uid = uid;
-        }
+        [Description("within_last_day")]
+        WithinLastDay,
 
-        protected IllegalPrivatePolicyException([NotNull] SerializationInfo info, StreamingContext context, string uid) : base(info, context)
-        {
-            Uid = uid;
-        }
+        [Description("within_last_week")]
+        WithinLastWeek,
 
-        public IllegalPrivatePolicyException([CanBeNull] string? message, string uid) : base(message)
-        {
-            Uid = uid;
-        }
-
-        public IllegalPrivatePolicyException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException, string uid) : base(message, innerException)
-        {
-            Uid = uid;
-        }
-
-        public string Uid { get; }
+        [Description("within_last_month")]
+        WithinLastMonth
     }
 }

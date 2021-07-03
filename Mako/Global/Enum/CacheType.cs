@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
+// Copyright (c) Pixeval 2021 Mako/MakoClient.Core.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,20 +24,12 @@
 
 #endregion
 
-using System.Runtime.Serialization;
-using JetBrains.Annotations;
-
-namespace Mako.Exception
+namespace Mako.Global.Enum
 {
-    [PublicAPI]
-    public class MakoException : System.Exception
+    internal enum CacheType
     {
-        public MakoException() { }
-
-        protected MakoException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context) { }
-
-        public MakoException([CanBeNull] string? message) : base(message) { }
-
-        public MakoException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException) { }
+        User,
+        Illustration,
+        SpotlightDetail
     }
 }

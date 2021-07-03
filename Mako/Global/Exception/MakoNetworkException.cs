@@ -28,7 +28,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
-namespace Mako.Exception
+namespace Mako.Global.Exception
 {
     [PublicAPI]
     public class MakoNetworkException : MakoException

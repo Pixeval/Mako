@@ -28,7 +28,7 @@ using System.Runtime.Serialization;
 using JetBrains.Annotations;
 using Mako.Model;
 
-namespace Mako.Exception
+namespace Mako.Global.Exception
 {
     [PublicAPI]
     public class MangaPagesNotFoundException : MakoException

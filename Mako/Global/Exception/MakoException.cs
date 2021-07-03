@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/SortOptions.cs
+// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,31 +24,20 @@
 
 #endregion
 
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
-using Mako.Util;
 
-namespace Mako
+namespace Mako.Global.Exception
 {
     [PublicAPI]
-    public enum IllustrationSortOption
+    public class MakoException : System.Exception
     {
-        [Description("popular_desc")]
-        PopularityDescending,
+        public MakoException() { }
 
-        [Description("date_asc")]
-        PublishDateAscending,
+        protected MakoException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context) { }
 
-        [Description("date_desc")]
-        PublishDateDescending
-    }
+        public MakoException([CanBeNull] string? message) : base(message) { }
 
-    [PublicAPI]
-    public enum UserSortOption
-    {
-        [Description("date_asc")]
-        DateAscending,
-
-        [Description("date_desc")]
-        DateDescending
+        public MakoException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException) { }
     }
 }
