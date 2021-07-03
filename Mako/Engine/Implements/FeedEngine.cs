@@ -80,6 +80,7 @@ namespace Mako.Engine.Implements
                         case Result<string>.Failure(var exception):
                             if (exception is { } e)
                             {
+                                PixivFetchEngine.EngineHandle.Complete();
                                 throw e;
                             }
 

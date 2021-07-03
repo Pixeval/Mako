@@ -28,12 +28,14 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using JetBrains.Annotations;
 
 namespace Mako.Util
 {
     /// <summary>
     ///     Ext methods for JsonProperty and JsonElement.
     /// </summary>
+    [PublicAPI]
     public static class Jsons
     {
         public static IEnumerable<JsonProperty> EnumerateObjectOrEmpty(this JsonElement? element)

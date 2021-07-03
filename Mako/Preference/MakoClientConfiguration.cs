@@ -24,8 +24,6 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using JetBrains.Annotations;
 
@@ -42,24 +40,14 @@ namespace Mako.Preference
             CultureInfo = CultureInfo.CurrentCulture;
             ConnectionTimeout = 5000;
             Bypass = false;
-            MirrorHost = null;
-            ExcludeTags = null;
-            IncludeTags = null;
-            MinBookmark = 0;
-            AllowCache = false;
-            CacheEntrySlidingExpiration = TimeSpan.FromMinutes(5);
+            MirrorHost = string.Empty;
         }
 
-        public MakoClientConfiguration(int connectionTimeout, bool bypass, string? mirrorHost, ISet<string>? excludeTags, ISet<string>? includeTags, int minBookmark, bool allowCache, TimeSpan cacheEntrySlidingExpiration, CultureInfo cultureInfo)
+        public MakoClientConfiguration(int connectionTimeout, bool bypass, string? mirrorHost, CultureInfo cultureInfo)
         {
             ConnectionTimeout = connectionTimeout;
             Bypass = bypass;
             MirrorHost = mirrorHost;
-            ExcludeTags = excludeTags;
-            IncludeTags = includeTags;
-            MinBookmark = minBookmark;
-            AllowCache = allowCache;
-            CacheEntrySlidingExpiration = cacheEntrySlidingExpiration;
             CultureInfo = cultureInfo;
         }
 
@@ -79,24 +67,5 @@ namespace Mako.Preference
         ///     Mirror server's host of image downloading
         /// </summary>
         public string? MirrorHost { get; set; }
-
-        /// <summary>
-        ///     Indicates which tags should be strictly exclude when performing a query operation
-        /// </summary>
-        public ISet<string>? ExcludeTags { get; }
-
-        /// <summary>
-        ///     Indicates which tags should be strictly include when performing a query operation
-        /// </summary>
-        public ISet<string>? IncludeTags { get; }
-
-        /// <summary>
-        ///     Any illust with less bookmarks will be filtered out
-        /// </summary>
-        public int MinBookmark { get; set; }
-
-        public bool AllowCache { get; set; }
-
-        public TimeSpan CacheEntrySlidingExpiration { get; set; }
     }
 }

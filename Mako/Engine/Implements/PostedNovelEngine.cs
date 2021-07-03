@@ -52,7 +52,7 @@ namespace Mako.Engine.Implements
         public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
             return RecursivePixivAsyncEnumerators.Novel<PostedNovelEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
-                engine => $"/v1/user/novels"
+                engine => "/v1/user/novels"
                           + $"?user_id={engine._uid}"
                           + $"&filter={engine._targetFilter.GetDescription()}")!;
         }

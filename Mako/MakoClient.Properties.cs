@@ -54,8 +54,6 @@ namespace Mako
         /// </summary>
         internal IContainer MakoServices { get; init; }
 
-        internal static MemoryCache MemoryCache { get; }
-
         /// <summary>
         ///     The <see cref="CancellationTokenSource" /> that is used to cancel ths <see cref="MakoClient" />\
         ///     and all of its running engines

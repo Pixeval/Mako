@@ -25,20 +25,15 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.Caching;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using JetBrains.Annotations;
 using Mako.Engine;
-using Mako.Engine.Implements;
 using Mako.Global.Enum;
 using Mako.Global.Exception;
-using Mako.Util;
 using Mako.Net;
 using Mako.Net.EndPoints;
 using Mako.Preference;
@@ -49,14 +44,6 @@ namespace Mako
     [PublicAPI]
     public partial class MakoClient : ICancellable
     {
-        /// <summary>
-        ///     Creates the cache of current <see cref="MakoClient" />
-        /// </summary>
-        static MakoClient()
-        {
-            MemoryCache = new MemoryCache("MakoCache", new NameValueCollection {["cacheMemoryLimitMegabytes"] = "50"});
-        }
-
         /// <summary>
         ///     Create an new <see cref="MakoClient" /> based on given <see cref="Configuration" />, <see cref="Session" />, and
         ///     <see cref="ISessionUpdate" />
@@ -213,27 +200,6 @@ namespace Mako
             return (TResult) MakoServices.Resolve(type);
         }
 
-        // Creates the namespace (region) of the current 'MakoClient'
-        private string CreateCacheRegionForCurrent(string secondary)
-        {
-            return $"{Id}::{secondary}";
-        }
-
-        // Caches an 'item'
-        internal void Cache<T>(CacheType type, string key, T item) where T : notnull
-        {
-            MemoryCache.AddWithRegionName(key, item, new CacheItemPolicy
-            {
-                SlidingExpiration = Configuration.CacheEntrySlidingExpiration
-            }, CreateCacheRegionForCurrent(type.ToString()));
-        }
-
-        // Gets an cached item or null
-        internal T? GetCached<T>(CacheType type, string key) where T : notnull
-        {
-            return (T?) MemoryCache.GetWithRegionName(key, CreateCacheRegionForCurrent(type.ToString()));
-        }
-
         // registers an instance to the running instances list
         private void RegisterInstance(IEngineHandleSource engineHandleSource)
         {
@@ -244,15 +210,6 @@ namespace Mako
         private void CancelInstance(EngineHandle handle)
         {
             _runningInstances.RemoveAll(instance => instance.EngineHandle == handle);
-        }
-
-        // Cache the results of 'IFetchEngine<out E>' if and only if 'Configuration.AllowCache' is set
-        private void TryCache<T>(CacheType type, IEnumerable<T> enumerable, string key)
-        {
-            if (Configuration.AllowCache)
-            {
-                Cache(type, key, new AdaptedComputedFetchEngine<T>(enumerable));
-            }
         }
 
         // PrivacyPolicy.Private is only allowed when the uid is pointing to yourself

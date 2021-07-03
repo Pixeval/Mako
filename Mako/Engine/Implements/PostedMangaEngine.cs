@@ -51,7 +51,7 @@ namespace Mako.Engine.Implements
                 engine => "/v1/user/illusts"
                           + $"?filter={_targetFilter.GetDescription()}"
                           + $"&user_id={engine._uid}"
-                          + $"&type=manga")!;
+                          + "&type=manga")!;
         }
     }
 }

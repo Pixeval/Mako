@@ -52,7 +52,6 @@ namespace Mako.Console
         private static readonly MakoClient MakoClient = new(Session, new MakoClientConfiguration
         {
             Bypass = true,
-            AllowCache = true,
             CultureInfo = new CultureInfo("zh-cn")
         });
 

@@ -65,7 +65,7 @@ namespace Mako.Engine.Implements
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
             return RecursivePixivAsyncEnumerators.Illustration<BookmarkEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
-                engine => $"/v1/user/bookmarks/illust"
+                engine => "/v1/user/bookmarks/illust"
                           + $"?user_id={engine._uid}"
                           + $"&restrict={engine._privacyPolicy.GetDescription()}"
                           + $"&filter={engine._targetFilter.GetDescription()}")!;

@@ -82,10 +82,5 @@ namespace Mako.Preference
         {
             return this.ToJson();
         }
-
-        public bool RefreshRequired()
-        {
-            return AccessToken.IsNullOrEmpty() || DateTime.Now >= ExpireIn;
-        }
     }
 }

@@ -55,7 +55,7 @@ namespace Mako.Engine.Implements
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
             return RecursivePixivAsyncEnumerators.Illustration<RankingEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
-                engine => $"/v1/illust/ranking"
+                engine => "/v1/illust/ranking"
                           + $"?filter={engine._targetFilter.GetDescription()}"
                           + $"&mode={engine._rankOption.GetDescription()}"
                           + $"&date={engine._dateTime:yyyy-MM-dd}")!;
