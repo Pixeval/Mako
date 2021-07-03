@@ -1,4 +1,30 @@
-﻿using System;
+﻿#region Copyright (c) Pixeval/Mako
+
+// MIT License
+// 
+// Copyright (c) Pixeval 2021 Mako/TokenResponse.cs
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+#endregion
+
+using System;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using Mako.Preference;
@@ -29,6 +55,21 @@ namespace Mako.Model
 
         [JsonPropertyName("response")]
         public TokenResponse? Response { get; set; }
+
+        public Session ToSession()
+        {
+            return new()
+            {
+                AccessToken = AccessToken,
+                Account = User?.Account,
+                AvatarUrl = User?.ProfileImageUrls?.Px170X170,
+                ExpireIn = DateTime.Now + TimeSpan.FromSeconds(ExpiresIn) - TimeSpan.FromMinutes(5), // 减去5分钟是考虑到网络延迟会导致精确时间不可能恰好是一小时(TokenResponse的ExpireIn是60分钟)
+                Id = User?.Id,
+                IsPremium = User?.IsPremium ?? false,
+                RefreshToken = RefreshToken,
+                Name = User?.Name
+            };
+        }
 
         [PublicAPI]
         public class TokenUser
@@ -72,21 +113,6 @@ namespace Mako.Model
 
             [JsonPropertyName("px_170x170")]
             public string? Px170X170 { get; set; }
-        }
-        
-        public Session ToSession()
-        {
-            return new()
-            {
-                AccessToken = AccessToken,
-                Account = User?.Account,
-                AvatarUrl = User?.ProfileImageUrls?.Px170X170,
-                ExpireIn = DateTime.Now + TimeSpan.FromSeconds(ExpiresIn) - TimeSpan.FromMinutes(5), // 减去5分钟是考虑到网络延迟会导致精确时间不可能恰好是一小时(TokenResponse的ExpireIn是60分钟)
-                Id = User?.Id,
-                IsPremium = User?.IsPremium ?? false,
-                RefreshToken = RefreshToken,
-                Name = User?.Name
-            };
         }
     }
 }
