@@ -62,7 +62,7 @@ namespace Mako.Util
             block(obj);
             return obj;
         }
-        
+
         public static async Task<Result<TResult>> WithTimeoutAsync<TResult>(Task<TResult> task, int timeoutMills)
         {
             using var cancellationToken = new CancellationTokenSource();

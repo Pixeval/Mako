@@ -172,7 +172,7 @@ namespace Mako.Util
         /// <param name="url"></param>
         /// <param name="exceptionSelector"></param>
         /// <returns></returns>
-        public static async Task<Result<string>> GetStringResultAsync(this HttpClient httpClient, string url, Func<HttpResponseMessage, Task<System.Exception>>? exceptionSelector = null)
+        public static async Task<Result<string>> GetStringResultAsync(this HttpClient httpClient, string url, Func<HttpResponseMessage, Task<Exception>>? exceptionSelector = null)
         {
             var responseMessage = await httpClient.GetAsync(url).ConfigureAwait(false);
             return !responseMessage.IsSuccessStatusCode ? Result<string>.OfFailure(exceptionSelector is { } selector ? await selector.Invoke(responseMessage).ConfigureAwait(false) : null) : Result<string>.OfSuccess(await responseMessage.Content.ReadAsStringAsync());

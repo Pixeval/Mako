@@ -30,12 +30,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mako.Global.Enum;
 using Mako.Global.Exception;
-using Mako.Util;
 using Mako.Model;
 using Mako.Net;
 using Mako.Net.EndPoints;
 using Mako.Net.Request;
 using Mako.Net.Response;
+using Mako.Util;
 
 namespace Mako
 {

@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.Caching;
 using System.Threading;
 using Autofac;
 using Mako.Engine;

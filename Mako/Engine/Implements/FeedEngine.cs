@@ -42,7 +42,9 @@ namespace Mako.Engine.Implements
 {
     internal class FeedEngine : AbstractPixivFetchEngine<Feed>
     {
-        public FeedEngine([NotNull] MakoClient makoClient, EngineHandle? engineHandle) : base(makoClient, engineHandle) { }
+        public FeedEngine([NotNull] MakoClient makoClient, EngineHandle? engineHandle) : base(makoClient, engineHandle)
+        {
+        }
 
         public override IAsyncEnumerator<Feed> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
@@ -55,7 +57,9 @@ namespace Mako.Engine.Implements
             private string? _tt;
 
 
-            public UserFeedsAsyncEnumerator([NotNull] FeedEngine pixivFetchEngine, MakoApiKind apiKind) : base(pixivFetchEngine, apiKind) { }
+            public UserFeedsAsyncEnumerator([NotNull] FeedEngine pixivFetchEngine, MakoApiKind apiKind) : base(pixivFetchEngine, apiKind)
+            {
+            }
 
             public override async ValueTask<bool> MoveNextAsync()
             {

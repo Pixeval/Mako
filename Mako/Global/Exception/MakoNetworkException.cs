@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
+// Copyright (c) Pixeval 2021 Mako/MakoNetworkException.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

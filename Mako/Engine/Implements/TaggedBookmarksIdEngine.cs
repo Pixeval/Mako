@@ -28,9 +28,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Web;
 using JetBrains.Annotations;
-using Mako.Util;
 using Mako.Net;
 using Mako.Net.Response;
+using Mako.Util;
 
 namespace Mako.Engine.Implements
 {
@@ -58,7 +58,9 @@ namespace Mako.Engine.Implements
         {
             private int _currentIndex;
 
-            public TaggedBookmarksIdAsyncEnumerator([NotNull] TaggedBookmarksIdEngine pixivFetchEngine, MakoApiKind apiKind) : base(pixivFetchEngine, apiKind) { }
+            public TaggedBookmarksIdAsyncEnumerator([NotNull] TaggedBookmarksIdEngine pixivFetchEngine, MakoApiKind apiKind) : base(pixivFetchEngine, apiKind)
+            {
+            }
 
             protected override bool ValidateResponse(WebApiBookmarksWithTagResponse rawEntity)
             {

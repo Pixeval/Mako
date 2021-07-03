@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
+// Copyright (c) Pixeval 2021 Mako/IllegalSortOptionException.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,12 +35,20 @@ namespace Mako.Global.Exception
     [PublicAPI]
     public class IllegalSortOptionException : MakoException
     {
-        public IllegalSortOptionException() { }
+        public IllegalSortOptionException()
+        {
+        }
 
-        protected IllegalSortOptionException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context) { }
+        protected IllegalSortOptionException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
 
-        public IllegalSortOptionException([CanBeNull] string? message) : base(message) { }
+        public IllegalSortOptionException([CanBeNull] string? message) : base(message)
+        {
+        }
 
-        public IllegalSortOptionException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException) { }
+        public IllegalSortOptionException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException)
+        {
+        }
     }
 }

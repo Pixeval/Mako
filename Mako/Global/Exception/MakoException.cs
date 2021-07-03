@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
+// Copyright (c) Pixeval 2021 Mako/MakoException.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,12 +32,20 @@ namespace Mako.Global.Exception
     [PublicAPI]
     public class MakoException : System.Exception
     {
-        public MakoException() { }
+        public MakoException()
+        {
+        }
 
-        protected MakoException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context) { }
+        protected MakoException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
 
-        public MakoException([CanBeNull] string? message) : base(message) { }
+        public MakoException([CanBeNull] string? message) : base(message)
+        {
+        }
 
-        public MakoException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException) { }
+        public MakoException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException)
+        {
+        }
     }
 }

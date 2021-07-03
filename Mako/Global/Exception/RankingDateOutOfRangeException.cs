@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/MakoExceptions.cs
+// Copyright (c) Pixeval 2021 Mako/RankingDateOutOfRangeException.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,12 +35,20 @@ namespace Mako.Global.Exception
     [PublicAPI]
     public class RankingDateOutOfRangeException : MakoException
     {
-        public RankingDateOutOfRangeException() { }
+        public RankingDateOutOfRangeException()
+        {
+        }
 
-        protected RankingDateOutOfRangeException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context) { }
+        protected RankingDateOutOfRangeException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
 
-        public RankingDateOutOfRangeException([CanBeNull] string? message) : base(message) { }
+        public RankingDateOutOfRangeException([CanBeNull] string? message) : base(message)
+        {
+        }
 
-        public RankingDateOutOfRangeException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException) { }
+        public RankingDateOutOfRangeException([CanBeNull] string? message, [CanBeNull] System.Exception? innerException) : base(message, innerException)
+        {
+        }
     }
 }

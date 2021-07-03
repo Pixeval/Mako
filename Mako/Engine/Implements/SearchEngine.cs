@@ -29,9 +29,9 @@ using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Annotations;
 using Mako.Global.Enum;
-using Mako.Util;
 using Mako.Model;
 using Mako.Net;
+using Mako.Util;
 
 namespace Mako.Engine.Implements
 {
@@ -78,7 +78,9 @@ namespace Mako.Engine.Implements
 
         private class SearchAsyncEnumerator : RecursivePixivAsyncEnumerators.Illustration<SearchEngine>
         {
-            public SearchAsyncEnumerator([NotNull] SearchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind) { }
+            public SearchAsyncEnumerator([NotNull] SearchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
+            {
+            }
 
             protected override string InitialUrl()
             {

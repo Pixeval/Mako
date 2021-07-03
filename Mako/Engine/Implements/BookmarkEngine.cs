@@ -27,9 +27,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using Mako.Global.Enum;
-using Mako.Util;
 using Mako.Model;
 using Mako.Net;
+using Mako.Util;
 
 namespace Mako.Engine.Implements
 {
