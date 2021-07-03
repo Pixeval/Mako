@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/ICancellable.cs
+// Copyright (c) Pixeval 2021 Mako/IEngineHandle.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,18 @@
 
 #endregion
 
-using System.Threading;
 using JetBrains.Annotations;
 
-namespace Mako.Engines
+namespace Mako.Engine
 {
+    /// <summary>
+    ///     Represents a class that is capable of tracking its own lifetime, any class that
+    ///     implements <see cref="IEngineHandleSource" /> must exposes an <see cref="EngineHandle" />
+    ///     that can be used to cancel itself or report the completion
+    /// </summary>
     [PublicAPI]
-    public interface ICancellable
+    public interface IEngineHandleSource
     {
-        CancellationTokenSource CancellationTokenSource { get; set; }
+        EngineHandle EngineHandle { get; }
     }
 }

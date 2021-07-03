@@ -34,8 +34,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using JetBrains.Annotations;
-using Mako.Engines;
-using Mako.Engines.Implements;
+using Mako.Engine;
+using Mako.Engine.Implements;
 using Mako.Net;
 using Mako.Net.EndPoints;
 using Mako.Preference;
@@ -187,7 +187,10 @@ namespace Mako
         // Ensures the current instances hasn't been cancelled
         private void EnsureNotCancelled()
         {
-            if (CancellationTokenSource.IsCancellationRequested) throw new OperationCanceledException($"MakoClient({Id}) has been cancelled");
+            if (CancellationTokenSource.IsCancellationRequested)
+            {
+                throw new OperationCanceledException($"MakoClient({Id}) has been cancelled");
+            }
         }
 
         // Resolves a dependency of type 'TResult'
@@ -244,7 +247,10 @@ namespace Mako
         // Cache the results of 'IFetchEngine<out E>' if and only if 'Configuration.AllowCache' is set
         private void TryCache<T>(CacheType type, IEnumerable<T> enumerable, string key)
         {
-            if (Configuration.AllowCache) Cache(type, key, new AdaptedComputedFetchEngine<T>(enumerable));
+            if (Configuration.AllowCache)
+            {
+                Cache(type, key, new AdaptedComputedFetchEngine<T>(enumerable));
+            }
         }
 
         // PrivacyPolicy.Private is only allowed when the uid is pointing to yourself

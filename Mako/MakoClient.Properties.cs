@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Runtime.Caching;
 using System.Threading;
 using Autofac;
-using Mako.Engines;
+using Mako.Engine;
 using Mako.Preference;
 
 namespace Mako

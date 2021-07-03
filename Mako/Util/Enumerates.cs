@@ -88,7 +88,10 @@ namespace Mako.Util
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
-            foreach (var t in enumerable) action(t);
+            foreach (var t in enumerable)
+            {
+                action(t);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

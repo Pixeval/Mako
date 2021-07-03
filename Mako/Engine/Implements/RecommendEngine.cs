@@ -30,7 +30,7 @@ using Mako.Model;
 using Mako.Net;
 using Mako.Util;
 
-namespace Mako.Engines.Implements
+namespace Mako.Engine.Implements
 {
     internal class RecommendEngine : AbstractPixivFetchEngine<Illustration>
     {

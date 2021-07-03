@@ -25,8 +25,8 @@
 #endregion
 
 using System;
-using Mako.Engines;
-using Mako.Engines.Implements;
+using Mako.Engine;
+using Mako.Engine.Implements;
 using Mako.Model;
 using Mako.Util;
 
@@ -44,7 +44,10 @@ namespace Mako
         public IFetchEngine<Illustration> Bookmarks(string uid, PrivacyPolicy privacyPolicy, TargetFilter targetFilter = TargetFilter.ForAndroid)
         {
             EnsureNotCancelled();
-            if (!CheckPrivacyPolicy(uid, privacyPolicy)) throw new IllegalPrivatePolicyException(uid);
+            if (!CheckPrivacyPolicy(uid, privacyPolicy))
+            {
+                throw new IllegalPrivatePolicyException(uid);
+            }
 
             return new BookmarkEngine(this, uid, privacyPolicy, targetFilter, new EngineHandle(CancelInstance)).Apply(RegisterInstance);
         }
@@ -61,7 +64,10 @@ namespace Mako
             DateTime? endDate = null)
         {
             EnsureNotCancelled();
-            if (sortOption == IllustrationSortOption.PopularityDescending && !Session.IsPremium) throw new IllegalSortOptionException();
+            if (sortOption == IllustrationSortOption.PopularityDescending && !Session.IsPremium)
+            {
+                throw new IllegalSortOptionException();
+            }
 
             return new SearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, start, pages, sortOption, searchDuration, startDate, endDate, targetFilter);
         }
@@ -69,7 +75,11 @@ namespace Mako
         public IFetchEngine<Illustration> Ranking(RankOption rankOption, DateTime dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
         {
             EnsureNotCancelled();
-            if (DateTime.Today - dateTime.Date > TimeSpan.FromDays(2)) throw new RankingDateOutOfRangeException();
+            if (DateTime.Today - dateTime.Date > TimeSpan.FromDays(2))
+            {
+                throw new RankingDateOutOfRangeException();
+            }
+
             return new RankingEngine(this, rankOption, dateTime, targetFilter, new EngineHandle(CancelInstance));
         }
 
@@ -110,7 +120,10 @@ namespace Mako
         public IFetchEngine<User> Following(string uid, PrivacyPolicy privacyPolicy)
         {
             EnsureNotCancelled();
-            if (!CheckPrivacyPolicy(uid, privacyPolicy)) throw new IllegalPrivatePolicyException(uid);
+            if (!CheckPrivacyPolicy(uid, privacyPolicy))
+            {
+                throw new IllegalPrivatePolicyException(uid);
+            }
 
             return new FollowingEngine(this, privacyPolicy, uid, new EngineHandle(CancelInstance));
         }

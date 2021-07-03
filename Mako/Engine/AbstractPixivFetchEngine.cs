@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Mako.Engines
+namespace Mako.Engine
 {
     /// <summary>
     ///     A <see cref="IFetchEngine{E}" /> that specialized for Pixiv, it holds an <see cref="MakoClient" />

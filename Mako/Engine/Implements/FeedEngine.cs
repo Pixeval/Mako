@@ -37,7 +37,7 @@ using Mako.Model;
 using Mako.Net;
 using Mako.Util;
 
-namespace Mako.Engines.Implements
+namespace Mako.Engine.Implements
 {
     internal class FeedEngine : AbstractPixivFetchEngine<Feed>
     {
@@ -63,6 +63,7 @@ namespace Mako.Engines.Implements
             public override async ValueTask<bool> MoveNextAsync()
             {
                 if (_feedRequestContext is null)
+                {
                     switch (await GetResponseAsync(BuildRequestUrl()).ConfigureAwait(false))
                     {
                         case Result<string>.Success (var response):
@@ -80,12 +81,20 @@ namespace Mako.Engines.Implements
 
                             break;
                         case Result<string>.Failure(var exception):
-                            if (exception is { } e) throw e;
+                            if (exception is { } e)
+                            {
+                                throw e;
+                            }
+
                             PixivFetchEngine.EngineHandle.Complete();
                             return false;
                     }
+                }
 
-                if (CurrentEntityEnumerator!.MoveNext()) return true;
+                if (CurrentEntityEnumerator!.MoveNext())
+                {
+                    return true;
+                }
 
                 if (_feedRequestContext!.IsLastPage)
                 {
@@ -107,6 +116,7 @@ namespace Mako.Engines.Implements
             private static FeedRequestContext? ExtractRequestContextFromHtml(string html)
             {
                 if (TryExtractPreloadJson(html, out var json))
+                {
                     try
                     {
                         return ExtractRequestContextFromJsonElement(JsonDocument.Parse(json).RootElement);
@@ -115,6 +125,7 @@ namespace Mako.Engines.Implements
                     {
                         return null;
                     }
+                }
 
                 return null;
             }
@@ -167,7 +178,11 @@ namespace Mako.Engines.Implements
                 {
                     var id = timeline.Name;
                     var status = statuses.FirstOrNull(st => st.Name == id);
-                    if (!status.HasValue) return null;
+                    if (!status.HasValue)
+                    {
+                        return null;
+                    }
+
                     FeedType? feedType = status.Value.GetPropertyString("type") switch
                     {
                         "add_bookmark"       => FeedType.AddBookmark,
@@ -183,7 +198,10 @@ namespace Mako.Engines.Implements
                         FeedType.AddNovelBookmark                  => status.Value.GetProperty("ref_novel").GetPropertyString("id"),
                         _                                          => null
                     };
-                    if (feedTargetId is null) return null; // a feed with null target ID is considered useless because we cannot track its target
+                    if (feedTargetId is null)
+                    {
+                        return null; // a feed with null target ID is considered useless because we cannot track its target
+                    }
 
                     var feedTargetThumbnail = feedType switch
                     {
@@ -207,7 +225,11 @@ namespace Mako.Engines.Implements
                     var postDate = DateTime.ParseExact(status.Value.GetPropertyString("post_date")!, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AllowWhiteSpaces);
                     var postUserId = status.Value.GetProperty("post_user").GetPropertyLong("id").ToString();
                     var postUser = users.FirstOrNull(u => u.Name == postUserId);
-                    if (!postUser.HasValue) return null;
+                    if (!postUser.HasValue)
+                    {
+                        return null;
+                    }
+
                     var postUserName = postUser.Value.GetPropertyString("name");
                     var postUserThumbnail = postUser.Value
                         .GetPropertyOrNull("profile_image")

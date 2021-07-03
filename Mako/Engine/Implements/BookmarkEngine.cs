@@ -30,7 +30,7 @@ using Mako.Model;
 using Mako.Net;
 using Mako.Util;
 
-namespace Mako.Engines.Implements
+namespace Mako.Engine.Implements
 {
     /// <summary>
     ///     An <see cref="IFetchEngine{E}" /> that fetches the bookmark of a specific user

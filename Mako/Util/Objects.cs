@@ -106,7 +106,11 @@ namespace Mako.Util
 
         public static async Task<string?> ToJsonAsync<TEntity>(this TEntity? obj, Action<JsonSerializerOptions>? serializerOptionConfigure = null)
         {
-            if (obj is null) return null;
+            if (obj is null)
+            {
+                return null;
+            }
+
             await using var memoryStream = new MemoryStream();
             await JsonSerializer.SerializeAsync(memoryStream, obj, new JsonSerializerOptions().Apply(option => serializerOptionConfigure?.Invoke(option))).ConfigureAwait(false);
             return memoryStream.ToArray().GetString();

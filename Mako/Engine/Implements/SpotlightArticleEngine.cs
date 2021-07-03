@@ -32,7 +32,7 @@ using Mako.Net;
 using Mako.Net.Response;
 using Mako.Util;
 
-namespace Mako.Engines.Implements
+namespace Mako.Engine.Implements
 {
     internal class SpotlightArticleEngine : AbstractPixivFetchEngine<SpotlightArticle>
     {

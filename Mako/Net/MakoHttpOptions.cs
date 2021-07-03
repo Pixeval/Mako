@@ -53,10 +53,12 @@ namespace Mako.Net
         public static void UseHttpScheme(HttpRequestMessage request)
         {
             if (request.RequestUri != null)
+            {
                 request.RequestUri = new UriBuilder(request.RequestUri)
                 {
                     Scheme = "http"
                 }.Uri;
+            }
         }
 
         public static HttpMessageInvoker CreateHttpMessageInvoker(INameResolver nameResolver)

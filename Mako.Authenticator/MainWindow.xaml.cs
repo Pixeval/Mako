@@ -88,7 +88,10 @@ namespace Mako.Authenticator
 
         private async void LoginWebView_OnNavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e)
         {
-            if (e.Uri.StartsWith("pixiv://")) _webViewLoginCompletion.SetResult((e.Uri, AsString(await LoginWebView.CoreWebView2.CookieManager.GetCookiesAsync("https://www.pixiv.net"))));
+            if (e.Uri.StartsWith("pixiv://"))
+            {
+                _webViewLoginCompletion.SetResult((e.Uri, AsString(await LoginWebView.CoreWebView2.CookieManager.GetCookiesAsync("https://www.pixiv.net"))));
+            }
         }
 
         private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)

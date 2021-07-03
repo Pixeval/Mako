@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/PostedIllustrationEngine.cs
+// Copyright (c) Pixeval 2021 Mako/UserSearchEngine.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,21 +29,27 @@ using System.Threading;
 using JetBrains.Annotations;
 using Mako.Model;
 using Mako.Net;
+using Mako.Util;
 
-namespace Mako.Engines.Implements
+namespace Mako.Engine.Implements
 {
-    internal class PostedIllustrationEngine : AbstractPixivFetchEngine<Illustration>
+    public class UserSearchEngine : AbstractPixivFetchEngine<User>
     {
-        private readonly string _uid;
+        private readonly string _keyword;
+        private readonly TargetFilter _targetFilter;
+        private readonly UserSortOption _userSortOption;
 
-        public PostedIllustrationEngine([NotNull] MakoClient makoClient, string uid, EngineHandle? engineHandle) : base(makoClient, engineHandle)
+        public UserSearchEngine([NotNull] MakoClient makoClient, TargetFilter targetFilter, UserSortOption? userSortOption, string keyword, EngineHandle? engineHandle) : base(makoClient, engineHandle)
         {
-            _uid = uid;
+            _keyword = keyword;
+            _targetFilter = targetFilter;
+            _userSortOption = userSortOption ?? UserSortOption.DateDescending;
         }
 
-        public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
+        public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return RecursivePixivAsyncEnumerators.Illustration<PostedIllustrationEngine>.WithInitialUrl(this, MakoApiKind.AppApi, engine => $"/v1/user/illusts?user_id={engine._uid}&filter=for_android&type=illust")!;
+            return RecursivePixivAsyncEnumerators.User<UserSearchEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
+                engine => $"https://app-api.pixiv.net/v1/search/user?filter={engine._targetFilter.GetDescription()}&word={engine._keyword}&sort={engine._userSortOption.GetDescription()}")!;
         }
     }
 }

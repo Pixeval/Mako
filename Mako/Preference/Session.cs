@@ -30,9 +30,6 @@ using Mako.Util;
 
 namespace Mako.Preference
 {
-    /// <summary>
-    ///     Contains all the user configurable
-    /// </summary>
     [PublicAPI]
     public record Session
     {

@@ -63,7 +63,7 @@ namespace Mako.Net
             INameResolver resolver = MakoHttpOptions.BypassRequiredHost.IsMatch(host) && MakoClient.Configuration.Bypass
                 ? MakoClient.Resolve<PixivApiNameResolver>()
                 : MakoClient.Resolve<LocalMachineNameResolver>();
-            return await MakoHttpOptions.CreateHttpMessageInvoker(resolver)
+            return await MakoHttpOptions.CreateHttpMessageInvoker(resolver) // TODO use a unique http message invoker through the application lifetime
                 .SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
     }

@@ -50,7 +50,10 @@ namespace Mako.Util
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Let<T>(this T obj, Action<T> block)
         {
-            if (obj is not null) block(obj);
+            if (obj is not null)
+            {
+                block(obj);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -82,7 +85,10 @@ namespace Mako.Util
                 var task = body();
                 try
                 {
-                    if (await WithTimeoutAsync(task, timeoutMills).ConfigureAwait(false) is Result<TResult>.Success result) return result;
+                    if (await WithTimeoutAsync(task, timeoutMills).ConfigureAwait(false) is Result<TResult>.Success result)
+                    {
+                        return result;
+                    }
                 }
                 catch (Exception e)
                 {

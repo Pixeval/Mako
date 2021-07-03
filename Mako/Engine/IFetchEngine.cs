@@ -27,7 +27,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Mako.Engines
+namespace Mako.Engine
 {
     /// <summary>
     ///     An highly abstracted fetch engine that fetches pages and yields results asynchronously

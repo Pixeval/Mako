@@ -98,17 +98,5 @@ namespace Mako.Preference
         public bool AllowCache { get; set; }
 
         public TimeSpan CacheEntrySlidingExpiration { get; set; }
-
-        public MakoClientConfiguration UseCache()
-        {
-            AllowCache = true;
-            return this;
-        }
-
-        public MakoClientConfiguration UseBypass()
-        {
-            Bypass = true;
-            return this;
-        }
     }
 }

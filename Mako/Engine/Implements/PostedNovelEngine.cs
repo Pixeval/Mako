@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/IEngineHandle.cs
+// Copyright (c) Pixeval 2021 Mako/PostedNovelEngine.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,34 @@
 
 #endregion
 
+using System.Collections.Generic;
+using System.Threading;
 using JetBrains.Annotations;
+using Mako.Model;
+using Mako.Net;
+using Mako.Util;
 
-namespace Mako.Engines
+namespace Mako.Engine.Implements
 {
-    /// <summary>
-    ///     Represents a class that is capable of tracking its own lifetime, any class that
-    ///     implements <see cref="IEngineHandleSource" /> must exposes an <see cref="EngineHandle" />
-    ///     that can be used to cancel itself or report the completion
-    /// </summary>
-    [PublicAPI]
-    public interface IEngineHandleSource
+    public class PostedNovelEngine : AbstractPixivFetchEngine<Novel>
     {
-        EngineHandle EngineHandle { get; }
+        private readonly TargetFilter _targetFilter;
+        private readonly string _uid;
+
+        public PostedNovelEngine(
+            [NotNull] MakoClient makoClient,
+            string uid,
+            TargetFilter targetFilter,
+            EngineHandle? engineHandle) : base(makoClient, engineHandle)
+        {
+            _uid = uid;
+            _targetFilter = targetFilter;
+        }
+
+        public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = new())
+        {
+            return RecursivePixivAsyncEnumerators.Novel<PostedNovelEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
+                engine => $"/v1/user/novels?user_id={engine._uid}&filter={engine._targetFilter.GetDescription()}")!;
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/PostedMangaEngine.cs
+// Copyright (c) Pixeval 2021 Mako/PostedIllustrationEngine.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,25 +29,21 @@ using System.Threading;
 using JetBrains.Annotations;
 using Mako.Model;
 using Mako.Net;
-using Mako.Util;
 
-namespace Mako.Engines.Implements
+namespace Mako.Engine.Implements
 {
-    public class PostedMangaEngine : AbstractPixivFetchEngine<Illustration>
+    internal class PostedIllustrationEngine : AbstractPixivFetchEngine<Illustration>
     {
-        private readonly TargetFilter _targetFilter;
         private readonly string _uid;
 
-        public PostedMangaEngine([NotNull] MakoClient makoClient, string uid, TargetFilter targetFilter, EngineHandle? engineHandle) : base(makoClient, engineHandle)
+        public PostedIllustrationEngine([NotNull] MakoClient makoClient, string uid, EngineHandle? engineHandle) : base(makoClient, engineHandle)
         {
             _uid = uid;
-            _targetFilter = targetFilter;
         }
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return RecursivePixivAsyncEnumerators.Illustration<PostedMangaEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
-                engine => $"/v1/user/illusts?filter={_targetFilter.GetDescription()}&user_id={engine._uid}&type=manga")!;
+            return RecursivePixivAsyncEnumerators.Illustration<PostedIllustrationEngine>.WithInitialUrl(this, MakoApiKind.AppApi, engine => $"/v1/user/illusts?user_id={engine._uid}&filter=for_android&type=illust")!;
         }
     }
 }

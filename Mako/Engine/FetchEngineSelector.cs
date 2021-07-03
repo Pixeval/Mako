@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Mako.Engines
+namespace Mako.Engine
 {
     internal class FetchEngineSelector<T, R> : IFetchEngine<R>
     {

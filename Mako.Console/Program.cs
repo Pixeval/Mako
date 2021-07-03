@@ -71,11 +71,13 @@ namespace Mako.Console
         {
             var cnt = 0;
             foreach (var i in tags)
+            {
                 if (i != null)
                 {
                     cnt++;
                     System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
+            }
 
             System.Console.WriteLine($"Count: {cnt}");
         }
@@ -84,11 +86,13 @@ namespace Mako.Console
         {
             var cnt = 0;
             await foreach (var i in illustrations)
+            {
                 if (i != null)
                 {
                     cnt++;
                     System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
+            }
 
             System.Console.WriteLine($"Count: {cnt}");
         }
@@ -97,11 +101,13 @@ namespace Mako.Console
         {
             var cnt = 0;
             await foreach (var i in novels)
+            {
                 if (i != null)
                 {
                     cnt++;
                     System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
+            }
 
             System.Console.WriteLine($"Count: {cnt}");
         }
@@ -110,11 +116,13 @@ namespace Mako.Console
         {
             var cnt = 0;
             await foreach (var i in users)
+            {
                 if (i != null)
                 {
                     cnt++;
                     System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
+            }
 
             System.Console.WriteLine($"Count: {cnt}");
         }
@@ -123,11 +131,13 @@ namespace Mako.Console
         {
             var cnt = 0;
             await foreach (var i in articles)
+            {
                 if (i != null)
                 {
                     cnt++;
                     System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
+            }
 
             System.Console.WriteLine($"Count: {cnt}");
         }
@@ -136,11 +146,13 @@ namespace Mako.Console
         {
             var cnt = 0;
             await foreach (var i in feeds)
+            {
                 if (i != null)
                 {
                     cnt++;
                     System.Console.WriteLine(i.ToJson(DefaultSerializerOptions));
                 }
+            }
 
             System.Console.WriteLine($"Count: {cnt}");
         }
@@ -226,7 +238,11 @@ namespace Mako.Console
         private static async Task UserTaggedBookmarksId()
         {
             var tags = await MakoClient.GetUserSpecifiedBookmarkTagsAsync("333556");
-            if (!tags.Any()) System.Console.WriteLine("Empty tags!");
+            if (!tags.Any())
+            {
+                System.Console.WriteLine("Empty tags!");
+            }
+
             var (tag, _) = tags.Aggregate(tags.First(), (lhs, rhs) => lhs.Key.Count > rhs.Key.Count ? lhs : rhs);
             var ids = MakoClient.UserTaggedBookmarksId("333556", tag.Tag.Name!).Distinct();
             var cnt = 0;
@@ -242,7 +258,10 @@ namespace Mako.Console
         private static async Task UserTaggedBookmarks()
         {
             var tags = await MakoClient.GetUserSpecifiedBookmarkTagsAsync("333556");
-            if (!tags.Any()) System.Console.WriteLine("Empty tags!");
+            if (!tags.Any())
+            {
+                System.Console.WriteLine("Empty tags!");
+            }
 
             var (tag, _) = tags.ToList()[new Random().Next(0, tags.Count)];
             var ids = MakoClient.UserTaggedBookmarks("333556", tag.Tag.Name!).Distinct();

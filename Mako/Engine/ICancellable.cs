@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/RecommendIllustratorEnumerable.cs
+// Copyright (c) Pixeval 2021 Mako/ICancellable.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,14 @@
 
 #endregion
 
-using System.Collections.Generic;
 using System.Threading;
-using Mako.Model;
-using Mako.Net;
-using Mako.Util;
+using JetBrains.Annotations;
 
-namespace Mako.Engines.Implements
+namespace Mako.Engine
 {
-    internal class RecommendIllustratorEngine : AbstractPixivFetchEngine<User>
+    [PublicAPI]
+    public interface ICancellable
     {
-        private readonly TargetFilter _targetFilter;
-
-        public RecommendIllustratorEngine(MakoClient makoClient, TargetFilter targetFilter, EngineHandle? engineHandle) : base(makoClient, engineHandle)
-        {
-            _targetFilter = targetFilter;
-        }
-
-        public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
-        {
-            return RecursivePixivAsyncEnumerators.User<RecommendIllustratorEngine>.WithInitialUrl(this, MakoApiKind.AppApi, engine => $"/v1/user/recommended?filter={engine._targetFilter.GetDescription()}")!;
-        }
+        CancellationTokenSource CancellationTokenSource { get; set; }
     }
 }

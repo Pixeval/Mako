@@ -33,10 +33,10 @@ using Mako.Net;
 using Mako.Net.Response;
 using Mako.Util;
 
-namespace Mako.Engines
+namespace Mako.Engine
 {
     internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine> : AbstractPixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>
-        where TEntity : class?
+        where TEntity : class
         where TFetchEngine : class, IFetchEngine<TEntity>
     {
         protected RecursivePixivAsyncEnumerator(TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind)
@@ -44,7 +44,7 @@ namespace Mako.Engines
         {
         }
 
-        private TRawEntity? Entity { get; set; }
+        private TRawEntity? RawEntity { get; set; }
 
         protected abstract string? NextUrl(TRawEntity? rawEntity);
 
@@ -54,7 +54,7 @@ namespace Mako.Engines
 
         protected virtual bool HasNextPage()
         {
-            return NextUrl(Entity).IsNotNullOrEmpty();
+            return NextUrl(RawEntity).IsNotNullOrEmpty();
         }
 
         public override async ValueTask<bool> MoveNextAsync()
@@ -65,7 +65,7 @@ namespace Mako.Engines
                 return false;
             }
 
-            if (Entity is null)
+            if (RawEntity is null)
             {
                 var first = InitialUrl();
                 switch (await GetJsonResponseAsync(first).ConfigureAwait(false))
@@ -74,7 +74,11 @@ namespace Mako.Engines
                         Update(raw);
                         break;
                     case Result<TRawEntity>.Failure (var exception):
-                        if (exception is { } e) throw e;
+                        if (exception is { } e)
+                        {
+                            throw e;
+                        }
+
                         PixivFetchEngine.EngineHandle.Complete();
                         return false;
                 }
@@ -82,7 +86,6 @@ namespace Mako.Engines
 
             if (CurrentEntityEnumerator!.MoveNext()) // If the enumerator can proceeds then return true
             {
-                TryCacheCurrent(); // Cache if allowed in session
                 return true;
             }
 
@@ -92,10 +95,9 @@ namespace Mako.Engines
                 return false;
             }
 
-            if (await GetJsonResponseAsync(NextUrl(Entity)!).ConfigureAwait(false) is Result<TRawEntity>.Success (var value)) // Else request a new page
+            if (await GetJsonResponseAsync(NextUrl(RawEntity)!).ConfigureAwait(false) is Result<TRawEntity>.Success (var value)) // Else request a new page
             {
                 Update(value);
-                TryCacheCurrent();
                 return true;
             }
 
@@ -103,14 +105,9 @@ namespace Mako.Engines
             return false;
         }
 
-        private void TryCacheCurrent()
-        {
-            if (PixivFetchEngine.MakoClient.Configuration.AllowCache) PixivFetchEngine.EngineHandle.CacheValue(Current);
-        }
-
         private void Update(TRawEntity rawEntity)
         {
-            Entity = rawEntity;
+            RawEntity = rawEntity;
             CurrentEntityEnumerator = GetNewEnumerator(rawEntity) ?? EmptyEnumerators<TEntity>.Sync;
             PixivFetchEngine!.RequestedPages++;
         }

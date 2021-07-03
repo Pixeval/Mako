@@ -31,7 +31,7 @@ using System.Threading.Tasks;
 using Mako.Net;
 using Mako.Util;
 
-namespace Mako.Engines
+namespace Mako.Engine
 {
     /// <summary>
     ///     An abstract enumerator that encapsulates the required properties for Pixiv, it is intended to be
@@ -104,10 +104,17 @@ namespace Mako.Engines
             try
             {
                 var responseMessage = await MakoClient.GetMakoHttpClient(ApiKind).GetAsync(url).ConfigureAwait(false);
-                if (!responseMessage.IsSuccessStatusCode) return Result<TRawEntity>.OfFailure(await MakoNetworkException.FromHttpResponseMessageAsync(responseMessage, MakoClient.Configuration.Bypass).ConfigureAwait(false));
+                if (!responseMessage.IsSuccessStatusCode)
+                {
+                    return Result<TRawEntity>.OfFailure(await MakoNetworkException.FromHttpResponseMessageAsync(responseMessage, MakoClient.Configuration.Bypass).ConfigureAwait(false));
+                }
 
                 var result = (await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false)).FromJson<TRawEntity>();
-                if (result is null) return Result<TRawEntity>.OfFailure();
+                if (result is null)
+                {
+                    return Result<TRawEntity>.OfFailure();
+                }
+
                 return ValidateResponse(result)
                     ? Result<TRawEntity>.OfSuccess(result)
                     : Result<TRawEntity>.OfFailure();

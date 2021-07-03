@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/UserSearchEngine.cs
+// Copyright (c) Pixeval 2021 Mako/NovelBookmarkEngine.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,25 +31,30 @@ using Mako.Model;
 using Mako.Net;
 using Mako.Util;
 
-namespace Mako.Engines.Implements
+namespace Mako.Engine.Implements
 {
-    public class UserSearchEngine : AbstractPixivFetchEngine<User>
+    public class NovelBookmarkEngine : AbstractPixivFetchEngine<Novel>
     {
-        private readonly string _keyword;
+        private readonly PrivacyPolicy _privacyPolicy;
         private readonly TargetFilter _targetFilter;
-        private readonly UserSortOption _userSortOption;
+        private readonly string _uid;
 
-        public UserSearchEngine([NotNull] MakoClient makoClient, TargetFilter targetFilter, UserSortOption? userSortOption, string keyword, EngineHandle? engineHandle) : base(makoClient, engineHandle)
+        public NovelBookmarkEngine(
+            [NotNull] MakoClient makoClient,
+            string uid,
+            PrivacyPolicy privacyPolicy,
+            TargetFilter targetFilter,
+            EngineHandle? engineHandle) : base(makoClient, engineHandle)
         {
-            _keyword = keyword;
+            _uid = uid;
+            _privacyPolicy = privacyPolicy;
             _targetFilter = targetFilter;
-            _userSortOption = userSortOption ?? UserSortOption.DateDescending;
         }
 
-        public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
+        public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return RecursivePixivAsyncEnumerators.User<UserSearchEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
-                engine => $"https://app-api.pixiv.net/v1/search/user?filter={engine._targetFilter.GetDescription()}&word={engine._keyword}&sort={engine._userSortOption.GetDescription()}")!;
+            return RecursivePixivAsyncEnumerators.Novel<NovelBookmarkEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
+                engine => $"/v1/user/bookmarks/novel?user_id={engine._uid}&restrict={engine._privacyPolicy.GetDescription()}&filter={engine._targetFilter.GetDescription()}")!;
         }
     }
 }

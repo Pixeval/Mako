@@ -25,21 +25,16 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Annotations;
-using Mako.Util;
 
-namespace Mako.Engines
+namespace Mako.Engine
 {
     [PublicAPI]
 #pragma warning disable 660,661 // Object.Equals() and Object.GetHashCode() are not overwritten
     public struct EngineHandle : ICancellable, INotifyCompletion, ICompletionCallback<EngineHandle>
 #pragma warning restore 660,661
-    {
-        // Works if and only if the 'MakoClient' allows cache
-        private readonly IList<object> _cache;
-
+    { 
         private readonly Action<EngineHandle>? _onCompletion;
 
         public bool Equals(EngineHandle other)
@@ -62,15 +57,9 @@ namespace Mako.Engines
         /// </summary>
         public bool IsCompleted { get; set; }
 
-        /// <summary>
-        ///     当前搜索引擎搜索结果的缓存
-        /// </summary>
-        internal ICollection<object> Cache => _cache; // Excluded from equality comparison
-
         public EngineHandle(Guid id, Action<EngineHandle>? onCompletion = null)
         {
             _onCompletion = onCompletion;
-            _cache = new List<object>();
             Id = id;
             CancellationTokenSource = new CancellationTokenSource();
             IsCompleted = false;
@@ -79,7 +68,6 @@ namespace Mako.Engines
         public EngineHandle(Action<EngineHandle> onCompletion)
         {
             _onCompletion = onCompletion;
-            _cache = new List<object>();
             Id = Guid.NewGuid();
             CancellationTokenSource = new CancellationTokenSource();
             IsCompleted = false;
@@ -100,11 +88,6 @@ namespace Mako.Engines
         {
             IsCompleted = true;
             OnCompletion(this);
-        }
-
-        internal void CacheValue(object? value)
-        {
-            value?.Let(_cache.Add);
         }
 
         public static bool operator ==(EngineHandle lhs, EngineHandle rhs)

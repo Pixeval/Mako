@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/RecentPostedIllustrationEngine.cs
+// Copyright (c) Pixeval 2021 Mako/ICompletionCallback.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,13 @@
 
 #endregion
 
-using System.Collections.Generic;
-using System.Threading;
 using JetBrains.Annotations;
-using Mako.Model;
-using Mako.Net;
-using Mako.Util;
 
-namespace Mako.Engines.Implements
+namespace Mako.Engine
 {
-    public class RecentPostedIllustrationEngine : AbstractPixivFetchEngine<Illustration>
+    [PublicAPI]
+    public interface ICompletionCallback<in T>
     {
-        private readonly PrivacyPolicy _privacyPolicy;
-
-        public RecentPostedIllustrationEngine([NotNull] MakoClient makoClient, PrivacyPolicy privacyPolicy, EngineHandle? engineHandle) : base(makoClient, engineHandle)
-        {
-            _privacyPolicy = privacyPolicy;
-        }
-
-        public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
-        {
-            return RecursivePixivAsyncEnumerators.Illustration<RecentPostedIllustrationEngine>.WithInitialUrl(this, MakoApiKind.AppApi, engine => $"/v2/illust/follow?restrict={engine._privacyPolicy.GetDescription()}")!;
-        }
+        void OnCompletion(T param);
     }
 }

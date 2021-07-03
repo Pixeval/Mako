@@ -93,7 +93,11 @@ namespace Mako
                         message => MakoNetworkException.FromHttpResponseMessageAsync(message, Configuration.Bypass))
                     .ConfigureAwait(false))
                 .GetOrThrow().FromJson<PixivSpotlightDetailResponse>();
-            if (result?.ResponseBody is null) return null;
+            if (result?.ResponseBody is null)
+            {
+                return null;
+            }
+
             var illustrations = await (result.ResponseBody.First().Illusts?.SelectNotNull(illust => Task.Run(() => GetIllustrationFromIdAsync(illust.IllustId.ToString()))).WhenAll()
                                        ?? Task.FromResult(Array.Empty<Illustration>())).ConfigureAwait(false);
             var entry = result.ResponseBody.First().Entry;
@@ -149,8 +153,15 @@ namespace Mako
                 .GetOrThrow()
                 .FromJson<UserSpecifiedBookmarkTagResponse>();
             var dic = new Dictionary<CountedTag, PrivacyPolicy>();
-            if (tags?.ResponseBody?.Public is { } publicTags) publicTags.ForEach(tag => dic[new CountedTag(new Tag {Name = tag.Name}, tag.Count)] = PrivacyPolicy.Public);
-            if (tags?.ResponseBody?.Private is { } privateTags) privateTags.ForEach(tag => dic[new CountedTag(new Tag {Name = tag.Name}, tag.Count)] = PrivacyPolicy.Private);
+            if (tags?.ResponseBody?.Public is { } publicTags)
+            {
+                publicTags.ForEach(tag => dic[new CountedTag(new Tag {Name = tag.Name}, tag.Count)] = PrivacyPolicy.Public);
+            }
+
+            if (tags?.ResponseBody?.Private is { } privateTags)
+            {
+                privateTags.ForEach(tag => dic[new CountedTag(new Tag {Name = tag.Name}, tag.Count)] = PrivacyPolicy.Private);
+            }
 
             return dic;
         }

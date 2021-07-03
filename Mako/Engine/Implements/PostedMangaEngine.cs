@@ -2,7 +2,7 @@
 
 // MIT License
 // 
-// Copyright (c) Pixeval 2021 Mako/RankingEngine.cs
+// Copyright (c) Pixeval 2021 Mako/PostedMangaEngine.cs
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,37 +24,30 @@
 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
+using JetBrains.Annotations;
 using Mako.Model;
 using Mako.Net;
 using Mako.Util;
 
-namespace Mako.Engines.Implements
+namespace Mako.Engine.Implements
 {
-    internal class RankingEngine : AbstractPixivFetchEngine<Illustration>
+    public class PostedMangaEngine : AbstractPixivFetchEngine<Illustration>
     {
-        private readonly DateTime _dateTime;
-        private readonly RankOption _rankOption;
         private readonly TargetFilter _targetFilter;
+        private readonly string _uid;
 
-        public RankingEngine(
-            MakoClient makoClient,
-            RankOption rankOption,
-            DateTime dateTime,
-            TargetFilter targetFilter,
-            EngineHandle? engineHandle) : base(makoClient, engineHandle)
+        public PostedMangaEngine([NotNull] MakoClient makoClient, string uid, TargetFilter targetFilter, EngineHandle? engineHandle) : base(makoClient, engineHandle)
         {
-            _rankOption = rankOption;
-            _dateTime = dateTime;
+            _uid = uid;
             _targetFilter = targetFilter;
         }
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return RecursivePixivAsyncEnumerators.Illustration<RankingEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
-                engine => $"/v1/illust/ranking?filter={engine._targetFilter.GetDescription()}&mode={engine._rankOption.GetDescription()}&date={engine._dateTime:yyyy-MM-dd}")!;
+            return RecursivePixivAsyncEnumerators.Illustration<PostedMangaEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
+                engine => $"/v1/user/illusts?filter={_targetFilter.GetDescription()}&user_id={engine._uid}&type=manga")!;
         }
     }
 }

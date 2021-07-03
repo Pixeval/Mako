@@ -30,7 +30,7 @@ using System.Threading;
 using JetBrains.Annotations;
 using Mako.Util;
 
-namespace Mako.Engines.Implements
+namespace Mako.Engine.Implements
 {
     /// <summary>
     ///     This class aims to hold an already computed <see cref="IFetchEngine{E}" />, it delegates
