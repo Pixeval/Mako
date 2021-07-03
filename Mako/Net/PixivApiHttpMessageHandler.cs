@@ -40,7 +40,7 @@ namespace Mako.Net
 
         public sealed override MakoClient MakoClient { get; set; }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             MakoHttpOptions.UseHttpScheme(request);
             var headers = request.Headers;
@@ -60,11 +60,11 @@ namespace Mako.Net
                     break;
             }
 
-            INameResolver resolver = MakoHttpOptions.BypassRequiredHost.IsMatch(host) && MakoClient.Configuration.Bypass
-                ? MakoClient.Resolve<PixivApiNameResolver>()
-                : MakoClient.Resolve<LocalMachineNameResolver>();
-            return await MakoHttpOptions.CreateHttpMessageInvoker(resolver) // TODO use a unique http message invoker through the application lifetime
-                .SendAsync(request, cancellationToken).ConfigureAwait(false);
+            return MakoClient.GetHttpMessageInvoker(
+                MakoHttpOptions.BypassRequiredHost.IsMatch(host) && MakoClient.Configuration.Bypass
+                    ? typeof(PixivApiNameResolver)
+                    : typeof(LocalMachineNameResolver)
+            ).SendAsync(request, cancellationToken);
         }
     }
 }

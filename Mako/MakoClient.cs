@@ -142,6 +142,19 @@ namespace Mako
                 .As<HttpClient>()
                 .SingleInstance();
 
+            builder.Register(static c => MakoHttpOptions.CreateHttpMessageInvoker(c.Resolve<PixivApiNameResolver>()))
+                .Keyed<HttpMessageInvoker>(typeof(PixivApiNameResolver))
+                .As<HttpMessageInvoker>()
+                .SingleInstance();
+            builder.Register(static c => MakoHttpOptions.CreateHttpMessageInvoker(c.Resolve<PixivImageNameResolver>()))
+                .Keyed<HttpMessageInvoker>(typeof(PixivImageNameResolver))
+                .As<HttpMessageInvoker>()
+                .SingleInstance();
+            builder.Register(static c => MakoHttpOptions.CreateHttpMessageInvoker(c.Resolve<LocalMachineNameResolver>()))
+                .Keyed<HttpMessageInvoker>(typeof(LocalMachineNameResolver))
+                .As<HttpMessageInvoker>()
+                .SingleInstance();
+
             builder.Register(static c =>
             {
                 var context = c.Resolve<IComponentContext>(); // or a System.ObjectDisposedException will thrown because the 'c' cannot be hold
@@ -198,6 +211,11 @@ namespace Mako
         internal TResult Resolve<TResult>(Type type) where TResult : notnull
         {
             return (TResult) MakoServices.Resolve(type);
+        }
+
+        internal HttpMessageInvoker GetHttpMessageInvoker(Type key)
+        {
+            return ResolveKeyed<HttpMessageInvoker>(key);
         }
 
         // registers an instance to the running instances list
