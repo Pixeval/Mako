@@ -1,5 +1,4 @@
 ﻿using System.Net.Http;
-using JetBrains.Annotations;
 
 namespace Mako.Net
 {

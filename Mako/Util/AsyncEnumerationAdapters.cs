@@ -6,15 +6,11 @@ using JetBrains.Annotations;
 
 namespace Mako.Util
 {
-    /// <summary>
-    /// 把一个同步的<see cref="IEnumerator{T}"/>适配到异步的<see cref="IAsyncEnumerator{T}"/>
-    /// </summary>
-    /// <typeparam name="T">参数类型</typeparam>
     [PublicAPI]
     public class AdaptedAsyncEnumerator<T> : IAsyncEnumerator<T>
     {
-        private readonly IEnumerator<T> _outerEnumerator;
         private readonly CancellationToken _cancellationToken;
+        private readonly IEnumerator<T> _outerEnumerator;
 
         public AdaptedAsyncEnumerator(IEnumerator<T> outerEnumerator, CancellationToken cancellationToken = new())
         {

@@ -14,21 +14,11 @@ namespace Mako
         // elements is not guaranteed, call Distinct() if you
         // are care about the uniqueness of the results
         // --------------------------------------------------
-        private void EnsureNotCancelled()
-        {
-            if (CancellationTokenSource.IsCancellationRequested)
-            {
-                throw new OperationCanceledException("This client has been cancelled");
-            }
-        }
-        
+
         public IFetchEngine<Illustration> Bookmarks(string uid, PrivacyPolicy privacyPolicy, TargetFilter targetFilter = TargetFilter.ForAndroid)
         {
             EnsureNotCancelled();
-            if (!CheckPrivacyPolicy(uid, privacyPolicy))
-            {
-                throw new IllegalPrivatePolicyException(uid);
-            }
+            if (!CheckPrivacyPolicy(uid, privacyPolicy)) throw new IllegalPrivatePolicyException(uid);
 
             return new BookmarkEngine(this, uid, privacyPolicy, targetFilter, new EngineHandle(CancelInstance)).Apply(RegisterInstance);
         }
@@ -45,10 +35,7 @@ namespace Mako
             DateTime? endDate = null)
         {
             EnsureNotCancelled();
-            if (sortOption == IllustrationSortOption.PopularityDescending && !Session.IsPremium)
-            {
-                throw new IllegalSortOptionException();
-            }
+            if (sortOption == IllustrationSortOption.PopularityDescending && !Session.IsPremium) throw new IllegalSortOptionException();
 
             return new SearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, start, pages, sortOption, searchDuration, startDate, endDate, targetFilter);
         }
@@ -56,10 +43,7 @@ namespace Mako
         public IFetchEngine<Illustration> Ranking(RankOption rankOption, DateTime dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
         {
             EnsureNotCancelled();
-            if (DateTime.Today - dateTime.Date > TimeSpan.FromDays(2))
-            {
-                throw new RankingDateOutOfRangeException();
-            }
+            if (DateTime.Today - dateTime.Date > TimeSpan.FromDays(2)) throw new RankingDateOutOfRangeException();
             return new RankingEngine(this, rankOption, dateTime, targetFilter, new EngineHandle(CancelInstance));
         }
 
@@ -88,24 +72,21 @@ namespace Mako
         public IFetchEngine<Feed> Feeds()
         {
             EnsureNotCancelled();
-            return new UserFeedEngine(this, new EngineHandle(CancelInstance));
+            return new FeedEngine(this, new EngineHandle(CancelInstance));
         }
 
-        public IFetchEngine<Illustration> Uploads(string uid)
+        public IFetchEngine<Illustration> Posts(string uid)
         {
             EnsureNotCancelled();
-            return new UserUploadEngine(this, uid, new EngineHandle(CancelInstance));
+            return new PostedIllustrationEngine(this, uid, new EngineHandle(CancelInstance));
         }
 
         public IFetchEngine<User> Following(string uid, PrivacyPolicy privacyPolicy)
         {
             EnsureNotCancelled();
-            if (!CheckPrivacyPolicy(uid, privacyPolicy))
-            {
-                throw new IllegalPrivatePolicyException(uid);
-            }
+            if (!CheckPrivacyPolicy(uid, privacyPolicy)) throw new IllegalPrivatePolicyException(uid);
 
-            return new UserFollowingEngine(this, privacyPolicy, uid, new EngineHandle(CancelInstance));
+            return new FollowingEngine(this, privacyPolicy, uid, new EngineHandle(CancelInstance));
         }
 
         public IFetchEngine<User> SearchUser(
@@ -117,31 +98,50 @@ namespace Mako
             return new UserSearchEngine(this, targetFilter, userSortOption, keyword, new EngineHandle(CancelInstance));
         }
 
-        public IFetchEngine<Illustration> Updates(PrivacyPolicy privacyPolicy)
+        public IFetchEngine<Illustration> RecentPosts(PrivacyPolicy privacyPolicy)
         {
             EnsureNotCancelled();
-            return new UserUpdateEngine(this, privacyPolicy, new EngineHandle(CancelInstance));
+            return new RecentPostedIllustrationEngine(this, privacyPolicy, new EngineHandle(CancelInstance));
         }
 
         /// <summary>
-        /// This function is intended to be cooperated with <see cref="GetUserSpecifiedBookmarkTags"/>, because
-        /// it requires an untranslated tag, for example, "未分類" is the untranslated name for "uncategorized",
-        /// and the API only recognizes the former one, while the latter one is usually works as the display
-        /// name
+        ///     This function is intended to be cooperated with <see cref="GetUserSpecifiedBookmarkTagsAsync" />, because
+        ///     it requires an untranslated tag, for example, "未分類" is the untranslated name for "uncategorized",
+        ///     and the API only recognizes the former one, while the latter one is usually works as the display
+        ///     name
         /// </summary>
         /// <param name="uid"></param>
-        /// <param name="tagWithOriginalName"></param>
+        /// <param name="tagWithOriginalName">The untranslated name of the tag</param>
         /// <returns></returns>
         public IFetchEngine<string> UserTaggedBookmarksId(string uid, string tagWithOriginalName)
         {
             EnsureNotCancelled();
             return new TaggedBookmarksIdEngine(this, new EngineHandle(CancelInstance), uid, tagWithOriginalName);
         }
-        
+
         public IFetchEngine<Illustration> UserTaggedBookmarks(string uid, string tagWithOriginalName)
         {
             EnsureNotCancelled();
             return new FetchEngineSelector<string, Illustration>(new TaggedBookmarksIdEngine(this, new EngineHandle(CancelInstance), uid, tagWithOriginalName), GetIllustrationFromIdAsync);
+        }
+
+        public IFetchEngine<Illustration> MangaPosts(string uid, TargetFilter targetFilter)
+        {
+            EnsureNotCancelled();
+            return new PostedMangaEngine(this, uid, targetFilter, new EngineHandle(CancelInstance));
+        }
+
+        public IFetchEngine<Novel> NovelPosts(string uid, TargetFilter targetFilter)
+        {
+            EnsureNotCancelled();
+            return new PostedNovelEngine(this, uid, targetFilter, new EngineHandle(CancelInstance));
+        }
+
+        public IFetchEngine<Novel> NovelBookmarks(string uid, PrivacyPolicy privacyPolicy, TargetFilter targetFilter)
+        {
+            EnsureNotCancelled();
+            CheckPrivacyPolicy(uid, privacyPolicy);
+            return new NovelBookmarkEngine(this, uid, privacyPolicy, targetFilter, new EngineHandle(CancelInstance));
         }
     }
 }

@@ -1,88 +1,122 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
-using JetBrains.Annotations;
-using Mako.Engines;
-using Mako.Util;
 
 namespace Mako.Model
 {
-    [PublicAPI]
+    // ReSharper disable UnusedAutoPropertyAccessor.Global
     public record Illustration
     {
-        private Illustration()
-        {
-            
-        }
-        
-        public string? Id { get; set; }
+        [JsonPropertyName("id")]
+        public long Id { get; set; }
 
-        public bool IsUgoira { get; set; }
-
-        public string? OriginalUrl { get; set; }
-
-        public string? LargeUrl { get; set; }
-
-        public string? ThumbnailUrl { get; set; }
-
-        public int Bookmarks { get; set; }
-
-        public bool IsBookmarked { get; set; }
-
-        public bool IsManga { get; set; }
-
+        [JsonPropertyName("title")]
         public string? Title { get; set; }
 
-        public string? ArtistName { get; set; }
+        [JsonPropertyName("type")]
+        public string? Type { get; set; }
 
-        public string? ArtistId { get; set; }
+        [JsonPropertyName("image_urls")]
+        public IllustrationImageUrls? ImageUrls { get; set; }
 
-#if DEBUG // this object may will serialized into json under DEBUG mode, use [JsonIgnore] to prevents the object cycle on this property
-        [JsonIgnore]
-#endif
-        public Illustration[]? MangaMetadata { get; set; }
+        [JsonPropertyName("caption")]
+        public string? Caption { get; set; }
 
-        public DateTimeOffset PublishDate { get; set; }
+        [JsonPropertyName("restrict")]
+        public long Restrict { get; set; }
 
-        public int TotalViews { get; set; }
+        [JsonPropertyName("user")]
+        public UserInfo? User { get; set; }
 
-        public Resolution? Resolution { get; set; }
-        
+        [JsonPropertyName("tags")]
         public IEnumerable<Tag>? Tags { get; set; }
 
-        public bool IsR18 => Tags?.Any(x => Regex.IsMatch(x.Name ?? string.Empty, "[Rr][-]?18[Gg]?") || Regex.IsMatch(x.TranslatedName ?? string.Empty, "[Rr][-]?18[Gg]?")) ?? false;
+        [JsonPropertyName("tools")]
+        public IEnumerable<string>? Tools { get; set; }
 
-        public void SetBookmark()
+        [JsonPropertyName("create_date")]
+        public DateTimeOffset CreateDate { get; set; }
+
+        [JsonPropertyName("page_count")]
+        public long PageCount { get; set; }
+
+        [JsonPropertyName("width")]
+        public int Width { get; set; }
+
+        [JsonPropertyName("height")]
+        public int Height { get; set; }
+
+        [JsonPropertyName("sanity_level")]
+        public long SanityLevel { get; set; }
+
+        [JsonPropertyName("x_restrict")]
+        public long XRestrict { get; set; }
+
+        [JsonPropertyName("meta_single_page")]
+        public IllustrationMetaSinglePage? MetaSinglePage { get; set; }
+
+        [JsonPropertyName("meta_pages")]
+        public IEnumerable<MetaPage>? MetaPages { get; set; }
+
+        [JsonPropertyName("total_view")]
+        public int TotalView { get; set; }
+
+        [JsonPropertyName("total_bookmarks")]
+        public int TotalBookmarks { get; set; }
+
+        [JsonPropertyName("is_bookmarked")]
+        public bool IsBookmarked { get; set; }
+
+        [JsonPropertyName("visible")]
+        public bool Visible { get; set; }
+
+        [JsonPropertyName("is_muted")]
+        public bool IsMuted { get; set; }
+
+
+        public class IllustrationMetaSinglePage
         {
-            IsBookmarked = true;
+            [JsonPropertyName("original_image_url")]
+            public string? OriginalImageUrl { get; set; }
         }
 
-        public void UnsetBookmark()
+        public class IllustrationImageUrls
         {
-            IsBookmarked = false;
+            [JsonPropertyName("square_medium")]
+            public string? SquareMedium { get; set; }
+
+            [JsonPropertyName("medium")]
+            public string? Medium { get; set; }
+
+            [JsonPropertyName("large")]
+            public string? Large { get; set; }
+
+            [JsonPropertyName("original")]
+            public string? Original { get; set; }
         }
 
-        /// <summary>
-        /// Instantiate and tries to cache an <see cref="Illustration"/> to <see cref="MakoClient"/>'s cache,
-        /// if the cache entry already exists, this method will returns the cached instance
-        /// </summary>
-        /// <remarks>
-        /// !!! This is the ONLY way to directly instantiate an <see cref="Illustration"/> !!!
-        /// You cannot instantiate <see cref="Illustration"/> at anywhere else because we need
-        /// something like an unique registration to simplify the caching system
-        /// </remarks>
-        /// <param name="id">The ID here is used as the cache key</param>
-        /// <param name="makoClient">The <see cref="MakoClient"/> that owns the cache</param>
-        /// <param name="instantiationConfiguration">Used to configure the newly instantiated <see cref="Illustration"/></param>
-        internal static Illustration GetOrInstantiateAndConfigureIllustrationFromCache(string id, MakoClient makoClient, Action<Illustration> instantiationConfiguration)
+        public class UserInfo
         {
-            return makoClient.GetCached<Illustration>(CacheType.Illustration, id) ?? new Illustration().Apply(i =>
-            {
-                instantiationConfiguration(i);
-                makoClient.Cache(CacheType.Illustration, id, i);
-            });
+            [JsonPropertyName("id")]
+            public long Id { get; set; }
+
+            [JsonPropertyName("name")]
+            public string? Name { get; set; }
+
+            [JsonPropertyName("account")]
+            public string? Account { get; set; }
+
+            [JsonPropertyName("profile_image_urls")]
+            public ProfileImageUrls? ProfileImageUrls { get; set; }
+
+            [JsonPropertyName("is_followed")]
+            public bool IsFollowed { get; set; }
+        }
+
+        public class MetaPage
+        {
+            [JsonPropertyName("image_urls")]
+            public IllustrationImageUrls? ImageUrls { get; set; }
         }
     }
 }

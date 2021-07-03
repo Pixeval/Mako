@@ -3,11 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Mako.Authenticator"
         xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d" Loaded="MainWindow_OnLoaded"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <wpf:WebView2 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="LoginWebView" NavigationStarting="LoginWebView_OnNavigationStarting"/>
+        <wpf:WebView2 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="LoginWebView"
+                      NavigationStarting="LoginWebView_OnNavigationStarting" />
     </Grid>
 </Window>

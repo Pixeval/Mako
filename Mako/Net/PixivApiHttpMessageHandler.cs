@@ -11,7 +11,7 @@ namespace Mako.Net
         {
             MakoClient = makoClient;
         }
-        
+
         public sealed override MakoClient MakoClient { get; set; }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ namespace Mako.Net
                 ? MakoClient.Resolve<PixivApiNameResolver>()
                 : MakoClient.Resolve<LocalMachineNameResolver>();
             return await MakoHttpOptions.CreateHttpMessageInvoker(resolver)
-                .SendAsync(request, cancellationToken);
+                .SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
     }
 }

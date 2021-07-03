@@ -8,10 +8,10 @@ namespace Mako
     {
         [Description("popular_desc")]
         PopularityDescending,
-        
+
         [Description("date_asc")]
         PublishDateAscending,
-        
+
         [Description("date_desc")]
         PublishDateDescending
     }
@@ -21,7 +21,7 @@ namespace Mako
     {
         [Description("date_asc")]
         DateAscending,
-        
+
         [Description("date_desc")]
         DateDescending
     }

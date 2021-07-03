@@ -8,7 +8,7 @@ namespace Mako.Net.Response
     {
         [JsonPropertyName("body")]
         public Body? ResponseBody { get; set; }
-        
+
         public class Body
         {
             [JsonPropertyName("works")]

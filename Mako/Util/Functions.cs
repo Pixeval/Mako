@@ -10,21 +10,21 @@ namespace Mako.Util
     public static class Functions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Func<T, T> Identity<T>() => static t => t;
+        public static Func<T, T> Identity<T>()
+        {
+            return static t => t;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ROut? Let<TIn, ROut>(this TIn obj, Func<TIn, ROut> block)
         {
             return obj is not null ? block(obj) : default;
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Let<T>(this T obj, Action<T> block)
         {
-            if (obj is not null)
-            {
-                block(obj);
-            }
+            if (obj is not null) block(obj);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -33,12 +33,12 @@ namespace Mako.Util
             block(obj);
             return obj;
         }
-        
 
-        public static async Task<Result<TResult>> WithTimeout<TResult>(Task<TResult> task, int timeoutMills)
+
+        public static async Task<Result<TResult>> WithTimeoutAsync<TResult>(Task<TResult> task, int timeoutMills)
         {
             using var cancellationToken = new CancellationTokenSource();
-            if (await Task.WhenAny(task, Task.Delay(timeoutMills, cancellationToken.Token)) == task)
+            if (await Task.WhenAny(task, Task.Delay(timeoutMills, cancellationToken.Token)).ConfigureAwait(false) == task)
             {
                 cancellationToken.Cancel();
                 return Result<TResult>.OfSuccess(task.Result);
@@ -46,7 +46,7 @@ namespace Mako.Util
 
             return Result<TResult>.OfFailure();
         }
-        
+
         public static async Task<Result<TResult>> RetryAsync<TResult>(Func<Task<TResult>> body, int attempts = 3, int timeoutMills = 0)
         {
             var counter = 0;
@@ -56,16 +56,14 @@ namespace Mako.Util
                 var task = body();
                 try
                 {
-                    if (await WithTimeout(task, timeoutMills) is Result<TResult>.Success result)
-                    {
-                        return result;
-                    }
+                    if (await WithTimeoutAsync(task, timeoutMills).ConfigureAwait(false) is Result<TResult>.Success result) return result;
                 }
                 catch (Exception e)
                 {
                     cause = e;
                 }
             }
+
             return Result<TResult>.OfFailure(cause);
         }
     }

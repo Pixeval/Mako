@@ -8,12 +8,12 @@ namespace Mako.Util
     [PublicAPI]
     public class Description : Attribute
     {
-        public string Name { get; }
-
         public Description(string name)
         {
             Name = name;
         }
+
+        public string Name { get; }
     }
 
     [PublicAPI]

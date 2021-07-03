@@ -26,15 +26,10 @@ namespace Mako
         {
         }
     }
-    
+
     [PublicAPI]
     public class MakoNetworkException : MakoException
     {
-        public string Url { get; set; }
-        
-        public bool Bypass { get; set; }
-        public int StatusCode { get; }
-
         public MakoNetworkException(string url, bool bypass, string? extraMsg, int statusCode)
             : base($"Network error while requesting URL: {url}:\n {extraMsg}\n Bypassing: {bypass}\n Status code: {statusCode}")
         {
@@ -43,13 +38,18 @@ namespace Mako
             StatusCode = statusCode;
         }
 
+        public string Url { get; set; }
+
+        public bool Bypass { get; set; }
+        public int StatusCode { get; }
+
         // We use Task<Exception> instead of Task<MakoNetworkException> to compromise with the generic variance
-        public static async Task<Exception> FromHttpResponseMessage(HttpResponseMessage message, bool bypass)
+        public static async Task<Exception> FromHttpResponseMessageAsync(HttpResponseMessage message, bool bypass)
         {
-            return new MakoNetworkException(message.RequestMessage?.RequestUri?.ToString() ?? string.Empty, bypass, await message.Content.ReadAsStringAsync(), (int) message.StatusCode);
+            return new MakoNetworkException(message.RequestMessage?.RequestUri?.ToString() ?? string.Empty, bypass, await message.Content.ReadAsStringAsync().ConfigureAwait(false), (int) message.StatusCode);
         }
     }
-    
+
     [PublicAPI]
     public class MangaPagesNotFoundException : MakoException
     {
@@ -77,7 +77,7 @@ namespace Mako
     }
 
     /// <summary>
-    /// 搜索榜单时设定的日期大于等于当前日期-2天
+    ///     搜索榜单时设定的日期大于等于当前日期-2天
     /// </summary>
     [PublicAPI]
     public class RankingDateOutOfRangeException : MakoException
@@ -100,13 +100,12 @@ namespace Mako
     }
 
     /// <summary>
-    /// When a <see cref="PrivacyPolicy"/> is set to <see cref="PrivacyPolicy.Private"/> while the uid is not equivalent to the <see cref="MakoClient.Session"/>
+    ///     When a <see cref="PrivacyPolicy" /> is set to <see cref="PrivacyPolicy.Private" /> while the uid is not equivalent
+    ///     to the <see cref="MakoClient.Session" />
     /// </summary>
     [PublicAPI]
     public class IllegalPrivatePolicyException : MakoException
     {
-        public string Uid { get; }
-
         public IllegalPrivatePolicyException(string uid)
         {
             Uid = uid;
@@ -126,10 +125,12 @@ namespace Mako
         {
             Uid = uid;
         }
+
+        public string Uid { get; }
     }
 
     /// <summary>
-    /// Raised if you're trying to set the sort option to popular_desc without a premium access
+    ///     Raised if you're trying to set the sort option to popular_desc without a premium access
     /// </summary>
     [PublicAPI]
     public class IllegalSortOptionException : MakoException

@@ -13,13 +13,9 @@ namespace Mako.Net
     internal static class MakoHttpOptions
     {
         public const string AppApiBaseUrl = "https://app-api.pixiv.net";
-        
-        public const string SauceNaoBaseUrl = "https://saucenao.com";
-        
-        public const string OAuthBaseUrl = "https://oauth.secure.pixiv.net";
-        
+
         public const string WebApiBaseUrl = "https://www.pixiv.net";
-        
+
         public const string ImageHost = "i.pximg.net";
 
         public const string WebApiHost = "www.pixiv.net"; // experiments revealed that the secondary domain 'www' is required 
@@ -28,17 +24,13 @@ namespace Mako.Net
 
         public static readonly Regex BypassRequiredHost = "^app-api\\.pixiv\\.net$|^www\\.pixiv\\.net$".ToRegex();
 
-        public static string AppApiUrl(string query) => $"{AppApiBaseUrl}/{query}";
-
         public static void UseHttpScheme(HttpRequestMessage request)
         {
             if (request.RequestUri != null)
-            {
                 request.RequestUri = new UriBuilder(request.RequestUri)
                 {
                     Scheme = "http"
                 }.Uri;
-            }
         }
 
         public static HttpMessageInvoker CreateHttpMessageInvoker(INameResolver nameResolver)
@@ -48,16 +40,16 @@ namespace Mako.Net
                 ConnectCallback = BypassedConnectCallback(nameResolver)
             });
         }
-        
+
         private static Func<SocketsHttpConnectionContext, CancellationToken, ValueTask<Stream>> BypassedConnectCallback(INameResolver nameResolver)
         {
             return async (context, token) =>
             {
                 var sockets = new Socket(SocketType.Stream, ProtocolType.Tcp); // disposed by networkStream
-                await sockets.ConnectAsync(await nameResolver.Lookup(context.InitialRequestMessage.RequestUri!.Host), 443, token);
+                await sockets.ConnectAsync(await nameResolver.Lookup(context.InitialRequestMessage.RequestUri!.Host), 443, token).ConfigureAwait(false);
                 var networkStream = new NetworkStream(sockets, true); // disposed by sslStream
                 var sslStream = new SslStream(networkStream, false, (_, _, _, _) => true);
-                await sslStream.AuthenticateAsClientAsync(string.Empty);
+                await sslStream.AuthenticateAsClientAsync(string.Empty).ConfigureAwait(false);
                 return sslStream;
             };
         }

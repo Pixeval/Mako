@@ -9,13 +9,13 @@ namespace Mako.Engines.Implements
 {
     internal class RankingEngine : AbstractPixivFetchEngine<Illustration>
     {
-        private readonly RankOption _rankOption;
         private readonly DateTime _dateTime;
+        private readonly RankOption _rankOption;
         private readonly TargetFilter _targetFilter;
 
         public RankingEngine(
             MakoClient makoClient,
-            RankOption rankOption, 
+            RankOption rankOption,
             DateTime dateTime,
             TargetFilter targetFilter,
             EngineHandle? engineHandle) : base(makoClient, engineHandle)
@@ -27,7 +27,7 @@ namespace Mako.Engines.Implements
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
-            return RecursivePixivAsyncEnumerators.Illustration<RankingEngine>.WithInitialUrl(this, MakoApiKind.AppApi, 
+            return RecursivePixivAsyncEnumerators.Illustration<RankingEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
                 engine => $"/v1/illust/ranking?filter={engine._targetFilter.GetDescription()}&mode={engine._rankOption.GetDescription()}&date={engine._dateTime:yyyy-MM-dd}")!;
         }
     }

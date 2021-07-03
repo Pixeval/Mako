@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 namespace Mako.Preference
 {
     /// <summary>
-    /// Contains all the user-configurable keys
+    ///     Contains all the user-configurable keys
     /// </summary>
     [PublicAPI]
     public class MakoClientConfiguration
@@ -38,39 +38,39 @@ namespace Mako.Preference
         }
 
         public CultureInfo CultureInfo { get; set; }
-        
+
         public int ConnectionTimeout { get; set; }
-        
+
         /// <summary>
-        /// Automatically bypass GFW or not, default is set to true.
-        /// If you are currently living in China Mainland, turn it on to make sure
-        /// you can use Mako without using any kind of proxy, otherwise you will
-        /// need a proper proxy server to bypass the GFW
+        ///     Automatically bypass GFW or not, default is set to true.
+        ///     If you are currently living in China Mainland, turn it on to make sure
+        ///     you can use Mako without using any kind of proxy, otherwise you will
+        ///     need a proper proxy server to bypass the GFW
         /// </summary>
         public bool Bypass { get; set; }
 
         /// <summary>
-        /// Mirror server's host of image downloading
+        ///     Mirror server's host of image downloading
         /// </summary>
         public string? MirrorHost { get; set; }
 
         /// <summary>
-        /// Indicates which tags should be strictly exclude when performing a query operation
+        ///     Indicates which tags should be strictly exclude when performing a query operation
         /// </summary>
         public ISet<string>? ExcludeTags { get; }
 
         /// <summary>
-        /// Indicates which tags should be strictly include when performing a query operation
+        ///     Indicates which tags should be strictly include when performing a query operation
         /// </summary>
         public ISet<string>? IncludeTags { get; }
 
         /// <summary>
-        /// Any illust with less bookmarks will be filtered out
+        ///     Any illust with less bookmarks will be filtered out
         /// </summary>
         public int MinBookmark { get; set; }
-        
+
         public bool AllowCache { get; set; }
-        
+
         public TimeSpan CacheEntrySlidingExpiration { get; set; }
 
         public MakoClientConfiguration UseCache()

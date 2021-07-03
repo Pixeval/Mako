@@ -3,11 +3,14 @@
 namespace Mako.Net
 {
     /// <summary>
-    /// Mako所使用到的不同API类型
+    ///     The several kinds of APIs that Mako will use
     /// </summary>
     [PublicAPI]
     public enum MakoApiKind
     {
-        AppApi, WebApi, AuthApi, ImageApi
+        AppApi,
+        WebApi,
+        AuthApi,
+        ImageApi
     }
 }

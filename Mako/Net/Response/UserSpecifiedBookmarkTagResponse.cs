@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace Mako.Net.Response
 {
-    
     // ReSharper disable UnusedAutoPropertyAccessor.Global
     internal class UserSpecifiedBookmarkTagResponse
     {
@@ -15,7 +14,7 @@ namespace Mako.Net.Response
 
         [JsonPropertyName("body")]
         public Body? ResponseBody { get; set; }
-        
+
         public class Body
         {
             [JsonPropertyName("public")]

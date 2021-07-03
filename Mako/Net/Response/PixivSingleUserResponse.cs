@@ -1,11 +1,13 @@
 ﻿using System.Text.Json.Serialization;
+using Mako.Model;
 
 namespace Mako.Net.Response
 {
+    // ReSharper disable UnusedAutoPropertyAccessor.Global
     internal class PixivSingleUserResponse
     {
         [JsonPropertyName("user")]
-        public User? UserEntity { get; set; }
+        public User.Info? UserEntity { get; set; }
 
         [JsonPropertyName("profile")]
         public Profile? UserProfile { get; set; }
@@ -107,27 +109,6 @@ namespace Mako.Net.Response
 
             [JsonPropertyName("pawoo")]
             public bool? Pawoo { get; set; }
-        }
-
-        public class User
-        {
-            [JsonPropertyName("id")]
-            public long Id { get; set; }
-
-            [JsonPropertyName("name")]
-            public string? Name { get; set; }
-
-            [JsonPropertyName("account")]
-            public string? Account { get; set; }
-
-            [JsonPropertyName("profile_image_urls")]
-            public ProfileImageUrls? ProfileImageUrls { get; set; }
-
-            [JsonPropertyName("comment")]
-            public string? Comment { get; set; }
-
-            [JsonPropertyName("is_followed")]
-            public bool IsFollowed { get; set; }
         }
 
         public class ProfileImageUrls

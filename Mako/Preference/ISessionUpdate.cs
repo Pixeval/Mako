@@ -6,6 +6,6 @@ namespace Mako.Preference
     [PublicAPI]
     public interface ISessionUpdate
     {
-        Task<Session> Refresh(MakoClient makoClient);
+        Task<Session> RefreshAsync(MakoClient makoClient);
     }
 }

@@ -13,11 +13,10 @@ using Microsoft.Web.WebView2.Core;
 
 namespace Mako.Authenticator
 {
-    
     public partial class MainWindow
     {
         private readonly TaskCompletionSource<(string, string)> _webViewLoginCompletion = new();
-        
+
         public MainWindow()
         {
             InitializeComponent();
@@ -29,12 +28,12 @@ namespace Mako.Authenticator
             var hashBytes = crypt.ComputeHash((encoding ?? Encoding.UTF8).GetBytes(str));
             return hashBytes;
         }
-        
+
         private static string GetCodeChallenge(string code)
         {
             return ToUrlSafeBase64String(HashBytes<SHA256CryptoServiceProvider>(code, Encoding.ASCII));
         }
-        
+
         private static string GetCodeVerify()
         {
             var bytes = new byte[32];
@@ -42,7 +41,7 @@ namespace Mako.Authenticator
             rng.GetBytes(bytes);
             return ToUrlSafeBase64String(bytes);
         }
-        
+
         private static string GenerateWebPageUrl(string codeVerify, bool signUp = false)
         {
             var codeChallenge = GetCodeChallenge(codeVerify);
@@ -50,23 +49,20 @@ namespace Mako.Authenticator
                 ? $"https://app-api.pixiv.net/web/v1/provisional-accounts/create?code_challenge={codeChallenge}&code_challenge_method=S256&client=pixiv-android"
                 : $"https://app-api.pixiv.net/web/v1/login?code_challenge={codeChallenge}&code_challenge_method=S256&client=pixiv-android";
         }
-        
+
         private static string ToUrlSafeBase64String(byte[] bytes)
         {
-            return Convert.ToBase64String(bytes).TrimEnd(new[] { '=' }).Replace("+", "-").Replace("/", "_");
+            return Convert.ToBase64String(bytes).TrimEnd(new[] {'='}).Replace("+", "-").Replace("/", "_");
         }
 
         private static string AsString(IEnumerable<CoreWebView2Cookie> cookies)
         {
             return cookies.Aggregate("", (s, cookie) => s + $"{cookie.Name}={cookie.Value};");
         }
-        
+
         private async void LoginWebView_OnNavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e)
         {
-            if (e.Uri.StartsWith("pixiv://"))
-            {
-                _webViewLoginCompletion.SetResult((e.Uri, AsString(await LoginWebView.CoreWebView2.CookieManager.GetCookiesAsync("https://www.pixiv.net"))));
-            }
+            if (e.Uri.StartsWith("pixiv://")) _webViewLoginCompletion.SetResult((e.Uri, AsString(await LoginWebView.CoreWebView2.CookieManager.GetCookiesAsync("https://www.pixiv.net"))));
         }
 
         private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)

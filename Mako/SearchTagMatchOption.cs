@@ -8,10 +8,10 @@ namespace Mako
     {
         [Description("partial_match_for_tags")]
         PartialMatchForTags,
-        
+
         [Description("exact_match_for_tags")]
         ExactMatchForTags,
-        
+
         [Description("title_and_caption")]
         TitleAndCaption
     }

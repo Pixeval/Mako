@@ -10,41 +10,27 @@ namespace Mako.Engines.Implements
 {
     internal class SearchEngine : AbstractPixivFetchEngine<Illustration>
     {
-        private readonly SearchTagMatchOption _matchOption;
-        private readonly IllustrationSortOption _sortOption;
-        private readonly SearchDuration? _searchDuration;
-        private readonly TargetFilter _targetFilter;
-        private readonly DateTime? _startDate;
-        private readonly DateTime? _endDate;
-        private readonly string _tag;
-        private readonly int _pages;
         private readonly int _current;
-
-        /// <summary>
-        /// 实例化一个<see cref="SearchEngine"/>
-        /// </summary>
-        /// <param name="makoClient">与该<see cref="SearchEngine"/>绑定的<see cref="MakoClient"/></param>
-        /// <param name="engineHandle">该<see cref="SearchEngine"/>的句柄</param>
-        /// <param name="matchOption">关键字匹配选项</param>
-        /// <param name="tag">关键字</param>
-        /// <param name="start">从第几页开始搜索(每页包含30条结果)</param>
-        /// <param name="pages">搜索页数</param>
-        /// <param name="sortOption">如何排序结果</param>
-        /// <param name="searchDuration">搜索时间区间</param>
-        /// <param name="startDate">日期区间开始</param>
-        /// <param name="endDate">日期区间结束</param>
-        /// <param name="targetFilter"></param>
+        private readonly DateTime? _endDate;
+        private readonly SearchTagMatchOption _matchOption;
+        private readonly int _pages;
+        private readonly SearchDuration? _searchDuration;
+        private readonly IllustrationSortOption _sortOption;
+        private readonly DateTime? _startDate;
+        private readonly string _tag;
+        private readonly TargetFilter _targetFilter;
+        
         public SearchEngine(
-            MakoClient makoClient, 
+            MakoClient makoClient,
             EngineHandle? engineHandle,
             SearchTagMatchOption matchOption,
             string tag,
             int start,
             int pages,
-            IllustrationSortOption? sortOption, 
-            SearchDuration? searchDuration, 
+            IllustrationSortOption? sortOption,
+            SearchDuration? searchDuration,
             DateTime? startDate,
-            DateTime? endDate, 
+            DateTime? endDate,
             TargetFilter? targetFilter) : base(makoClient, engineHandle)
         {
             _matchOption = matchOption;
@@ -68,8 +54,11 @@ namespace Mako.Engines.Implements
             public SearchAsyncEnumerator([NotNull] SearchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
             {
             }
-            
-            protected override string InitialUrl() => GetSearchUrl();
+
+            protected override string InitialUrl()
+            {
+                return GetSearchUrl();
+            }
 
             protected override bool HasNextPage()
             {

@@ -21,22 +21,28 @@ namespace Mako
     [PublicAPI]
     public partial class MakoClient : ICancellable
     {
+        /// <summary>
+        ///     Creates the cache of current <see cref="MakoClient" />
+        /// </summary>
         static MakoClient()
         {
             MemoryCache = new MemoryCache("MakoCache", new NameValueCollection {["cacheMemoryLimitMegabytes"] = "50"});
         }
-        
+
         /// <summary>
-        /// Create an new <see cref="MakoClient"/> based on given <paramref name="configuration"/> and <paramref name="session"/>
+        ///     Create an new <see cref="MakoClient" /> based on given <see cref="Configuration" />, <see cref="Session" />, and
+        ///     <see cref="ISessionUpdate" />
         /// </summary>
         /// <remarks>
-        /// The <see cref="MakoClient"/> is not responsible for the <see cref="Session"/>'s refreshment, you need to check the
-        /// <see cref="P:Session.Expire"/> and call <see cref="RefreshSession(Mako.Preference.Session)"/> or <see cref="RefreshSession()"/>
-        /// periodically
+        ///     The <see cref="MakoClient" /> is not responsible for the <see cref="Session" />'s refreshment, you need to check
+        ///     the
+        ///     <see cref="P:Session.Expire" /> and call <see cref="RefreshSession(Mako.Preference.Session)" /> or
+        ///     <see cref="RefreshSessionAsync" />
+        ///     periodically
         /// </remarks>
-        /// <param name="session"></param>
-        /// <param name="configuration"></param>
-        /// <param name="sessionUpdater"></param>
+        /// <param name="session">The <see cref="Mako.Preference.Session" /></param>
+        /// <param name="configuration">The <see cref="Configuration" /></param>
+        /// <param name="sessionUpdater">The updater of <see cref="Mako.Preference.Session" /></param>
         public MakoClient(Session session, MakoClientConfiguration configuration, ISessionUpdate? sessionUpdater = null)
         {
             SessionUpdater = sessionUpdater ?? new RefreshTokenSessionUpdate();
@@ -48,7 +54,21 @@ namespace Mako
             // while also be able to cancel all of them from 'MakoClient'
             CancellationTokenSource.Token.Register(() => _runningInstances.ForEach(instance => instance.EngineHandle.Cancel()));
         }
-        
+
+        /// <summary>
+        ///     Creates a <see cref="MakoClient" /> based on given <see cref="Session" /> and <see cref="ISessionUpdate" />, the
+        ///     configurations will stay
+        ///     as default
+        /// </summary>
+        /// <remarks>
+        ///     The <see cref="MakoClient" /> is not responsible for the <see cref="Session" />'s refreshment, you need to check
+        ///     the
+        ///     <see cref="P:Session.Expire" /> and call <see cref="RefreshSession(Mako.Preference.Session)" /> or
+        ///     <see cref="RefreshSessionAsync" />
+        ///     periodically
+        /// </remarks>
+        /// <param name="session">The <see cref="Mako.Preference.Session" /></param>
+        /// <param name="sessionUpdater">The updater of <see cref="Mako.Preference.Session" /></param>
         public MakoClient(Session session, ISessionUpdate? sessionUpdater = null)
         {
             SessionUpdater = sessionUpdater ?? new RefreshTokenSessionUpdate();
@@ -62,9 +82,9 @@ namespace Mako
         }
 
         /// <summary>
-        /// 注入必要的依赖
+        ///     Injects necessary dependencies
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The <see cref="IContainer" /> contains all the required dependencies</returns>
         private IContainer BuildContainer()
         {
             var builder = new ContainerBuilder();
@@ -73,9 +93,6 @@ namespace Mako
             builder.RegisterType<PixivApiNameResolver>().SingleInstance();
             builder.RegisterType<PixivImageNameResolver>().SingleInstance();
             builder.RegisterType<LocalMachineNameResolver>().SingleInstance();
-
-            builder.RegisterType<IllustrationPopularityComparator>().SingleInstance();
-            builder.RegisterType<IllustrationPublishDateComparator>().SingleInstance();
 
             builder.RegisterType<PixivApiHttpMessageHandler>().SingleInstance();
             builder.RegisterType<PixivImageHttpMessageHandler>().SingleInstance();
@@ -115,70 +132,93 @@ namespace Mako
                 var context = c.Resolve<IComponentContext>(); // or a System.ObjectDisposedException will thrown because the 'c' cannot be hold
                 return RestService.For<IAppApiEndPoint>(c.ResolveKeyed<HttpClient>(MakoApiKind.AppApi), new RefitSettings
                 {
-                    ExceptionFactory = async message => !message.IsSuccessStatusCode ? await MakoNetworkException.FromHttpResponseMessage(message, context.Resolve<MakoClient>().Configuration.Bypass) : null
+                    ExceptionFactory = async message => !message.IsSuccessStatusCode ? await MakoNetworkException.FromHttpResponseMessageAsync(message, context.Resolve<MakoClient>().Configuration.Bypass).ConfigureAwait(false) : null
                 });
             });
-            
+
             builder.Register(static c =>
             {
                 var context = c.Resolve<IComponentContext>(); // or a System.ObjectDisposedException will thrown because the 'c' cannot be hold
                 return RestService.For<IAuthEndPoint>(c.ResolveKeyed<HttpClient>(MakoApiKind.AppApi), new RefitSettings
                 {
-                    ExceptionFactory = async message => !message.IsSuccessStatusCode ? await MakoNetworkException.FromHttpResponseMessage(message, context.Resolve<MakoClient>().Configuration.Bypass) : null
+                    ExceptionFactory = async message => !message.IsSuccessStatusCode ? await MakoNetworkException.FromHttpResponseMessageAsync(message, context.Resolve<MakoClient>().Configuration.Bypass).ConfigureAwait(false) : null
                 });
             });
             return builder.Build();
         }
 
+        /// <summary>
+        ///     Cancels this <see cref="MakoClient" />, including all of the running instances, the
+        ///     <see cref="Session" /> will be reset to its default value, the <see cref="MakoClient" />
+        ///     will unable to be used again after calling this method
+        /// </summary>
         public void Cancel()
         {
+            Session = new Session();
             CancellationTokenSource.Cancel();
         }
 
+        // Ensures the current instances hasn't been cancelled
+        private void EnsureNotCancelled()
+        {
+            if (CancellationTokenSource.IsCancellationRequested) throw new OperationCanceledException($"MakoClient({Id}) has been cancelled");
+        }
+
+        // Resolves a dependency of type 'TResult'
         internal TResult Resolve<TResult>() where TResult : notnull
         {
             return MakoServices.Resolve<TResult>();
         }
 
+        // Resolves a key-bounded dependency of type 'TResult'
         internal TResult ResolveKeyed<TResult>(object key) where TResult : notnull
         {
             return MakoServices.ResolveKeyed<TResult>(key);
         }
 
+        // Resolves a dependency of type 'type'
         internal TResult Resolve<TResult>(Type type) where TResult : notnull
         {
             return (TResult) MakoServices.Resolve(type);
         }
 
+        // Creates the namespace (region) of the current 'MakoClient'
         private string CreateCacheRegionForCurrent(string secondary)
         {
             return $"{Id}::{secondary}";
         }
-        
+
+        // Caches an 'item'
         internal void Cache<T>(CacheType type, string key, T item) where T : notnull
         {
-            
             MemoryCache.AddWithRegionName(key, item, new CacheItemPolicy
             {
                 SlidingExpiration = Configuration.CacheEntrySlidingExpiration
             }, CreateCacheRegionForCurrent(type.ToString()));
         }
-        
+
+        // Gets an cached item or null
         internal T? GetCached<T>(CacheType type, string key) where T : notnull
         {
             return (T?) MemoryCache.GetWithRegionName(key, CreateCacheRegionForCurrent(type.ToString()));
         }
 
-        private void RegisterInstance(IEngineHandleSource engineHandleSource) => _runningInstances.Add(engineHandleSource);
+        // registers an instance to the running instances list
+        private void RegisterInstance(IEngineHandleSource engineHandleSource)
+        {
+            _runningInstances.Add(engineHandleSource);
+        }
 
-        private void CancelInstance(EngineHandle handle) => _runningInstances.RemoveAll(instance => instance.EngineHandle == handle);
+        // removes an instance from the running instances list
+        private void CancelInstance(EngineHandle handle)
+        {
+            _runningInstances.RemoveAll(instance => instance.EngineHandle == handle);
+        }
 
+        // Cache the results of 'IFetchEngine<out E>' if and only if 'Configuration.AllowCache' is set
         private void TryCache<T>(CacheType type, IEnumerable<T> enumerable, string key)
         {
-            if (Configuration.AllowCache)
-            {
-                Cache(type, key, new AdaptedComputedFetchEngine<T>(enumerable));
-            }
+            if (Configuration.AllowCache) Cache(type, key, new AdaptedComputedFetchEngine<T>(enumerable));
         }
 
         // PrivacyPolicy.Private is only allowed when the uid is pointing to yourself
@@ -187,29 +227,42 @@ namespace Mako
             return !(privacyPolicy == PrivacyPolicy.Private && Session.Id! != uid);
         }
 
+        /// <summary>
+        ///     Gets a registered <see cref="IFetchEngine{E}" /> by its <see cref="EngineHandle" />
+        /// </summary>
+        /// <param name="handle">The <see cref="EngineHandle" /> of the <see cref="IFetchEngine{E}" /></param>
+        /// <typeparam name="T">The type of the results of the <see cref="IFetchEngine{E}" /></typeparam>
+        /// <returns>The <see cref="IFetchEngine{E}" /> instance</returns>
         public IFetchEngine<T>? GetByHandle<T>(EngineHandle handle)
         {
             return _runningInstances.FirstOrDefault(h => h.EngineHandle == handle) as IFetchEngine<T>;
         }
 
         /// <summary>
-        /// Acquires a configured <see cref="HttpClient"/> for the network traffics
+        ///     Acquires a configured <see cref="HttpClient" /> for the network traffics
         /// </summary>
-        /// <param name="makoApiKind"></param>
-        /// <returns></returns>
+        /// <param name="makoApiKind">The kind of API that is going to be used by the request</param>
+        /// <returns>The <see cref="HttpClient" /> corresponding to <paramref name="makoApiKind" /></returns>
         public HttpClient GetMakoHttpClient(MakoApiKind makoApiKind)
         {
             return ResolveKeyed<HttpClient>(makoApiKind);
         }
 
+        /// <summary>
+        ///     Sets the <see cref="Session" /> to a new value
+        /// </summary>
+        /// <param name="newSession">The new <see cref="Mako.Preference.Session" /></param>
         public void RefreshSession(Session newSession)
         {
             Session = newSession;
         }
-        
-        public async Task RefreshSession()
+
+        /// <summary>
+        ///     Refresh session using the provided <see cref="ISessionUpdate" />
+        /// </summary>
+        public async Task RefreshSessionAsync()
         {
-            Session = await SessionUpdater.Refresh(this);
+            Session = await SessionUpdater.RefreshAsync(this).ConfigureAwait(false);
         }
     }
 }

@@ -4,12 +4,11 @@ using Mako.Model;
 
 namespace Mako.Net.Response
 {
-    
     // ReSharper disable UnusedAutoPropertyAccessor.Global
     internal class PixivResponse
     {
         [JsonPropertyName("illusts")]
-        public IEnumerable<IllustrationEssential.Illust>? Illusts { get; set; }
+        public IEnumerable<Illustration>? Illusts { get; set; }
 
         [JsonPropertyName("next_url")]
         public string? NextUrl { get; set; }

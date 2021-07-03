@@ -6,7 +6,7 @@ namespace Mako
     {
         [Description("illust")]
         Illust,
-        
+
         [Description("manga")]
         Manga
     }

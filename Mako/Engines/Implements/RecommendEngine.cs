@@ -8,11 +8,11 @@ namespace Mako.Engines.Implements
 {
     internal class RecommendEngine : AbstractPixivFetchEngine<Illustration>
     {
-
-        private readonly RecommendContentType _recommendContentType;
         private readonly TargetFilter _filter;
         private readonly uint? _maxBookmarkIdForRecommend;
         private readonly uint? _minBookmarkIdForRecentIllust;
+
+        private readonly RecommendContentType _recommendContentType;
 
         public RecommendEngine(MakoClient makoClient, RecommendContentType? recommendContentType, TargetFilter filter, uint? maxBookmarkIdForRecommend, uint? minBookmarkIdForRecentIllust, EngineHandle? engineHandle) : base(makoClient, engineHandle)
         {

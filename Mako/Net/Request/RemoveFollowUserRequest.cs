@@ -6,12 +6,12 @@ namespace Mako.Net.Request
     // ReSharper disable MemberCanBePrivate.Global
     internal class RemoveFollowUserRequest
     {
-        [AliasAs("user_id")]
-        public string UserId { get; }
-
         public RemoveFollowUserRequest(string userId)
         {
             UserId = userId;
         }
+
+        [AliasAs("user_id")]
+        public string UserId { get; }
     }
 }

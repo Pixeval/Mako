@@ -5,53 +5,53 @@ using Mako.Util;
 namespace Mako.Preference
 {
     /// <summary>
-    /// Contains all the user configurable
+    ///     Contains all the user configurable
     /// </summary>
     [PublicAPI]
     public record Session
     {
         /// <summary>
-        /// User name
+        ///     User name
         /// </summary>
         public string? Name { get; set; }
 
         /// <summary>
-        /// Token expiration
+        ///     Token expiration
         /// </summary>
         public DateTimeOffset ExpireIn { get; set; }
 
         /// <summary>
-        /// Current access token
+        ///     Current access token
         /// </summary>
         public string? AccessToken { get; set; }
 
         /// <summary>
-        /// Current refresh token
+        ///     Current refresh token
         /// </summary>
         public string? RefreshToken { get; set; }
 
         /// <summary>
-        /// Avatar
+        ///     Avatar
         /// </summary>
         public string? AvatarUrl { get; set; }
 
         /// <summary>
-        /// User id
+        ///     User id
         /// </summary>
         public string? Id { get; set; }
-        
+
         /// <summary>
-        /// Account for login
+        ///     Account for login
         /// </summary>
         public string? Account { get; set; }
 
         /// <summary>
-        /// Indicates current user is Pixiv Premium or not
+        ///     Indicates current user is Pixiv Premium or not
         /// </summary>
         public bool IsPremium { get; set; }
 
         /// <summary>
-        /// WebAPI cookie
+        ///     WebAPI cookie
         /// </summary>
         public string? Cookie { get; set; }
 

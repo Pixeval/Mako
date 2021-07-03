@@ -9,15 +9,16 @@ namespace Mako.Util
     [PublicAPI]
     public enum SequenceComparison
     {
-        Sequential, Unordered
+        Sequential,
+        Unordered
     }
 
     [PublicAPI]
     public static class Enumerates
     {
-        public static bool SequenceEquals<T>(this IEnumerable<T> @this, 
-            IEnumerable<T> another, 
-            SequenceComparison comparison = SequenceComparison.Sequential, 
+        public static bool SequenceEquals<T>(this IEnumerable<T> @this,
+            IEnumerable<T> another,
+            SequenceComparison comparison = SequenceComparison.Sequential,
             IEqualityComparer<T>? equalityComparer = null)
         {
             return comparison switch
@@ -33,7 +34,7 @@ namespace Mako.Util
         {
             return enumerable.Where(i => i is not null)!;
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> enumerable, Func<T, object?> keySelector)
         {
@@ -45,7 +46,7 @@ namespace Mako.Util
         {
             return src.WhereNotNull().Select(selector);
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<TResult> SelectNotNull<T, TResult>(this IEnumerable<T> src, Func<T, object?> keySelector, Func<T, TResult> selector)
         {
@@ -53,19 +54,22 @@ namespace Mako.Util
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool None<T>(this IEnumerable<T> enumerable) => !enumerable.Any();
+        public static bool None<T>(this IEnumerable<T> enumerable)
+        {
+            return !enumerable.Any();
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
-            foreach (var t in enumerable)
-            {
-                action(t);
-            }
+            foreach (var t in enumerable) action(t);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNotNullOrEmpty<T>(this IEnumerable<T>? enumerable) => enumerable is not null && enumerable.Any();
+        public static bool IsNotNullOrEmpty<T>(this IEnumerable<T>? enumerable)
+        {
+            return enumerable is not null && enumerable.Any();
+        }
 
         // https://stackoverflow.com/a/15407252/10439146 FirstOrDefault on value types
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -95,7 +99,7 @@ namespace Mako.Util
 
         public static readonly IAsyncEnumerator<T> Async = new AdaptedAsyncEnumerator<T>(Sync);
     }
-    
+
     [PublicAPI]
     public static class EmptyEnumerable<T>
     {

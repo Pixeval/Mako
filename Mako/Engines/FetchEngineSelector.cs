@@ -20,11 +20,11 @@ namespace Mako.Engines
         }
 
         public MakoClient MakoClient { get; }
-        
+
         public EngineHandle EngineHandle { get; }
-        
+
         public int RequestedPages { get; set; }
-        
+
         public IAsyncEnumerator<R> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
             return new FetchEngineSelectorAsyncEnumerator(_delegateEngine.GetAsyncEnumerator(cancellationToken), _selector)!;
@@ -48,9 +48,9 @@ namespace Mako.Engines
 
             public async ValueTask<bool> MoveNextAsync()
             {
-                if (await _delegateEnumerator.MoveNextAsync())
+                if (await _delegateEnumerator.MoveNextAsync().ConfigureAwait(false))
                 {
-                    Current = await _selector(_delegateEnumerator.Current);
+                    Current = await _selector(_delegateEnumerator.Current).ConfigureAwait(false);
                     return true;
                 }
 

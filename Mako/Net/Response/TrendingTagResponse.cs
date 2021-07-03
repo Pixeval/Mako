@@ -19,7 +19,7 @@ namespace Mako.Net.Response
             public string? TranslatedName { get; set; }
 
             [JsonPropertyName("illust")]
-            public IllustrationEssential.Illust? Illust { get; set; }
+            public Illustration? Illust { get; set; }
         }
     }
 }

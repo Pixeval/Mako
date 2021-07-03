@@ -12,7 +12,7 @@ namespace Mako.Engines.Implements
         private readonly string _keyword;
         private readonly TargetFilter _targetFilter;
         private readonly UserSortOption _userSortOption;
-        
+
         public UserSearchEngine([NotNull] MakoClient makoClient, TargetFilter targetFilter, UserSortOption? userSortOption, string keyword, EngineHandle? engineHandle) : base(makoClient, engineHandle)
         {
             _keyword = keyword;

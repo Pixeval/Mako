@@ -8,6 +8,11 @@ namespace Mako.Net.Request
 #pragma warning disable CA1822
     internal class RefreshSessionRequest
     {
+        public RefreshSessionRequest(string? refreshToken)
+        {
+            RefreshToken = refreshToken;
+        }
+
         [AliasAs("refresh_token")]
         public string? RefreshToken { get; }
 
@@ -22,11 +27,6 @@ namespace Mako.Net.Request
 
         [AliasAs("include_policy")]
         public string IncludePolicy => "true";
-
-        public RefreshSessionRequest(string? refreshToken)
-        {
-            RefreshToken = refreshToken;
-        }
     }
 #pragma warning restore CA1822
 }

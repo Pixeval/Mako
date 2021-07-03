@@ -20,17 +20,13 @@ namespace Mako.Net
             MakoHttpOptions.UseHttpScheme(request);
             var requestUri = request.RequestUri!;
             if (requestUri.Host == MakoHttpOptions.ImageHost)
-            {
                 if (MakoClient.Configuration.MirrorHost is { } mirror && mirror.IsNotNullOrBlank())
-                {
                     request.RequestUri = mirror switch
                     {
                         _ when Uri.CheckHostName(mirror) is not UriHostNameType.Unknown => new UriBuilder(requestUri) {Host = mirror}.Uri,
                         _ when Uri.IsWellFormedUriString(mirror, UriKind.Absolute)      => new Uri(mirror).Let(mirrorUri => new UriBuilder(requestUri) {Host = mirrorUri!.Host, Scheme = mirrorUri.Scheme})!.Uri,
                         _                                                               => throw new UriFormatException("Expecting a valid Host or URI")
                     };
-                }
-            }
 
             INameResolver resolver = MakoClient.Configuration.Bypass
                 ? MakoClient.Resolve<PixivImageNameResolver>()

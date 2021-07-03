@@ -7,9 +7,9 @@ namespace Mako.Preference
 {
     public class RefreshTokenSessionUpdate : ISessionUpdate
     {
-        public async Task<Session> Refresh(MakoClient makoClient)
+        public async Task<Session> RefreshAsync(MakoClient makoClient)
         {
-            return (await makoClient.Resolve<IAuthEndPoint>().Refresh(new RefreshSessionRequest(makoClient.Session.RefreshToken)))
+            return (await makoClient.Resolve<IAuthEndPoint>().Refresh(new RefreshSessionRequest(makoClient.Session.RefreshToken)).ConfigureAwait(false))
                 .ToSession().With(makoClient.Session);
         }
     }
