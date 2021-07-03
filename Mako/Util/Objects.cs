@@ -31,7 +31,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Runtime.Caching;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -141,28 +140,6 @@ namespace Mako.Util
         public static bool EqualsIgnoreCase(this string str1, string str2)
         {
             return string.Equals(str1, str2, StringComparison.OrdinalIgnoreCase);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool AddWithRegionName(
-            this ObjectCache objectCache,
-            string key,
-            object value,
-            CacheItemPolicy policy,
-            string regionName)
-        {
-            var realKey = $"{regionName}::{key}";
-            return objectCache.Add(realKey, value, policy);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static object? GetWithRegionName(
-            this ObjectCache objectCache,
-            string key,
-            string regionName)
-        {
-            var realKey = $"{regionName}::{key}";
-            return objectCache.Get(realKey);
         }
 
         /// <summary>
