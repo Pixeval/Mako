@@ -28,9 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Global.Enum;
@@ -46,7 +48,7 @@ namespace Mako.Console
     [PublicAPI]
     public static class Program
     {
-        private static readonly Session Session = ""
+        private static readonly Session Session = "{\"Name\":\"December0730\",\"ExpireIn\":\"2021-07-04T09:32:20.2335628+08:00\",\"AccessToken\":\"6VFY3ocrUl8N9eNoUimbQjvKEYhJ0SKln8YtEuE7MlY\",\"RefreshToken\":\"5QOHeUpB-cFNjrXmqOU0YFv2QLnlnKHmJ4RJF4YSSQI\",\"AvatarUrl\":\"https://i.pximg.net/user-profile/img/2019/01/13/21/00/08/15255001_2f78dcb00cc01551c55586280352571a_170.jpg\",\"Id\":\"17861677\",\"Account\":\"2653221698\",\"IsPremium\":false,\"Cookie\":\"__cf_bm=a469cca0ba4d4dc5cb55e3aae5535c3c37ef52cd-1625359041-1800-AZX9Yibv4JCJKB5EUVwuPeXdLI1Vt3S/4lL9f8SHQ8yf2jdW\\u002BxHZP3SP\\u002B7mvDFJcKcC\\u002BAt17Qf3vb4Ma05HKoiABF/SuCMOvO\\u002BjsWH0fKDz2F0l56CN2GtDWa6GmhIJ6SARLa/W\\u002BI3yQ4RfRkKEja/Awr1q\\u002B2nJ6Tvabcd9ViPgKJugSZLUeNbjK6gc2djZNVg==;privacy_policy_agreement=3;p_ab_id=5;d_type=1;b_type=1;device_token=a799b12b2bae4cd02e715c273314030d;_gat=1;c_type=21;PHPSESSID=17861677_JQgKd8M21Nkbp82KCrBnsdbPK4Hxnvni;p_ab_id_2=8;_gid=GA1.2.1677177896.1625284371;privacy_policy_notification=0;_ga=GA1.2.1567916307.1623632304;a_type=0;p_ab_d_id=626740158;\"}"
             .FromJson<Session>()!;
 
         private static readonly MakoClient MakoClient = new(Session, new MakoClientConfiguration
@@ -288,7 +290,6 @@ namespace Mako.Console
 
         public static async Task Main()
         {
-            await NovelBookmarks();
         }
     }
 }

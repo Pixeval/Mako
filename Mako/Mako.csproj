@@ -4,11 +4,22 @@
         <TargetFramework>net5.0</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <Authors>Dylech30th</Authors>
+        <Company>Pixeval</Company>
+        <Description>A fast and easy-to-use Pixiv API</Description>
+        <Copyright>© 2021 Dylech30th</Copyright>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageProjectUrl>https://github.com/Pixeval/Mako</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Pixeval/Mako</RepositoryUrl>
+        <RepositoryType>Class library</RepositoryType>
+        <PackageTags>Pixiv API</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Autofac" Version="6.2.0" />
-      <PackageReference Include="JetBrains.Annotations" Version="2021.2.0-eap2" />
+      <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
       <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="7.0.2" />
       <PackageReference Include="Refit" Version="6.0.38" />
     </ItemGroup>
@@ -23,6 +34,13 @@
       <Compile Update="MakoClient.Properties.cs">
         <DependentUpon>MakoClient.cs</DependentUpon>
       </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\LICENSE">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>

@@ -77,6 +77,8 @@ namespace Mako.Preference
         ///     WebAPI cookie
         /// </summary>
         public string? Cookie { get; set; }
+        
+        public DateTime CookieCreation { get; set; }
 
         public override string? ToString()
         {
