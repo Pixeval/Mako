@@ -119,7 +119,8 @@ namespace Mako.Authenticator
                 .FromJson<TokenResponse>()!
                 .ToSession() with
                 {
-                    Cookie = cookie
+                    Cookie = cookie,
+                    CookieCreation = DateTimeOffset.Now
                 };
             Clipboard.SetText((await session!.ToJsonAsync())!);
             Close();

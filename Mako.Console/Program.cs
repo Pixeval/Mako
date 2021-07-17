@@ -28,11 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Global.Enum;
@@ -290,9 +288,9 @@ namespace Mako.Console
 
         public static async Task Main()
         {
-            System.Console.WriteLine(MakoClient.Session.AccessToken);
+            System.Console.WriteLine(MakoClient.Session.CookieCreation);
             await MakoClient.RefreshSessionAsync();
-            System.Console.WriteLine(MakoClient.Session.AccessToken);
+            System.Console.WriteLine(MakoClient.Session.CookieCreation);
         }
     }
 }
