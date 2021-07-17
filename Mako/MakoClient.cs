@@ -51,13 +51,13 @@ namespace Mako
         /// <remarks>
         ///     The <see cref="MakoClient" /> is not responsible for the <see cref="Session" />'s refreshment, you need to check
         ///     the
-        ///     <see cref="P:Session.Expire" /> and call <see cref="RefreshSession(Mako.Preference.Session)" /> or
+        ///     <see cref="P:Session.Expire" /> and call <see cref="RefreshSession(Preference.Session)" /> or
         ///     <see cref="RefreshSessionAsync" />
         ///     periodically
         /// </remarks>
-        /// <param name="session">The <see cref="Mako.Preference.Session" /></param>
+        /// <param name="session">The <see cref="Preference.Session" /></param>
         /// <param name="configuration">The <see cref="Configuration" /></param>
-        /// <param name="sessionUpdater">The updater of <see cref="Mako.Preference.Session" /></param>
+        /// <param name="sessionUpdater">The updater of <see cref="Preference.Session" /></param>
         public MakoClient(Session session, MakoClientConfiguration configuration, ISessionUpdate? sessionUpdater = null)
         {
             SessionUpdater = sessionUpdater ?? new RefreshTokenSessionUpdate();
@@ -112,12 +112,12 @@ namespace Mako
             builder.RegisterType<PixivApiHttpMessageHandler>().SingleInstance();
             builder.RegisterType<PixivImageHttpMessageHandler>().SingleInstance();
 
-            builder.Register(static c => new RetryHttpClientHandler(c.Resolve<PixivApiHttpMessageHandler>()))
+            builder.Register(static c => new MakoRetryHttpClientHandler(c.Resolve<PixivApiHttpMessageHandler>()))
                 .Keyed<HttpMessageHandler>(typeof(PixivApiHttpMessageHandler))
                 .As<HttpMessageHandler>()
                 .PropertiesAutowired(static(info, _) => info.PropertyType == typeof(MakoClient))
                 .SingleInstance();
-            builder.Register(static c => new RetryHttpClientHandler(c.Resolve<PixivImageHttpMessageHandler>()))
+            builder.Register(static c => new MakoRetryHttpClientHandler(c.Resolve<PixivImageHttpMessageHandler>()))
                 .Keyed<HttpMessageHandler>(typeof(PixivImageHttpMessageHandler))
                 .As<HttpMessageHandler>()
                 .PropertiesAutowired(static(info, _) => info.PropertyType == typeof(MakoClient))
@@ -130,6 +130,11 @@ namespace Mako
             builder.Register(static c => MakoHttpClient.Create(c.ResolveKeyed<HttpMessageHandler>(typeof(PixivApiHttpMessageHandler)),
                     static client => client.BaseAddress = new Uri(MakoHttpOptions.WebApiBaseUrl)))
                 .Keyed<HttpClient>(MakoApiKind.WebApi)
+                .As<HttpClient>()
+                .SingleInstance();
+            builder.Register(static c => MakoHttpClient.Create(c.ResolveKeyed<HttpMessageHandler>(typeof(PixivApiHttpMessageHandler)),
+                    static client => client.BaseAddress = new Uri(MakoHttpOptions.OAuthBaseUrl)))
+                .Keyed<HttpClient>(MakoApiKind.AuthApi)
                 .As<HttpClient>()
                 .SingleInstance();
             builder.Register(static c => MakoHttpClient.Create(c.ResolveKeyed<HttpMessageHandler>(typeof(PixivApiHttpMessageHandler)),
@@ -167,7 +172,7 @@ namespace Mako
             builder.Register(static c =>
             {
                 var context = c.Resolve<IComponentContext>(); // or a System.ObjectDisposedException will thrown because the 'c' cannot be hold
-                return RestService.For<IAuthEndPoint>(c.ResolveKeyed<HttpClient>(MakoApiKind.AppApi), new RefitSettings
+                return RestService.For<IAuthEndPoint>(c.ResolveKeyed<HttpClient>(MakoApiKind.AuthApi), new RefitSettings
                 {
                     ExceptionFactory = async message => !message.IsSuccessStatusCode ? await MakoNetworkException.FromHttpResponseMessageAsync(message, context.Resolve<MakoClient>().Configuration.Bypass).ConfigureAwait(false) : null
                 });

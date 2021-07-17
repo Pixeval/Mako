@@ -61,7 +61,7 @@ namespace Mako.Net
             }
 
             return MakoClient.GetHttpMessageInvoker(
-                MakoHttpOptions.BypassRequiredHost.IsMatch(host) && MakoClient.Configuration.Bypass
+                MakoHttpOptions.BypassRequiredHost.IsMatch(host) && MakoClient.Configuration.Bypass || host == MakoHttpOptions.OAuthHost
                     ? typeof(PixivApiNameResolver)
                     : typeof(LocalMachineNameResolver)
             ).SendAsync(request, cancellationToken);

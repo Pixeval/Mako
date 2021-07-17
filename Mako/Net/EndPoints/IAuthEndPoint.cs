@@ -31,6 +31,7 @@ using Refit;
 
 namespace Mako.Net.EndPoints
 {
+    [Headers("User-Agent: PixivAndroidApp/5.0.64 (Android 6.0)", "Content-Type: application/x-www-form-urlencoded")]
     internal interface IAuthEndPoint
     {
         [Post("/auth/token")]

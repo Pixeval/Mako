@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 
 namespace Mako.Net
 {
-    internal class PixivImageNameResolver : INameResolver
+    public class PixivImageNameResolver : INameResolver
     {
         public Task<IPAddress[]> Lookup(string hostname)
         {

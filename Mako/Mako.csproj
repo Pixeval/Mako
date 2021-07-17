@@ -15,13 +15,14 @@
         <RepositoryUrl>https://github.com/Pixeval/Mako</RepositoryUrl>
         <RepositoryType>Class library</RepositoryType>
         <PackageTags>Pixiv API</PackageTags>
+        <Version>1.0.6</Version>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Autofac" Version="6.2.0" />
-      <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
-      <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="7.0.2" />
-      <PackageReference Include="Refit" Version="6.0.38" />
+      <PackageReference Include="Autofac" Version="6.2.0" PrivateAssets="True" />
+      <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" PrivateAssets="True" />
+      <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="7.0.2" PrivateAssets="True" />
+      <PackageReference Include="Refit" Version="6.0.38" PrivateAssets="True" />
     </ItemGroup>
 
     <ItemGroup>

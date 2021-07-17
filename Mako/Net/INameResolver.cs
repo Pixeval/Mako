@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 
 namespace Mako.Net
 {
-    internal interface INameResolver
+    public interface INameResolver
     {
         Task<IPAddress[]> Lookup(string hostname);
     }

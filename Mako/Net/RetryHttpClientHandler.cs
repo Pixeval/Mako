@@ -33,11 +33,33 @@ using Mako.Util;
 
 namespace Mako.Net
 {
-    internal class RetryHttpClientHandler : HttpMessageHandler, IMakoClientSupport
+    internal class RetryHttpClientHandler : HttpMessageHandler
+    {
+        private readonly int _timeout;
+        private readonly HttpMessageInvoker _delegatedHandler;
+
+        public RetryHttpClientHandler(HttpMessageHandler delegatedHandler, int timeout)
+        {
+            _timeout = timeout;
+            _delegatedHandler = new HttpMessageInvoker(delegatedHandler);
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            return await Functions.RetryAsync(() => _delegatedHandler.SendAsync(request, cancellationToken), 2, _timeout).ConfigureAwait(false) switch
+            {
+                Result<HttpResponseMessage>.Success(var response) => response,
+                Result<HttpResponseMessage>.Failure failure       => throw failure.Cause ?? new HttpRequestException(),
+                _                                                 => throw new InvalidOperationException("Unexpected case")
+            };
+        }
+    }
+
+    internal class MakoRetryHttpClientHandler : HttpMessageHandler, IMakoClientSupport
     {
         private readonly HttpMessageInvoker _delegatedHandler;
 
-        public RetryHttpClientHandler(HttpMessageHandler delegatedHandler)
+        public MakoRetryHttpClientHandler(HttpMessageHandler delegatedHandler)
         {
             _delegatedHandler = new HttpMessageInvoker(delegatedHandler);
         }

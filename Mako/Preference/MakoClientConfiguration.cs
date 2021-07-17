@@ -25,6 +25,7 @@
 #endregion
 
 using System.Globalization;
+using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 
 namespace Mako.Preference
@@ -33,7 +34,7 @@ namespace Mako.Preference
     ///     Contains all the user-configurable keys
     /// </summary>
     [PublicAPI]
-    public class MakoClientConfiguration
+    public record MakoClientConfiguration
     {
         public MakoClientConfiguration()
         {
@@ -51,8 +52,10 @@ namespace Mako.Preference
             CultureInfo = cultureInfo;
         }
 
+        [JsonIgnore]
         public CultureInfo CultureInfo { get; set; }
 
+        [JsonPropertyName("connectionTimeout")]
         public int ConnectionTimeout { get; set; }
 
         /// <summary>
@@ -61,11 +64,13 @@ namespace Mako.Preference
         ///     you can use Mako without using any kind of proxy, otherwise you will
         ///     need a proper proxy server to bypass the GFW
         /// </summary>
+        [JsonPropertyName("bypass")]
         public bool Bypass { get; set; }
 
         /// <summary>
         ///     Mirror server's host of image downloading
         /// </summary>
+        [JsonPropertyName("mirrorHost")]
         public string? MirrorHost { get; set; }
     }
 }

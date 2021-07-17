@@ -116,6 +116,7 @@ namespace Mako.Util
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [ContractAnnotation("obj:notnull => notnull; obj:null => null")]
         public static string? ToJson(this object? obj, Action<JsonSerializerOptions>? serializerOptionConfigure = null)
         {
             return obj?.Let(o => JsonSerializer.Serialize(o, new JsonSerializerOptions().Apply(option => serializerOptionConfigure?.Invoke(option))));

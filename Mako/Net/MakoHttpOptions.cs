@@ -36,17 +36,21 @@ using Mako.Util;
 
 namespace Mako.Net
 {
-    internal static class MakoHttpOptions
+    public static class MakoHttpOptions
     {
         public const string AppApiBaseUrl = "https://app-api.pixiv.net";
 
         public const string WebApiBaseUrl = "https://www.pixiv.net";
+
+        public const string OAuthBaseUrl = "https://oauth.secure.pixiv.net";
 
         public const string ImageHost = "i.pximg.net";
 
         public const string WebApiHost = "www.pixiv.net"; // experiments revealed that the secondary domain 'www' is required 
 
         public const string AppApiHost = "app-api.pixiv.net";
+
+        public const string OAuthHost = "oauth.secure.pixiv.net";
 
         public static readonly Regex BypassRequiredHost = "^app-api\\.pixiv\\.net$|^www\\.pixiv\\.net$".ToRegex();
 
