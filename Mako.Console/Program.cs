@@ -35,6 +35,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Mako.Global.Enum;
 using Mako.Model;
+using Mako.Net;
 using Mako.Preference;
 using Mako.Util;
 
@@ -51,7 +52,7 @@ namespace Mako.Console
 
         private static readonly MakoClient MakoClient = new(Session, new MakoClientConfiguration
         {
-            Bypass = false,
+            Bypass = true,
             CultureInfo = new CultureInfo("zh-cn")
         });
 
@@ -288,9 +289,7 @@ namespace Mako.Console
 
         public static async Task Main()
         {
-            System.Console.WriteLine(MakoClient.Session.CookieCreation);
-            await MakoClient.RefreshSessionAsync();
-            System.Console.WriteLine(MakoClient.Session.CookieCreation);
+            System.Console.WriteLine((await MakoClient.GetMakoHttpClient(MakoApiKind.ImageApi).GetByteArrayAsync(MakoClient.Session.AvatarUrl)).Length);
         }
     }
 }

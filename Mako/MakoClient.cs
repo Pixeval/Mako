@@ -137,7 +137,7 @@ namespace Mako
                 .Keyed<HttpClient>(MakoApiKind.AuthApi)
                 .As<HttpClient>()
                 .SingleInstance();
-            builder.Register(static c => MakoHttpClient.Create(c.ResolveKeyed<HttpMessageHandler>(typeof(PixivApiHttpMessageHandler)),
+            builder.Register(static c => MakoHttpClient.Create(c.ResolveKeyed<HttpMessageHandler>(typeof(PixivImageHttpMessageHandler)),
                     static client =>
                     {
                         client.DefaultRequestHeaders.TryAddWithoutValidation("Referer", "https://www.pixiv.net");

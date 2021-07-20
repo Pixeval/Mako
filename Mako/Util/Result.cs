@@ -39,7 +39,7 @@ namespace Mako.Util
             {
                 Success (var content) => content,
                 Failure (var cause)   => throw cause ?? new Exception("This is an exception thrown by Result.Failure"),
-                _                     => throw new ArgumentException("Result", "Result", null)
+                _                     => throw new Exception("Invalid derived type of Result<T>")
             };
         }
 
@@ -55,13 +55,23 @@ namespace Mako.Util
             return new Failure(cause);
         }
 
+        public Result<R> Bind<R>(Func<T, R> selector) where R : class
+        {
+            return this switch
+            {
+                Success(var content) => Result<R>.OfSuccess(selector(content)),
+                Failure(var cause)   => Result<R>.OfFailure(cause),
+                _                    => throw new Exception("Invalid derived type of Result<T>")
+            };
+        }
+
         public static Result<R?> Wrap<R>(Result<T> result) where R : class
         {
             return result switch
             {
-                Success (var content) => Result<R?>.OfSuccess(content as R),
-                Failure (var cause)   => Result<R?>.OfFailure(cause),
-                _                     => throw new ArgumentOutOfRangeException(nameof(result), result, null)
+                Success(var content) => Result<R?>.OfSuccess(content as R),
+                Failure(var cause) => Result<R?>.OfFailure(cause),
+                _ => throw new ArgumentOutOfRangeException(nameof(result), result, null)
             };
         }
 
