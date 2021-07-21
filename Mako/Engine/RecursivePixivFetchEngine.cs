@@ -97,6 +97,11 @@ namespace Mako.Engine
 
             if (await GetJsonResponseAsync(NextUrl(RawEntity)!).ConfigureAwait(false) is Result<TRawEntity>.Success (var value)) // Else request a new page
             {
+                if (IsCancellationRequested)
+                {
+                    PixivFetchEngine.EngineHandle.Complete();
+                    return false;
+                }
                 Update(value);
                 return true;
             }

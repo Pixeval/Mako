@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Annotations;
-using Mako.Preference;
 using Mako.Util;
 
 namespace Mako.Engine.Implements
@@ -37,11 +36,6 @@ namespace Mako.Engine.Implements
     ///     This class aims to hold an already computed <see cref="IFetchEngine{E}" />, it delegates
     ///     all of its property and methods to an inner <see cref="IEnumerable{T}" />, this class is
     ///     only supposed to be used by caching systems
-    ///     <para>
-    ///         It is integrated into Mako's caching system, the results of <see cref="IFetchEngine{E}" />
-    ///         should be cached if possible when <see cref="MakoClientConfiguration.AllowCache" />
-    ///         is set.
-    ///     </para>
     /// </summary>
     /// <typeparam name="T">The type of the results of the <see cref="IFetchEngine{E}" /></typeparam>
     [PublicAPI]

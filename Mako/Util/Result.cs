@@ -55,7 +55,7 @@ namespace Mako.Util
             return new Failure(cause);
         }
 
-        public Result<R> Bind<R>(Func<T, R> selector) where R : class
+        public Result<R> Bind<R>(Func<T, R> selector)
         {
             return this switch
             {
@@ -67,12 +67,7 @@ namespace Mako.Util
 
         public static Result<R?> Wrap<R>(Result<T> result) where R : class
         {
-            return result switch
-            {
-                Success(var content) => Result<R?>.OfSuccess(content as R),
-                Failure(var cause) => Result<R?>.OfFailure(cause),
-                _ => throw new ArgumentOutOfRangeException(nameof(result), result, null)
-            };
+            return result.Bind(t => t as R);
         }
 
         [PublicAPI]

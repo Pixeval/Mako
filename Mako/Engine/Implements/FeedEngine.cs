@@ -106,6 +106,11 @@ namespace Mako.Engine.Implements
 
                 if (await GetResponseAsync(BuildRequestUrl()).ConfigureAwait(false) is Result<string>.Success(var json)) // Else request a new page
                 {
+                    if (IsCancellationRequested)
+                    {
+                        PixivFetchEngine.EngineHandle.Complete();
+                        return false;
+                    }
                     await UpdateAsync(ParseFeedJson(JsonDocument.Parse(json).RootElement.GetProperty("stacc"))).ConfigureAwait(false);
                     _feedRequestContext = ExtractRequestContextFromJsonElement(JsonDocument.Parse(json).RootElement.GetProperty("stacc"));
                     return true;
