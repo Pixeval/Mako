@@ -15,7 +15,7 @@
         <RepositoryUrl>https://github.com/Pixeval/Mako</RepositoryUrl>
         <RepositoryType>Class library</RepositoryType>
         <PackageTags>Pixiv API</PackageTags>
-        <Version>1.0.10</Version>
+        <Version>1.0.11</Version>
     </PropertyGroup>
 
     <ItemGroup>

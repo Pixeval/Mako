@@ -42,9 +42,15 @@ namespace Mako.Net
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            MakoHttpOptions.UseHttpScheme(request);
             var headers = request.Headers;
             var host = request.RequestUri!.Host; // the 'RequestUri' is guaranteed to be nonnull here, because the 'HttpClient' will set it to 'BaseAddress' if its null
+
+            var bypass = MakoHttpOptions.BypassRequiredHost.IsMatch(host) && MakoClient.Configuration.Bypass || host == MakoHttpOptions.OAuthHost;
+
+            if (bypass)
+            {
+                MakoHttpOptions.UseHttpScheme(request);
+            }
 
             headers.TryAddWithoutValidation("Accept-Language", MakoClient.Configuration.CultureInfo.Name);
 
@@ -60,11 +66,9 @@ namespace Mako.Net
                     break;
             }
 
-            return MakoClient.GetHttpMessageInvoker(
-                MakoHttpOptions.BypassRequiredHost.IsMatch(host) && MakoClient.Configuration.Bypass || host == MakoHttpOptions.OAuthHost
-                    ? typeof(PixivApiNameResolver)
-                    : typeof(LocalMachineNameResolver)
-            ).SendAsync(request, cancellationToken);
+            return MakoClient.GetHttpMessageInvoker(bypass
+                ? typeof(PixivApiNameResolver)
+                : typeof(LocalMachineNameResolver)).SendAsync(request, cancellationToken);
         }
     }
 }

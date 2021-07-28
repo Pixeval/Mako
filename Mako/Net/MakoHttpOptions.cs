@@ -73,6 +73,12 @@ namespace Mako.Net
             });
         }
 
+        public static HttpMessageInvoker CreateDirectHttpMessageInvoker()
+        {
+            return new(new SocketsHttpHandler());
+        }
+
+
         private static Func<SocketsHttpConnectionContext, CancellationToken, ValueTask<Stream>> BypassedConnectCallback(INameResolver nameResolver)
         {
             return async (context, token) =>

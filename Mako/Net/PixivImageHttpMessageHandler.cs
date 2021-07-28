@@ -43,7 +43,10 @@ namespace Mako.Net
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            MakoHttpOptions.UseHttpScheme(request);
+            if (MakoClient.Configuration.Bypass)
+            {
+                MakoHttpOptions.UseHttpScheme(request);
+            }
             var requestUri = request.RequestUri!;
             if (requestUri.Host == MakoHttpOptions.ImageHost && MakoClient.Configuration.MirrorHost is { } mirror && mirror.IsNotNullOrBlank())
             {

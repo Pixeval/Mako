@@ -155,7 +155,7 @@ namespace Mako
                 .Keyed<HttpMessageInvoker>(typeof(PixivImageNameResolver))
                 .As<HttpMessageInvoker>()
                 .SingleInstance();
-            builder.Register(static c => MakoHttpOptions.CreateHttpMessageInvoker(c.Resolve<LocalMachineNameResolver>()))
+            builder.Register(static c => MakoHttpOptions.CreateDirectHttpMessageInvoker())
                 .Keyed<HttpMessageInvoker>(typeof(LocalMachineNameResolver))
                 .As<HttpMessageInvoker>()
                 .SingleInstance();

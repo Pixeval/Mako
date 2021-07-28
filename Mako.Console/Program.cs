@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -52,7 +53,7 @@ namespace Mako.Console
 
         private static readonly MakoClient MakoClient = new(Session, new MakoClientConfiguration
         {
-            Bypass = true,
+            Bypass = false,
             CultureInfo = new CultureInfo("zh-cn")
         });
 
@@ -172,13 +173,13 @@ namespace Mako.Console
 
         private static async Task GetBookmark()
         {
-            var bookmarks = MakoClient.Bookmarks("7263576", PrivacyPolicy.Public);
+            var bookmarks = MakoClient.Bookmarks(Session.Id!, PrivacyPolicy.Public);
             await PrintIllusts(bookmarks);
         }
 
         private static async Task Search()
         {
-            var search = MakoClient.Search("東方project", pages: 6, sortOption: IllustrationSortOption.PopularityDescending);
+            var search = MakoClient.Search("東方project", pages: 6);
             await PrintIllusts(search);
         }
 
@@ -289,7 +290,7 @@ namespace Mako.Console
 
         public static async Task Main()
         {
-            System.Console.WriteLine((await MakoClient.GetMakoHttpClient(MakoApiKind.ImageApi).GetByteArrayAsync(MakoClient.Session.AvatarUrl)).Length);
+            await Search();
         }
     }
 }
