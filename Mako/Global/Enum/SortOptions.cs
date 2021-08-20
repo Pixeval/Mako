@@ -39,7 +39,9 @@ namespace Mako.Global.Enum
         PublishDateAscending,
 
         [Description("date_desc")]
-        PublishDateDescending
+        PublishDateDescending,
+
+        DoNotSort
     }
 
     [PublicAPI]
@@ -49,6 +51,8 @@ namespace Mako.Global.Enum
         DateAscending,
 
         [Description("date_desc")]
-        DateDescending
+        DateDescending, 
+        
+        DoNotSort
     }
 }

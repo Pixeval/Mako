@@ -290,7 +290,10 @@ namespace Mako.Console
 
         public static async Task Main()
         {
-            await Search();
+            var res = await MakoClient.GetIllustrationFromIdAsync("91909164");
+            var res2 = await MakoClient.GetIllustrationFromIdAsync("91909010");
+            var res3 = await MakoClient.GetIllustrationFromIdAsync("91853925");
+            System.Console.WriteLine(res);
         }
     }
 }

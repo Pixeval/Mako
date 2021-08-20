@@ -98,12 +98,13 @@ namespace Mako.Engine.Implements
                 var startDateSegment = PixivFetchEngine._startDate?.Let(dn => $"&start_date={dn:yyyy-MM-dd}");
                 var endDateSegment = PixivFetchEngine._endDate?.Let(dn => $"&start_date={dn:yyyy-MM-dd}");
                 var durationSegment = PixivFetchEngine._searchDuration?.Let(du => $"&duration={du.GetDescription()}");
+                var sortSegment = PixivFetchEngine._sortOption != IllustrationSortOption.DoNotSort ? $"&sort={PixivFetchEngine._sortOption.GetDescription()}" : string.Empty;
                 return "/v1/search/illust"
                        + $"?search_target={match}"
                        + $"&word={PixivFetchEngine._tag}"
                        + $"&filter={PixivFetchEngine._targetFilter.GetDescription()}"
                        + $"&offset={PixivFetchEngine._current}"
-                       + $"&sort={PixivFetchEngine._sortOption.GetDescription()}{startDateSegment}{endDateSegment}{durationSegment}";
+                       + $"{sortSegment}{startDateSegment}{endDateSegment}{durationSegment}";
             }
         }
     }

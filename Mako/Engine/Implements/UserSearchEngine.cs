@@ -49,8 +49,9 @@ namespace Mako.Engine.Implements
 
         public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new())
         {
+            var sortSegment = _userSortOption != UserSortOption.DoNotSort ? $"&sort={_userSortOption.GetDescription()}" : string.Empty;
             return RecursivePixivAsyncEnumerators.User<UserSearchEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
-                engine => $"https://app-api.pixiv.net/v1/search/user?filter={engine._targetFilter.GetDescription()}&word={engine._keyword}&sort={engine._userSortOption.GetDescription()}")!;
+                engine => $"https://app-api.pixiv.net/v1/search/user?filter={engine._targetFilter.GetDescription()}&word={engine._keyword}{sortSegment}")!;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Mako.Preference
     {
         public async Task<Session> RefreshAsync(MakoClient makoClient)
         {
-            return (await makoClient.Resolve<IAuthEndPoint>().Refresh(new RefreshSessionRequest(makoClient.Session.RefreshToken)).ConfigureAwait(false))
+            return (await makoClient.Resolve<IAuthEndPoint>().RefreshAsync(new RefreshSessionRequest(makoClient.Session.RefreshToken)).ConfigureAwait(false))
                 .ToSession() with
                 {
                     Cookie = makoClient.Session.Cookie,

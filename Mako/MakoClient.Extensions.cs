@@ -49,13 +49,13 @@ namespace Mako
         public async Task<Illustration> GetIllustrationFromIdAsync(string id)
         {
             EnsureNotCancelled();
-            return (await Resolve<IAppApiEndPoint>().GetSingle(id).ConfigureAwait(false)).Illust!;
+            return (await Resolve<IAppApiEndPoint>().GetSingleAsync(id).ConfigureAwait(false)).Illust!;
         }
 
         public async Task<User.Info> GetUserFromIdAsync(string id, TargetFilter targetFilter)
         {
             EnsureNotCancelled();
-            var result = await Resolve<IAppApiEndPoint>().GetSingleUser(new SingleUserRequest(id, targetFilter.GetDescription())).ConfigureAwait(false);
+            var result = await Resolve<IAppApiEndPoint>().GetSingleUserAsync(new SingleUserRequest(id, targetFilter.GetDescription())).ConfigureAwait(false);
             return result.UserEntity!;
         }
 
@@ -68,7 +68,7 @@ namespace Mako
         public Task PostBookmarkAsync(string id, PrivacyPolicy privacyPolicy)
         {
             EnsureNotCancelled();
-            return Resolve<IAppApiEndPoint>().AddBookmark(new AddBookmarkRequest(privacyPolicy.GetDescription(), id));
+            return Resolve<IAppApiEndPoint>().AddBookmarkAsync(new AddBookmarkRequest(privacyPolicy.GetDescription(), id));
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Mako
         public Task RemoveBookmarkAsync(string id)
         {
             EnsureNotCancelled();
-            return Resolve<IAppApiEndPoint>().RemoveBookmark(new RemoveBookmarkRequest(id));
+            return Resolve<IAppApiEndPoint>().RemoveBookmarkAsync(new RemoveBookmarkRequest(id));
         }
 
         /// <summary>
@@ -116,19 +116,19 @@ namespace Mako
         public Task PostFollowUserAsync(string id, PrivacyPolicy privacyPolicy)
         {
             EnsureNotCancelled();
-            return Resolve<IAppApiEndPoint>().FollowUser(new FollowUserRequest(id, privacyPolicy.GetDescription()));
+            return Resolve<IAppApiEndPoint>().FollowUserAsync(new FollowUserRequest(id, privacyPolicy.GetDescription()));
         }
 
         public Task RemoveFollowUserAsync(string id)
         {
             EnsureNotCancelled();
-            return Resolve<IAppApiEndPoint>().RemoveFollowUser(new RemoveFollowUserRequest(id));
+            return Resolve<IAppApiEndPoint>().RemoveFollowUserAsync(new RemoveFollowUserRequest(id));
         }
 
         public async Task<IEnumerable<TrendingTag>> GetTrendingTagsAsync(TargetFilter targetFilter)
         {
             EnsureNotCancelled();
-            return ((await Resolve<IAppApiEndPoint>().GetTrendingTags(targetFilter.GetDescription()).ConfigureAwait(false)).TrendTags ?? Enumerable.Empty<TrendingTagResponse.TrendTag>()).Select(t => new TrendingTag
+            return ((await Resolve<IAppApiEndPoint>().GetTrendingTagsAsync(targetFilter.GetDescription()).ConfigureAwait(false)).TrendTags ?? Enumerable.Empty<TrendingTagResponse.TrendTag>()).Select(t => new TrendingTag
             {
                 Tag = t.TagStr,
                 Translation = t.TranslatedName,
@@ -166,6 +166,11 @@ namespace Mako
             }
 
             return dic;
+        }
+
+        public Task<UgoiraMetadataResponse> GetUgoiraMetadata(string id)
+        {
+            return Resolve<IAppApiEndPoint>().GetUgoiraMetadataAsync(id);
         }
     }
 }

@@ -258,5 +258,51 @@ namespace Mako.Engine
                 return _initialUrlFactory(PixivFetchEngine);
             }
         }
+
+        public abstract class Comment<TFetchEngine> : RecursivePixivAsyncEnumerator<IllustrationCommentsResponse.Comment, IllustrationCommentsResponse, TFetchEngine>
+            where TFetchEngine : class, IFetchEngine<IllustrationCommentsResponse.Comment>
+        {
+            protected Comment([NotNull] TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind) : base(pixivFetchEngine, makoApiKind)
+            {
+            }
+
+            protected override bool ValidateResponse(IllustrationCommentsResponse rawEntity)
+            {
+                return rawEntity.Comments.IsNotNullOrEmpty();
+            }
+
+            protected override string? NextUrl(IllustrationCommentsResponse? rawEntity)
+            {
+                return rawEntity?.NextUrl;
+            }
+
+            protected abstract override string InitialUrl();
+
+            protected override IEnumerator<IllustrationCommentsResponse.Comment>? GetNewEnumerator(IllustrationCommentsResponse? rawEntity)
+            {
+                return rawEntity?.Comments?.GetEnumerator();
+            }
+
+            public static Comment<TFetchEngine> WithInitialUrl(TFetchEngine engine, MakoApiKind kind, Func<TFetchEngine, string> initialUrlFactory)
+            {
+                return new CommentImpl<TFetchEngine>(engine, kind, initialUrlFactory);
+            }
+        }
+
+        private class CommentImpl<TFetchEngine> : Comment<TFetchEngine>
+            where TFetchEngine : class, IFetchEngine<IllustrationCommentsResponse.Comment>
+        {
+            private readonly Func<TFetchEngine, string> _initialUrlFactory;
+
+            public CommentImpl([NotNull] TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind, Func<TFetchEngine, string> initialUrlFactory) : base(pixivFetchEngine, makoApiKind)
+            {
+                _initialUrlFactory = initialUrlFactory;
+            }
+
+            protected override string InitialUrl()
+            {
+                return _initialUrlFactory(PixivFetchEngine);
+            }
+        }
     }
 }

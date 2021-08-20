@@ -24,6 +24,7 @@
 
 #endregion
 
+using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 
 namespace Mako.Model
@@ -31,8 +32,10 @@ namespace Mako.Model
     [PublicAPI]
     public record Tag
     {
+        [JsonPropertyName("name")]
         public string? Name { get; init; }
 
+        [JsonPropertyName("translated_name")]
         public string? TranslatedName { get; init; }
     }
 }

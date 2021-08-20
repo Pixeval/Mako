@@ -30,6 +30,7 @@ using Mako.Engine.Implements;
 using Mako.Global.Enum;
 using Mako.Global.Exception;
 using Mako.Model;
+using Mako.Net.Response;
 using Mako.Util;
 
 namespace Mako
@@ -68,7 +69,7 @@ namespace Mako
             EnsureNotCancelled();
             if (sortOption == IllustrationSortOption.PopularityDescending && !Session.IsPremium)
             {
-                throw new IllegalSortOptionException();
+                sortOption = IllustrationSortOption.DoNotSort;
             }
 
             return new SearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, start, pages, sortOption, searchDuration, startDate, endDate, targetFilter);
@@ -183,6 +184,18 @@ namespace Mako
             EnsureNotCancelled();
             CheckPrivacyPolicy(uid, privacyPolicy);
             return new NovelBookmarkEngine(this, uid, privacyPolicy, targetFilter, new EngineHandle(CancelInstance));
+        }
+
+        public IFetchEngine<IllustrationCommentsResponse.Comment> IllustrationComments(string illustId)
+        {
+            EnsureNotCancelled();
+            return new IllustrationCommentsEngine(illustId, this, new EngineHandle(CancelInstance));
+        }
+
+        public IFetchEngine<IllustrationCommentsResponse.Comment> IllustrationCommentReplies(string commentId)
+        {
+            EnsureNotCancelled();
+            return new IllustrationCommentRepliesEngine(commentId, this, new EngineHandle(CancelInstance));
         }
     }
 }

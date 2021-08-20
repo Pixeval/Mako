@@ -35,6 +35,6 @@ namespace Mako.Net.EndPoints
     internal interface IAuthEndPoint
     {
         [Post("/auth/token")]
-        Task<TokenResponse> Refresh([Body(BodySerializationMethod.UrlEncoded)] RefreshSessionRequest request);
+        Task<TokenResponse> RefreshAsync([Body(BodySerializationMethod.UrlEncoded)] RefreshSessionRequest request);
     }
 }
