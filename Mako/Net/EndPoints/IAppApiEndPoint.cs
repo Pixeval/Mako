@@ -1,64 +1,110 @@
-﻿#region Copyright (c) Pixeval/Mako
-
-// MIT License
-// 
-// Copyright (c) Pixeval 2021 Mako/IAppApiEndPoint.cs
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-#endregion
+// Copyright (c) Pixeval.CoreApi.
+// Licensed under the GPL v3 License.
 
 using System.Net.Http;
 using System.Threading.Tasks;
 using Mako.Net.Request;
 using Mako.Net.Response;
-using Refit;
+using WebApiClientCore;
+using WebApiClientCore.Attributes;
 
-namespace Mako.Net.EndPoints
+namespace Mako.Net.EndPoints;
+
+/// <summary>
+/// 方法上 [LoggingFilter] 输出日志
+/// </summary>
+[HttpHost(MakoHttpOptions.AppApiBaseUrl)]
+public interface IAppApiEndPoint
 {
-    internal interface IAppApiEndPoint
-    {
-        [Post("/v2/illust/bookmark/add")]
-        Task<HttpResponseMessage> AddBookmarkAsync([Body(BodySerializationMethod.UrlEncoded)] AddBookmarkRequest request);
+    [HttpPost("/v2/illust/bookmark/add")]
+    Task<HttpResponseMessage> AddIllustBookmarkAsync([FormContent] AddIllustBookmarkRequest request);
 
-        [Post("/v1/illust/bookmark/delete")]
-        Task<HttpResponseMessage> RemoveBookmarkAsync([Body(BodySerializationMethod.UrlEncoded)] RemoveBookmarkRequest request);
+    [HttpPost("/v1/illust/bookmark/delete")]
+    Task<HttpResponseMessage> RemoveIllustBookmarkAsync([FormContent] RemoveIllustBookmarkRequest request);
 
-        [Get("/v1/illust/detail")]
-        Task<PixivSingleIllustResponse> GetSingleAsync([AliasAs("illust_id")] string id);
+    [HttpPost("/v2/novel/bookmark/add")]
+    Task<HttpResponseMessage> AddNovelBookmarkAsync([FormContent] AddNovelBookmarkRequest request);
 
-        [Get("/v1/user/detail")]
-        Task<PixivSingleUserResponse> GetSingleUserAsync(SingleUserRequest request);
+    [HttpPost("/v1/novel/bookmark/delete")]
+    Task<HttpResponseMessage> RemoveNovelBookmarkAsync([FormContent] RemoveNovelBookmarkRequest request);
 
-        [Post("/v1/user/follow/add")]
-        Task<HttpResponseMessage> FollowUserAsync([Body(BodySerializationMethod.UrlEncoded)] FollowUserRequest request);
+    [Cache(60 * 1000)]
+    [HttpGet("/v1/illust/detail")]
+    Task<PixivSingleIllustResponse> GetSingleIllustAsync([AliasAs("illust_id")] long id);
 
-        [Post("/v1/user/follow/delete")]
-        Task<HttpResponseMessage> RemoveFollowUserAsync([Body(BodySerializationMethod.UrlEncoded)] RemoveFollowUserRequest request);
+    [Cache(60 * 1000)]
+    [HttpGet("/v1/user/detail")]
+    Task<PixivSingleUserResponse> GetSingleUserAsync([AliasAs("user_id")] long id, string filter);
 
-        [Get("/v1/trending-tags/illust")]
-        Task<TrendingTagResponse> GetTrendingTagsAsync([AliasAs("filter")] string filter);
+    [Cache(60 * 1000)]
+    [HttpGet("/v2/novel/detail")]
+    Task<PixivSingleNovelResponse> GetSingleNovelAsync([AliasAs("novel_id")] long id);
 
-        [Get("/v1/ugoira/metadata")]
-        Task<UgoiraMetadataResponse> GetUgoiraMetadataAsync([AliasAs("illust_id")] string id);
+    [Cache(60 * 1000)]
+    [HttpGet("/webview/v2/novel")]
+    Task<string> GetNovelContentAsync(long id, bool raw = false);
+    /*
+    [AliasAs("viewer_version")] string viewerVersion = "20221031_ai",
+    [AliasAs("font")] string x1 = "mincho",
+    [AliasAs("font_size")] string x2 = "1.0em",
+    [AliasAs("line_height")] string x3 = "1.8",
+    [AliasAs("color")] string x4 = "#1F1F1F",
+    [AliasAs("background_color")] string x5 = "#FFFFFF",
+    [AliasAs("mode")] string x6 = "horizontal",
+    [AliasAs("theme")] string x7 = "light",
+    [AliasAs("margin_top")] string x8 = "60px",
+    [AliasAs("margin_bottom")] string x9 = "50px"
+    */
 
-        [Post("/v1/illust/comment/add")]
-        Task<HttpResponseMessage> PostIllustrationCommentAsync([Body(BodySerializationMethod.UrlEncoded)] PostIllustrationCommentRequest request);
-    }
+    [HttpGet("/v1/user/related")]
+    Task<PixivRelatedUsersResponse> RelatedUserAsync([AliasAs("seed_user_id")] long userId, string filter);
+
+    [HttpPost("/v1/user/follow/add")]
+    Task<HttpResponseMessage> FollowUserAsync([FormContent] FollowUserRequest request);
+
+    [HttpPost("/v1/user/follow/delete")]
+    Task<HttpResponseMessage> RemoveFollowUserAsync([FormContent] RemoveFollowUserRequest request);
+
+    [HttpGet("/v1/trending-tags/illust")]
+    Task<TrendingTagResponse> GetTrendingTagsAsync(string filter);
+
+    [HttpGet("/v1/trending-tags/novel")]
+    Task<TrendingTagResponse> GetTrendingTagsForNovelAsync(string filter);
+
+    [Cache(60 * 1000)]
+    [HttpGet("/v1/ugoira/metadata")]
+    Task<UgoiraMetadataResponse> GetUgoiraMetadataAsync([AliasAs("illust_id")] long id);
+
+    [HttpGet("/v2/search/autocomplete")]
+    Task<AutoCompletionResponse> GetAutoCompletionAsync(string word, [AliasAs("merge_plain_keyword_results")] bool mergePlainKeywordResult = true);
+
+    [HttpPost("/v1/illust/comment/add")]
+    Task<PostCommentResponse> AddIllustCommentAsync([FormContent] AddNormalIllustCommentRequest request);
+
+    [HttpPost("/v1/illust/comment/add")]
+    Task<PostCommentResponse> AddIllustCommentAsync([FormContent] AddStampIllustCommentRequest request);
+
+    [HttpPost("/v1/illust/comment/delete")]
+    Task<HttpResponseMessage> DeleteIllustCommentAsync([FormContent] DeleteCommentRequest request);
+
+    [HttpPost("/v1/novel/comment/add")]
+    Task<PostCommentResponse> AddNovelCommentAsync([FormContent] AddNormalNovelCommentRequest request);
+
+    [HttpPost("/v1/novel/comment/add")]
+    Task<PostCommentResponse> AddNovelCommentAsync([FormContent] AddStampNovelCommentRequest request);
+
+    [HttpPost("/v1/novel/comment/delete")]
+    Task<HttpResponseMessage> DeleteNovelCommentAsync([FormContent] DeleteCommentRequest request);
+
+    [HttpGet("/v1/user/ai-show-settings")]
+    Task<ShowAiSettingsResponse> GetAiShowSettingsAsync();
+
+    [HttpPost("/v1/user/ai-show-settings/edit")]
+    Task<HttpResponseMessage> PostAiShowSettingsAsync([FormContent] ShowAiSettingsRequest request);
+
+    [HttpGet("/v1/user/restricted-mode-settings")]
+    Task<RestrictedModeSettingsResponse> GetRestrictedModeSettingsAsync();
+
+    [HttpPost("/v1/user/restricted-mode-settings")]
+    Task<HttpResponseMessage> PostRestrictedModeSettingsAsync([FormContent] RestrictedModeSettingsRequest request);
 }

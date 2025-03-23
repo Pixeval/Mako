@@ -1,62 +1,40 @@
-﻿#region Copyright (c) Pixeval/Mako
-
-// MIT License
-// 
-// Copyright (c) Pixeval 2021 Mako/MakoClient.Properties.cs
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-#endregion
+// Copyright (c) Pixeval.CoreApi.
+// Licensed under the GPL v3 License.
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using Autofac;
 using Mako.Engine;
+using Mako.Model;
+using Mako.Net;
 using Mako.Preference;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
-namespace Mako
+namespace Mako;
+
+public partial class MakoClient
 {
-    public partial class MakoClient
-    {
-        private readonly List<IEngineHandleSource> _runningInstances = new();
+    private readonly List<IEngineHandleSource> _runningInstances = [];
 
-        /// <summary>
-        ///     The globally unique ID of current <see cref="MakoClient" />
-        /// </summary>
-        public Guid Id { get; } = Guid.NewGuid();
+    /// <summary>
+    /// The globally unique ID of current <see cref="MakoClient" />
+    /// </summary>
+    public Guid Id { get; } = Guid.NewGuid();
 
-        public Session Session { get; private set; }
+    public TokenUser Me => Provider.GetRequiredService<PixivTokenProvider>().Me;
 
-        public MakoClientConfiguration Configuration { get; set; }
+    public TokenUser? TryGetMe() => Provider.GetService<PixivTokenProvider>()?.Me;
 
-        internal ISessionUpdate SessionUpdater { get; }
+    public MakoClientConfiguration Configuration { get; set; }
 
-        /// <summary>
-        ///     The IoC container
-        /// </summary>
-        internal IContainer MakoServices { get; init; }
+    public ILogger Logger { get; }
 
-        /// <summary>
-        ///     The <see cref="CancellationTokenSource" /> that is used to cancel ths <see cref="MakoClient" />\
-        ///     and all of its running engines
-        /// </summary>
-        public CancellationTokenSource CancellationTokenSource { get; set; }
-    }
+    /// <summary>
+    /// The IoC container
+    /// </summary>
+    internal ServiceCollection Services { get; } = [];
+
+    internal ServiceProvider Provider { get; }
+
+    public bool IsCancelled { get; set; }
 }

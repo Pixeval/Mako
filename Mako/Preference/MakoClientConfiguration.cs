@@ -1,76 +1,54 @@
-﻿#region Copyright (c) Pixeval/Mako
-
-// MIT License
-// 
-// Copyright (c) Pixeval 2021 Mako/MakoClientConfiguration.cs
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-#endregion
+// Copyright (c) Pixeval.CoreApi.
+// Licensed under the GPL v3 License.
 
 using System.Globalization;
+using System.Net.Http.Headers;
 using System.Text.Json.Serialization;
-using JetBrains.Annotations;
 
-namespace Mako.Preference
+namespace Mako.Preference;
+
+/// <summary>
+/// Contains all the user-configurable keys
+/// </summary>
+public record MakoClientConfiguration(
+    int ConnectionTimeout,
+    bool DomainFronting,
+    string? Proxy,
+    string? Cookie,
+    string? MirrorHost,
+    CultureInfo CultureInfo)
 {
+    public MakoClientConfiguration() : this(5000, false, "", "", "", CultureInfo.CurrentCulture) { }
+
+    [JsonIgnore] public CultureInfo CultureInfo { get; set; } = CultureInfo;
+
+    [JsonPropertyName("userAgent")]
+    public ProductInfoHeaderValue[] UserAgent { get; set; } =
+    [
+        new("Mozilla", "5.0"),
+        new("(Windows NT 10.0; Win64; x64)"),
+        new("AppleWebKit", "537.36"),
+        new("(KHTML, like Gecko)"),
+        new("Chrome", "133.0.0.0"),
+        new("Safari", "537.36"),
+        new("Edg", "133.0.0.0")
+    ];
+
+    [JsonPropertyName("connectionTimeout")]
+    public int ConnectionTimeout { get; set; } = ConnectionTimeout;
+
+    [JsonPropertyName("domainFronting")]
+    public bool DomainFronting { get; set; } = DomainFronting;
+
+    [JsonPropertyName("proxy")]
+    public string? Proxy { get; set; } = Proxy;
+
+    [JsonPropertyName("cookie")]
+    public string? Cookie { get; set; } = Cookie;
+
     /// <summary>
-    ///     Contains all the user-configurable keys
+    /// Mirror server's host of image downloading
     /// </summary>
-    [PublicAPI]
-    public record MakoClientConfiguration
-    {
-        public MakoClientConfiguration()
-        {
-            CultureInfo = CultureInfo.CurrentCulture;
-            ConnectionTimeout = 5000;
-            Bypass = false;
-            MirrorHost = string.Empty;
-        }
-
-        public MakoClientConfiguration(int connectionTimeout, bool bypass, string? mirrorHost, CultureInfo cultureInfo)
-        {
-            ConnectionTimeout = connectionTimeout;
-            Bypass = bypass;
-            MirrorHost = mirrorHost;
-            CultureInfo = cultureInfo;
-        }
-
-        [JsonIgnore]
-        public CultureInfo CultureInfo { get; set; }
-
-        [JsonPropertyName("connectionTimeout")]
-        public int ConnectionTimeout { get; set; }
-
-        /// <summary>
-        ///     Automatically bypass GFW or not, default is set to true.
-        ///     If you are currently living in China Mainland, turn it on to make sure
-        ///     you can use Mako without using any kind of proxy, otherwise you will
-        ///     need a proper proxy server to bypass the GFW
-        /// </summary>
-        [JsonPropertyName("bypass")]
-        public bool Bypass { get; set; }
-
-        /// <summary>
-        ///     Mirror server's host of image downloading
-        /// </summary>
-        [JsonPropertyName("mirrorHost")]
-        public string? MirrorHost { get; set; }
-    }
+    [JsonPropertyName("mirrorHost")]
+    public string? MirrorHost { get; set; } = MirrorHost;
 }

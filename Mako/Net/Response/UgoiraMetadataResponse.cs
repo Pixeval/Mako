@@ -1,35 +1,55 @@
-﻿using System.Collections.Generic;
+// Copyright (c) Pixeval.CoreApi.
+// Licensed under the GPL v3 License.
+
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
+using Mako.Utilities;
 
-namespace Mako.Net.Response
+namespace Mako.Net.Response;
+
+[Factory]
+public partial record UgoiraMetadataResponse
 {
-    public class UgoiraMetadataResponse
-    {
-        [JsonPropertyName("ugoira_metadata")]
-        public UgoiraMetadata? UgoiraMetadataInfo { get; set; }
-    }
+    [JsonPropertyName("ugoira_metadata")]
+    public required UgoiraMetadata UgoiraMetadataInfo { get; set; }
 
-    public class UgoiraMetadata
-    {
-        [JsonPropertyName("zip_urls")]
-        public ZipUrls? ZipUrls { get; set; }
+    public int FrameCount => UgoiraMetadataInfo.Frames.Length;
 
-        [JsonPropertyName("frames")]
-        public IEnumerable<Frame>? Frames { get; set; }
-    }
+    public IEnumerable<int> Delays => UgoiraMetadataInfo.Frames.Select(t => (int) t.Delay);
 
-    public class Frame
-    {
-        [JsonPropertyName("file")]
-        public string? File { get; set; }
+    public string MediumUrl => UgoiraMetadataInfo.ZipUrls.Medium;
 
-        [JsonPropertyName("delay")]
-        public long Delay { get; set; }
-    }
+    public string LargeUrl => UgoiraMetadataInfo.ZipUrls.Large;
 
-    public class ZipUrls
-    {
-        [JsonPropertyName("medium")]
-        public string? Medium { get; set; }
-    }
+    public string OrignalUrl => UgoiraMetadataInfo.ZipUrls.Large.Replace("1920x1080", "");
+}
+
+[Factory]
+public partial record UgoiraMetadata
+{
+    [JsonPropertyName("zip_urls")]
+    public required ZipUrls ZipUrls { get; set; }
+
+    [JsonPropertyName("frames")]
+    public required Frame[] Frames { get; set; } = [];
+}
+
+[Factory]
+public partial record Frame
+{
+    [JsonPropertyName("file")]
+    public required string File { get; set; } = "";
+
+    [JsonPropertyName("delay")]
+    public required long Delay { get; set; }
+}
+
+[Factory]
+public partial record ZipUrls
+{
+    [JsonPropertyName("medium")]
+    public required string Medium { get; set; } = DefaultImageUrls.ImageNotAvailable;
+
+    public string Large => Medium.Replace("600x600", "1920x1080");
 }

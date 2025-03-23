@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Alphabetical">
+  <Class Name="Mako.Engine.Implements.AdaptedComputedFetchEngine&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="100" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAAIAAAAACAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Engine\Implements\AdaptedComputedFetchEngine.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mako.Engine.Implements.FeedEngine" Collapsed="true">
+    <Position X="33.5" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\FeedEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.FollowingEngine" Collapsed="true">
+    <Position X="46" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\FollowingEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.IllustrationCommentRepliesEngine" Collapsed="true">
+    <Position X="58.5" Y="3.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\IllustrationCommentRepliesEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.IllustrationCommentsEngine" Collapsed="true">
+    <Position X="10.75" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\IllustrationCommentsEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.NovelBookmarkEngine" Collapsed="true">
+    <Position X="24" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\NovelBookmarkEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.PostedIllustrationEngine" Collapsed="true">
+    <Position X="36.5" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\PostedIllustrationEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.SpotlightEngine" Collapsed="true">
+    <Position X="49" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\SpotlightEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.PostedNovelEngine" Collapsed="true">
+    <Position X="62" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\PostedNovelEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.RecentPostedIllustrationEngine" Collapsed="true">
+    <Position X="27" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\RecentPostedIllustrationEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.RecommendIllustratorEngine" Collapsed="true">
+    <Position X="52.25" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\RecommendIllustratorEnumerable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.RelatedWorksFetchEngine" Collapsed="true">
+    <Position X="65" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\RelatedWorksFetchEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.IllustrationBookmarkEngine" Collapsed="true">
+    <Position X="30.25" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\IllustrationBookmarkEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.UserSearchEngine" Collapsed="true">
+    <Position X="55.5" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\UserSearchEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.AbstractPixivFetchEngine&lt;TE&gt;" Collapsed="true">
+    <Position X="53.75" Y="2.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAIAAAAACAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Engine\AbstractPixivFetchEngine.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Mako.Engine.ComputedFetchEngine&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="101.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAIAAAAACAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Engine\ComputedFetchEngine.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Mako.Engine.Implements.IllustrationBookmarkTagEngine" Collapsed="true">
+    <Position X="20.5" Y="3.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\IllustrationBookmarkTagEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.IllustrationNewEngine" Collapsed="true">
+    <Position X="17.25" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\IllustrationNewEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.IllustrationRankingEngine" Collapsed="true">
+    <Position X="14" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\IllustrationRankingEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.IllustrationSearchEngine" Collapsed="true">
+    <Position X="39.75" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\IllustrationSearchEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.MyPixivUserEngine" Collapsed="true">
+    <Position X="43" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\MyPixivUserEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.NovelBookmarkTagEngine" Collapsed="true">
+    <Position X="68.25" Y="3.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\NovelBookmarkTagEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.NovelCommentRepliesEngine" Collapsed="true">
+    <Position X="71.75" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\NovelCommentRepliesEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.NovelCommentsEngine" Collapsed="true">
+    <Position X="75" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\NovelCommentsEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.NovelNewEngine" Collapsed="true">
+    <Position X="78.25" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\NovelNewEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.NovelRankingEngine" Collapsed="true">
+    <Position X="81.25" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\NovelRankingEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.NovelSearchEngine" Collapsed="true">
+    <Position X="84.25" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\NovelSearchEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.RecentPostedNovelEngine" Collapsed="true">
+    <Position X="87.25" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\RecentPostedNovelEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.RecommendIllustrationEngine" Collapsed="true">
+    <Position X="90.25" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\RecommendIllustrationEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.RecommendMangaEngine" Collapsed="true">
+    <Position X="93.5" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\RecommendMangaEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.Implements.RecommendNovelEngine" Collapsed="true">
+    <Position X="96.75" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Engine\Implements\RecommendNovelEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.RecursivePixivAsyncEnumerator&lt;TEntity, TRawEntity, TFetchEngine&gt;" Collapsed="true">
+    <Position X="6.5" Y="6.75" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAABQIgIAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>Engine\RecursivePixivFetchEngine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Mako.Engine.AbstractPixivAsyncEnumerator&lt;TEntity, TRawEntity, TFetchEngine&gt;" Collapsed="true">
+    <Position X="6.5" Y="5.5" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAIAAAECAAABAAAIAAAAAAAgAAAAAADA=</HashCode>
+      <FileName>Engine\AbstractPixivAsyncEnumerator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>

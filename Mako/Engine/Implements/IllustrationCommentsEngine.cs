@@ -1,24 +1,18 @@
-﻿using System.Collections.Generic;
+// Copyright (c) Pixeval.CoreApi.
+// Licensed under the GPL v3 License.
+
+using System.Collections.Generic;
 using System.Threading;
-using JetBrains.Annotations;
-using Mako.Net;
-using Mako.Net.Response;
+using Mako.Model;
 
-namespace Mako.Engine.Implements
+namespace Mako.Engine.Implements;
+
+public class IllustrationCommentsEngine(long illustId, MakoClient makoClient, EngineHandle? engineHandle)
+    : AbstractPixivFetchEngine<Comment>(makoClient, engineHandle)
 {
-    public class IllustrationCommentsEngine : AbstractPixivFetchEngine<IllustrationCommentsResponse.Comment>
-    {
-        private readonly string _illustId;
-
-        public IllustrationCommentsEngine(string illustId, [NotNull] MakoClient makoClient, EngineHandle? engineHandle) : base(makoClient, engineHandle)
-        {
-            _illustId = illustId;
-        }
-
-        public override IAsyncEnumerator<IllustrationCommentsResponse.Comment> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())
-        {
-            return RecursivePixivAsyncEnumerators.Comment<IllustrationCommentsEngine>.WithInitialUrl(this, MakoApiKind.AppApi,
-                engine => $"/v3/illust/comments?illust_id={engine._illustId}")!;
-        }
-    }
+    public override IAsyncEnumerator<Comment> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+        new RecursivePixivAsyncEnumerators.Comment<IllustrationCommentsEngine>(
+            this,
+            $"/v3/illust/comments" +
+            $"?illust_id={illustId}");
 }

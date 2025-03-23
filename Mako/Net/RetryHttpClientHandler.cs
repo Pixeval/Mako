@@ -1,80 +1,44 @@
-﻿#region Copyright (c) Pixeval/Mako
+// Copyright (c) Pixeval.CoreApi.
+// Licensed under the GPL v3 License.
 
-// MIT License
-// 
-// Copyright (c) Pixeval 2021 Mako/RetryHttpClientHandler.cs
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-#endregion
-
-using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Mako.Global;
-using Mako.Util;
+using Mako.Utilities;
 
-namespace Mako.Net
+namespace Mako.Net;
+
+internal class RetryHttpClientHandler(HttpMessageHandler delegatedHandler, int timeout) : HttpMessageHandler
 {
-    internal class RetryHttpClientHandler : HttpMessageHandler
+    private readonly HttpMessageInvoker _delegatedHandler = new(delegatedHandler);
+
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        private readonly int _timeout;
-        private readonly HttpMessageInvoker _delegatedHandler;
-
-        public RetryHttpClientHandler(HttpMessageHandler delegatedHandler, int timeout)
+        var result = await Functions.RetryAsync(() => _delegatedHandler.SendAsync(request, cancellationToken), 2, timeout).ConfigureAwait(false);
+        return result switch
         {
-            _timeout = timeout;
-            _delegatedHandler = new HttpMessageInvoker(delegatedHandler);
-        }
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            return await Functions.RetryAsync(() => _delegatedHandler.SendAsync(request, cancellationToken), 2, _timeout).ConfigureAwait(false) switch
-            {
-                Result<HttpResponseMessage>.Success(var response) => response,
-                Result<HttpResponseMessage>.Failure failure       => throw failure.Cause ?? new HttpRequestException(),
-                _                                                 => throw new InvalidOperationException("Unexpected case")
-            };
-        }
+            Result<HttpResponseMessage>.Success(var response) => response,
+            Result<HttpResponseMessage>.Failure failure => ThrowHelper.Throw<HttpResponseMessage>(failure.Cause ?? new HttpRequestException()),
+            _ => ThrowHelper.ArgumentOutOfRange<Result<HttpResponseMessage>, HttpResponseMessage>(result, "Unexpected case")
+        };
     }
+}
 
-    internal class MakoRetryHttpClientHandler : HttpMessageHandler, IMakoClientSupport
+internal class MakoRetryHttpClientHandler(MakoClient makoClient, HttpMessageHandler delegatedHandler) : HttpMessageHandler, IMakoClientSupport
+{
+    private readonly HttpMessageInvoker _delegatedHandler = new(delegatedHandler);
+
+    public MakoClient MakoClient { get; set; } = makoClient;
+
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        private readonly HttpMessageInvoker _delegatedHandler;
-
-        public MakoRetryHttpClientHandler(HttpMessageHandler delegatedHandler)
+        var result = await Functions.RetryAsync(() => _delegatedHandler.SendAsync(request, cancellationToken), 2, MakoClient.Configuration.ConnectionTimeout).ConfigureAwait(false);
+        return result switch
         {
-            _delegatedHandler = new HttpMessageInvoker(delegatedHandler);
-        }
-
-        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global ! Dependency Injected
-        public MakoClient MakoClient { get; set; } = null!;
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            return await Functions.RetryAsync(() => _delegatedHandler.SendAsync(request, cancellationToken), 2, MakoClient!.Configuration.ConnectionTimeout).ConfigureAwait(false) switch
-            {
-                Result<HttpResponseMessage>.Success (var response) => response,
-                Result<HttpResponseMessage>.Failure failure        => throw failure.Cause ?? new HttpRequestException(),
-                _                                                  => throw new InvalidOperationException("Unexpected case")
-            };
-        }
+            Result<HttpResponseMessage>.Success(var response) => response,
+            Result<HttpResponseMessage>.Failure failure => ThrowHelper.Throw<HttpResponseMessage>(failure.Cause ?? new HttpRequestException()),
+            _ => ThrowHelper.ArgumentOutOfRange<Result<HttpResponseMessage>, HttpResponseMessage>(result, "Unexpected case")
+        };
     }
 }

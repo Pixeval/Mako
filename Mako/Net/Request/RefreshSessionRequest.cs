@@ -1,58 +1,28 @@
-﻿#region Copyright (c) Pixeval/Mako
+// Copyright (c) Pixeval.CoreApi.
+// Licensed under the GPL v3 License.
 
-// MIT License
-// 
-// Copyright (c) Pixeval 2021 Mako/RefreshSessionRequest.cs
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+using System.Text.Json.Serialization;
 
-#endregion
-
-using Refit;
-
-namespace Mako.Net.Request
-{
-    // ReSharper disable UnusedMember.Global
-    // ReSharper disable UnusedAutoPropertyAccessor.Global
-    // ReSharper disable MemberCanBePrivate.Global
+namespace Mako.Net.Request;
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBePrivate.Global
 #pragma warning disable CA1822
-    internal class RefreshSessionRequest
-    {
-        public RefreshSessionRequest(string? refreshToken)
-        {
-            RefreshToken = refreshToken;
-        }
+public class RefreshSessionRequest(string? refreshToken)
+{
+    [JsonPropertyName("refresh_token")]
+    public string? RefreshToken { get; } = refreshToken;
 
-        [AliasAs("refresh_token")]
-        public string? RefreshToken { get; }
+    [JsonPropertyName("grant_type")]
+    public string GrantType => "refresh_token";
 
-        [AliasAs("grant_type")]
-        public string GrantType => "refresh_token";
+    [JsonPropertyName("client_id")]
+    public string ClientId => "MOBrBDS8blbauoSck0ZfDbtuzpyT";
 
-        [AliasAs("client_id")]
-        public string ClientId => "MOBrBDS8blbauoSck0ZfDbtuzpyT";
+    [JsonPropertyName("client_secret")]
+    public string ClientSecret => "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj";
 
-        [AliasAs("client_secret")]
-        public string ClientSecret => "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj";
-
-        [AliasAs("include_policy")]
-        public string IncludePolicy => "true";
-    }
-#pragma warning restore CA1822
+    [JsonPropertyName("include_policy")]
+    public string IncludePolicy => "true";
 }
+#pragma warning restore CA1822

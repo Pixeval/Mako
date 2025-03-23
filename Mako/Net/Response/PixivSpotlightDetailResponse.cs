@@ -1,345 +1,329 @@
-﻿#region Copyright (c) Pixeval/Mako
+// Copyright (c) Pixeval.CoreApi.
+// Licensed under the GPL v3 License.
 
-// MIT License
-// 
-// Copyright (c) Pixeval 2021 Mako/PixivSpotlightDetailResponse.cs
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-#endregion
-
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Mako.Utilities;
 
-namespace Mako.Net.Response
+namespace Mako.Net.Response;
+
+[Factory]
+public partial record PixivSpotlightDetailResponse
 {
-    // ReSharper disable UnusedAutoPropertyAccessor.Global
-    internal class PixivSpotlightDetailResponse
-    {
-        [JsonPropertyName("error")]
-        public bool Error { get; set; }
+    [JsonPropertyName("error")]
+    public required bool Error { get; set; }
 
-        [JsonPropertyName("message")]
-        public string? Message { get; set; }
+    [JsonPropertyName("message")]
+    public required string Message { get; set; } = "";
 
-        [JsonPropertyName("body")]
-        public IEnumerable<Body>? ResponseBody { get; set; }
+    [JsonPropertyName("body")]
+    public required SpotlightBody[] ResponseBody { get; set; } = [];
+}
 
-        public class Body
-        {
-            [JsonPropertyName("id")]
-            public string? Id { get; set; }
+[Factory]
+public partial record SpotlightBody
+{
+    [JsonPropertyName("id")]
+    public required string Id { get; set; } = "";
 
-            [JsonPropertyName("lang")]
-            public string? Lang { get; set; }
+    [JsonPropertyName("lang")]
+    public required string Lang { get; set; } = "";
 
-            [JsonPropertyName("entry")]
-            public Entry? Entry { get; set; }
+    [JsonPropertyName("entry")]
+    public required Entry Entry { get; set; }
 
-            [JsonPropertyName("tags")]
-            public IEnumerable<Tag>? Tags { get; set; }
+    [JsonPropertyName("tags")]
+    public required PixivisionTag[] Tags { get; set; } = [];
 
-            [JsonPropertyName("thumbnailUrl")]
-            public string? ThumbnailUrl { get; set; }
+    [JsonPropertyName("thumbnailUrl")]
+    public required string ThumbnailUrl { get; set; } = "";
 
-            [JsonPropertyName("title")]
-            public string? Title { get; set; }
+    [JsonPropertyName("title")]
+    public required string Title { get; set; } = "";
 
-            [JsonPropertyName("publishDate")]
-            public long PublishDate { get; set; }
+    [JsonPropertyName("publishDate")]
+    public required long PublishDate { get; set; }
 
-            [JsonPropertyName("category")]
-            public string? Category { get; set; }
+    [JsonPropertyName("category")]
+    public required string Category { get; set; } = "";
 
-            [JsonPropertyName("subCategory")]
-            public string? SubCategory { get; set; }
+    [JsonPropertyName("subCategory")]
+    public required string SubCategory { get; set; } = "";
 
-            [JsonPropertyName("subCategoryLabel")]
-            public string? SubCategoryLabel { get; set; }
+    [JsonPropertyName("subCategoryLabel")]
+    public required string SubCategoryLabel { get; set; } = "";
 
-            [JsonPropertyName("subCategoryIntroduction")]
-            public string? SubCategoryIntroduction { get; set; }
+    [JsonPropertyName("subCategoryIntroduction")]
+    public required string SubCategoryIntroduction { get; set; } = "";
 
-            [JsonPropertyName("introduction")]
-            public string? Introduction { get; set; }
+    [JsonPropertyName("introduction")]
+    public required string Introduction { get; set; } = "";
 
-            [JsonPropertyName("footer")]
-            public string? Footer { get; set; }
+    [JsonPropertyName("footer")]
+    public required string Footer { get; set; } = "";
 
-            [JsonPropertyName("illusts")]
-            public IEnumerable<Illust>? Illusts { get; set; }
+    [JsonPropertyName("illusts")]
+    public required Illust[] Illusts { get; set; } = [];
 
-            [JsonPropertyName("relatedArticles")]
-            public IEnumerable<RelatedArticle>? RelatedArticles { get; set; }
+    [JsonPropertyName("relatedArticles")]
+    public required RelatedArticle[] RelatedArticles { get; set; } = [];
 
-            [JsonPropertyName("isOnlyOneUser")]
-            public bool? IsOnlyOneUser { get; set; }
-        }
+    [JsonPropertyName("isOnlyOneUser")]
+    public required bool IsOnlyOneUser { get; set; }
+}
 
-        public class Entry
-        {
-            [JsonPropertyName("id")]
-            public string? Id { get; set; }
+[Factory]
+public partial record Entry
+{
+    [JsonPropertyName("id")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)]
+    public required long Id { get; set; }
 
-            [JsonPropertyName("title")]
-            public string? Title { get; set; }
+    [JsonPropertyName("title")]
+    public required string Title { get; set; } = "";
 
-            [JsonPropertyName("pure_title")]
-            public string? PureTitle { get; set; }
+    [JsonPropertyName("pure_title")]
+    public required string PureTitle { get; set; } = "";
 
-            [JsonPropertyName("catchphrase")]
-            public string? Catchphrase { get; set; }
+    [JsonPropertyName("catchphrase")]
+    public required string Catchphrase { get; set; } = "";
 
-            [JsonPropertyName("header")]
-            public string? Header { get; set; }
+    [JsonPropertyName("header")]
+    public required string Header { get; set; } = "";
 
-            [JsonPropertyName("footer")]
-            public string? Footer { get; set; }
+    [JsonPropertyName("footer")]
+    public required string Footer { get; set; } = "";
 
-            [JsonPropertyName("sidebar")]
-            public string? Sidebar { get; set; }
+    [JsonPropertyName("sidebar")]
+    public required string Sidebar { get; set; } = "";
 
-            [JsonPropertyName("publish_date")]
-            public long PublishDate { get; set; }
+    [JsonPropertyName("publish_date")]
+    public required long PublishDate { get; set; }
 
-            [JsonPropertyName("language")]
-            public string? Language { get; set; }
+    [JsonPropertyName("language")]
+    public required string Language { get; set; } = "";
 
-            [JsonPropertyName("pixivision_category_slug")]
-            public string? PixivisionCategorySlug { get; set; }
+    [JsonPropertyName("pixivision_category_slug")]
+    public required string PixivisionCategorySlug { get; set; } = "";
 
-            [JsonPropertyName("pixivision_category")]
-            public PixivisionCategory? PixivisionCategory { get; set; }
+    [JsonPropertyName("pixivision_category")]
+    public required PixivisionCategory PixivisionCategory { get; set; }
 
-            [JsonPropertyName("pixivision_subcategory_slug")]
-            public string? PixivisionSubcategorySlug { get; set; }
+    [JsonPropertyName("pixivision_subcategory_slug")]
+    public required string PixivisionSubcategorySlug { get; set; } = "";
 
-            [JsonPropertyName("pixivision_subcategory")]
-            public PixivisionSubcategory? PixivisionSubcategory { get; set; }
+    [JsonPropertyName("pixivision_subcategory")]
+    public required PixivisionSubcategory PixivisionSubcategory { get; set; }
 
-            [JsonPropertyName("tags")]
-            public IEnumerable<Tag>? Tags { get; set; }
+    [JsonPropertyName("tags")]
+    public required PixivisionTag[] Tags { get; set; } = [];
 
-            [JsonPropertyName("article_url")]
-            public string? ArticleUrl { get; set; }
+    [JsonPropertyName("article_url")]
+    public required string ArticleUrl { get; set; } = "";
 
-            [JsonPropertyName("intro")]
-            public string? Intro { get; set; }
+    [JsonPropertyName("intro")]
+    public required string Intro { get; set; } = "";
 
-            [JsonPropertyName("facebook_count")]
-            public string? FacebookCount { get; set; }
+    [JsonPropertyName("facebook_count")]
+    public required string FacebookCount { get; set; } = "";
 
-            [JsonPropertyName("twitter_count")]
-            public string? TwitterCount { get; set; }
-        }
+    [JsonPropertyName("twitter_count")]
+    public required string TwitterCount { get; set; } = "";
+}
 
-        public class PixivisionCategory
-        {
-            [JsonPropertyName("label")]
-            public string? Label { get; set; }
+[Factory]
+public partial record PixivisionCategory
+{
+    [JsonPropertyName("label")]
+    public required string Label { get; set; } = "";
 
-            [JsonPropertyName("introduction")]
-            public string? Introduction { get; set; }
-        }
+    [JsonPropertyName("introduction")]
+    public required string Introduction { get; set; } = "";
+}
 
-        public class PixivisionSubcategory
-        {
-            [JsonPropertyName("label")]
-            public string? Label { get; set; }
+[Factory]
+public partial record PixivisionSubcategory
+{
+    [JsonPropertyName("label")]
+    public required string Label { get; set; } = "";
 
-            [JsonPropertyName("label_en")]
-            public string? LabelEn { get; set; }
+    [JsonPropertyName("label_en")]
+    public required string LabelEn { get; set; } = "";
 
-            [JsonPropertyName("title")]
-            public string? Title { get; set; }
+    [JsonPropertyName("title")]
+    public required string Title { get; set; } = "";
 
-            [JsonPropertyName("introduction")]
-            public string? Introduction { get; set; }
+    [JsonPropertyName("introduction")]
+    public required string Introduction { get; set; } = "";
 
-            [JsonPropertyName("image_url")]
-            public string? ImageUrl { get; set; }
+    [JsonPropertyName("image_url")]
+    public required string ImageUrl { get; set; } = "";
 
-            [JsonPropertyName("big_image_url")]
-            public string? BigImageUrl { get; set; }
-        }
+    [JsonPropertyName("big_image_url")]
+    public required string BigImageUrl { get; set; } = "";
+}
 
-        public class Tag
-        {
-            [JsonPropertyName("id")]
-            public string? Id { get; set; }
+[Factory]
+public partial record PixivisionTag
+{
+    [JsonPropertyName("id")]
+    public required string Id { get; set; } = "";
 
-            [JsonPropertyName("name")]
-            public string? Name { get; set; }
-        }
+    [JsonPropertyName("name")]
+    public required string Name { get; set; } = "";
+}
 
-        public class Illust
-        {
-            [JsonPropertyName("spotlight_article_id")]
-            public long SpotlightArticleId { get; set; }
+[Factory]
+public partial record Illust
+{
+    [JsonPropertyName("spotlight_article_id")]
+    public required long SpotlightArticleId { get; set; }
 
-            [JsonPropertyName("illust_id")]
-            public long IllustId { get; set; }
+    [JsonPropertyName("illust_id")]
+    public required long IllustId { get; set; }
 
-            [JsonPropertyName("description")]
-            public string? Description { get; set; }
+    [JsonPropertyName("description")]
+    public required string Description { get; set; } = "";
 
-            [JsonPropertyName("language")]
-            public string? Language { get; set; }
+    [JsonPropertyName("language")]
+    public required string Language { get; set; } = "";
 
-            [JsonPropertyName("illust_user_id")]
-            public string? IllustUserId { get; set; }
+    [JsonPropertyName("illust_user_id")]
+    public required string IllustUserId { get; set; } = "";
 
-            [JsonPropertyName("illust_title")]
-            public string? IllustTitle { get; set; }
+    [JsonPropertyName("illust_title")]
+    public required string IllustTitle { get; set; } = "";
 
-            [JsonPropertyName("illust_ext")]
-            public string? IllustExt { get; set; }
+    [JsonPropertyName("illust_ext")]
+    public required string IllustExt { get; set; } = "";
 
-            [JsonPropertyName("illust_width")]
-            public string? IllustWidth { get; set; }
+    [JsonPropertyName("illust_width")]
+    public required string IllustWidth { get; set; } = "";
 
-            [JsonPropertyName("illust_height")]
-            public string? IllustHeight { get; set; }
+    [JsonPropertyName("illust_height")]
+    public required string IllustHeight { get; set; } = "";
 
-            [JsonPropertyName("illust_restrict")]
-            public string? IllustRestrict { get; set; }
+    [JsonPropertyName("illust_restrict")]
+    public required string IllustRestrict { get; set; } = "";
 
-            [JsonPropertyName("illust_x_restrict")]
-            public string? IllustXRestrict { get; set; }
+    [JsonPropertyName("illust_x_restrict")]
+    public required string IllustXRestrict { get; set; } = "";
 
-            [JsonPropertyName("illust_create_date")]
-            public string? IllustCreateDate { get; set; }
+    [JsonPropertyName("illust_create_date")]
+    public required string IllustCreateDate { get; set; } = "";
 
-            [JsonPropertyName("illust_upload_date")]
-            public string? IllustUploadDate { get; set; }
+    [JsonPropertyName("illust_upload_date")]
+    public required string IllustUploadDate { get; set; } = "";
 
-            [JsonPropertyName("illust_server_id")]
-            public string? IllustServerId { get; set; }
+    [JsonPropertyName("illust_server_id")]
+    public required string IllustServerId { get; set; } = "";
 
-            [JsonPropertyName("illust_type")]
-            public string? IllustType { get; set; }
+    [JsonPropertyName("illust_type")]
+    public required string IllustType { get; set; } = "";
 
-            [JsonPropertyName("illust_sanity_level")]
-            public long IllustSanityLevel { get; set; }
+    [JsonPropertyName("illust_sanity_level")]
+    public required long IllustSanityLevel { get; set; }
 
-            [JsonPropertyName("illust_book_style")]
-            public string? IllustBookStyle { get; set; }
+    [JsonPropertyName("illust_book_style")]
+    public required string IllustBookStyle { get; set; } = "";
 
-            [JsonPropertyName("illust_page_count")]
-            public string? IllustPageCount { get; set; }
+    [JsonPropertyName("illust_page_count")]
+    public required string IllustPageCount { get; set; } = "";
 
-            [JsonPropertyName("illust_custom_thumbnail_upload_datetime")]
-            public string? IllustCustomThumbnailUploadDatetime { get; set; }
+    [JsonPropertyName("illust_custom_thumbnail_upload_datetime")]
+    public required string IllustCustomThumbnailUploadDatetime { get; set; } = "";
 
-            [JsonPropertyName("illust_comment")]
-            public string? IllustComment { get; set; }
+    [JsonPropertyName("illust_comment")]
+    public required string IllustComment { get; set; } = "";
 
-            [JsonPropertyName("user_account")]
-            public string? UserAccount { get; set; }
+    [JsonPropertyName("user_account")]
+    public required string UserAccount { get; set; } = "";
 
-            [JsonPropertyName("user_name")]
-            public string? UserName { get; set; }
+    [JsonPropertyName("user_name")]
+    public required string UserName { get; set; } = "";
 
-            [JsonPropertyName("user_comment")]
-            public string? UserComment { get; set; }
+    [JsonPropertyName("user_comment")]
+    public required string UserComment { get; set; } = "";
 
-            [JsonPropertyName("url")]
-            public Url? Url { get; set; }
+    [JsonPropertyName("url")]
+    public required Url Url { get; set; }
 
-            [JsonPropertyName("user_icon")]
-            public Uri? UserIcon { get; set; }
-        }
+    [JsonPropertyName("user_icon")]
+    public required string UserIcon { get; set; } = "";
+}
 
-        public class Url
-        {
-            [JsonPropertyName("1200x1200")]
-            public Uri? The1200X1200 { get; set; }
+[Factory]
+public partial record Url
+{
+    [JsonPropertyName("1200x1200")]
+    public required string The1200X1200 { get; set; } = "";
 
-            [JsonPropertyName("768x1200")]
-            public Uri? The768X1200 { get; set; }
+    [JsonPropertyName("768x1200")]
+    public required string The768X1200 { get; set; } = "";
 
-            [JsonPropertyName("ugoira600x600")]
-            public string? Ugoira600X600 { get; set; }
+    [JsonPropertyName("ugoira600x600")]
+    public required string Ugoira600X600 { get; set; } = "";
 
-            [JsonPropertyName("ugoira1920x1080")]
-            public string? Ugoira1920X1080 { get; set; }
-        }
+    [JsonPropertyName("ugoira1920x1080")]
+    public required string Ugoira1920X1080 { get; set; } = "";
+}
 
-        public class RelatedArticle
-        {
-            [JsonPropertyName("id")]
-            public string? Id { get; set; }
+[Factory]
+public partial record RelatedArticle
+{
+    [JsonPropertyName("id")]
+    public required string Id { get; set; } = "";
 
-            [JsonPropertyName("publish_date")]
-            public long? PublishDate { get; set; }
+    [JsonPropertyName("publish_date")]
+    public required long PublishDate { get; set; }
 
-            [JsonPropertyName("category")]
-            public string? Category { get; set; }
+    [JsonPropertyName("category")]
+    public required string Category { get; set; } = "";
 
-            [JsonPropertyName("pixivision_category_slug")]
-            public string? PixivisionCategorySlug { get; set; }
+    [JsonPropertyName("pixivision_category_slug")]
+    public required string PixivisionCategorySlug { get; set; } = "";
 
-            [JsonPropertyName("pixivision_subcategory_slug")]
-            public string? PixivisionSubcategorySlug { get; set; }
+    [JsonPropertyName("pixivision_subcategory_slug")]
+    public required string PixivisionSubcategorySlug { get; set; } = "";
 
-            [JsonPropertyName("thumbnail")]
-            public string? Thumbnail { get; set; }
+    [JsonPropertyName("thumbnail")]
+    public required string Thumbnail { get; set; } = "";
 
-            [JsonPropertyName("thumbnail_illust_id")]
-            public string? ThumbnailIllustId { get; set; }
+    [JsonPropertyName("thumbnail_illust_id")]
+    public required string ThumbnailIllustId { get; set; } = "";
 
-            [JsonPropertyName("has_body")]
-            public string? HasBody { get; set; }
+    [JsonPropertyName("has_body")]
+    public required string HasBody { get; set; } = "";
 
-            [JsonPropertyName("is_pr")]
-            public string? IsPr { get; set; }
+    [JsonPropertyName("is_pr")]
+    public required string IsPr { get; set; } = "";
 
-            [JsonPropertyName("pr_client_name")]
-            public string? PrClientName { get; set; }
+    [JsonPropertyName("pr_client_name")]
+    public required string PrClientName { get; set; } = "";
 
-            [JsonPropertyName("edit_status")]
-            public string? EditStatus { get; set; }
+    [JsonPropertyName("edit_status")]
+    public required string EditStatus { get; set; } = "";
 
-            [JsonPropertyName("translation_status")]
-            public string? TranslationStatus { get; set; }
+    [JsonPropertyName("translation_status")]
+    public required string TranslationStatus { get; set; } = "";
 
-            [JsonPropertyName("is_sample")]
-            public string? IsSample { get; set; }
+    [JsonPropertyName("is_sample")]
+    public required string IsSample { get; set; } = "";
 
-            [JsonPropertyName("memo")]
-            public string? Memo { get; set; }
+    [JsonPropertyName("memo")]
+    public required string Memo { get; set; } = "";
 
-            [JsonPropertyName("facebook_count")]
-            public string? FacebookCount { get; set; }
+    [JsonPropertyName("facebook_count")]
+    public required string FacebookCount { get; set; } = "";
 
-            [JsonPropertyName("tweet_count")]
-            public string? TweetCount { get; set; }
+    [JsonPropertyName("tweet_count")]
+    public required string TweetCount { get; set; } = "";
 
-            [JsonPropertyName("tweet_max_count")]
-            public string? TweetMaxCount { get; set; }
+    [JsonPropertyName("tweet_max_count")]
+    public required string TweetMaxCount { get; set; } = "";
 
-            [JsonPropertyName("main_abtest_pattern_id")]
-            public string? MainAbtestPatternId { get; set; }
+    [JsonPropertyName("main_abtest_pattern_id")]
+    public required string MainAbtestPatternId { get; set; } = "";
 
-            [JsonPropertyName("advertisement_id")]
-            public string? AdvertisementId { get; set; }
-        }
-    }
+    [JsonPropertyName("advertisement_id")]
+    public required string AdvertisementId { get; set; } = "";
 }

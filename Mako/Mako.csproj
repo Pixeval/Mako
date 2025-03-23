@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Nullable>enable</Nullable>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <LangVersion>preview</LangVersion>
+        <IsTrimmable>true</IsTrimmable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <Authors>Dylech30th</Authors>
         <Company>Pixeval</Company>
@@ -19,29 +20,28 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Autofac" Version="6.2.0" PrivateAssets="True" />
-      <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" PrivateAssets="True" />
-      <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="7.0.2" PrivateAssets="True" />
-      <PackageReference Include="Refit" Version="6.0.38" PrivateAssets="True" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.3.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.3" />
+        <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+        <PackageReference Include="WebApiClientCore" PrivateAssets="True" Version="2.1.5" />
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="MakoClient.Engines.cs">
-        <DependentUpon>MakoClient.cs</DependentUpon>
-      </Compile>
-      <Compile Update="MakoClient.Extensions.cs">
-        <DependentUpon>MakoClient.cs</DependentUpon>
-      </Compile>
-      <Compile Update="MakoClient.Properties.cs">
-        <DependentUpon>MakoClient.cs</DependentUpon>
-      </Compile>
+        <ProjectReference Include="..\Mako.SourceGen\Mako.SourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="..\LICENSE">
-        <Pack>True</Pack>
-        <PackagePath></PackagePath>
-      </None>
+        <Compile Update="MakoClient.*.cs">
+            <DependentUpon>MakoClient.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="..\LICENSE">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+    </ItemGroup>
 </Project>
