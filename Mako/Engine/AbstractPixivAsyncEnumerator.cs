@@ -10,6 +10,7 @@ using Mako.Global.Exception;
 using Mako.Model;
 using Mako.Net;
 using Mako.Utilities;
+using Misaki;
 
 namespace Mako.Engine;
 
@@ -28,7 +29,7 @@ namespace Mako.Engine;
 public abstract class AbstractPixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(TFetchEngine pixivFetchEngine,
     MakoApiKind apiKind) : IAsyncEnumerator<TEntity>
     where TFetchEngine : class, IFetchEngine<TEntity>
-    where TEntity : class, IEntry
+    where TEntity : class, IMisakaBase
     where TRawEntity : class
 {
     protected readonly MakoClient MakoClient = pixivFetchEngine.MakoClient;

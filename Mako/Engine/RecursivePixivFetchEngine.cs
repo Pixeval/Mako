@@ -8,12 +8,13 @@ using Mako.Model;
 using Mako.Net;
 using Mako.Net.Response;
 using Mako.Utilities;
+using Misaki;
 
 namespace Mako.Engine;
 
 internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind)
     : AbstractPixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(pixivFetchEngine, makoApiKind)
-    where TEntity : class, IEntry
+    where TEntity : class, IMisakaBase
     where TRawEntity : class
     where TFetchEngine : class, IFetchEngine<TEntity>
 {
@@ -96,7 +97,7 @@ internal static class RecursivePixivAsyncEnumerators
 {
     public abstract class BaseRecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind, string initialUrl)
         : RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(pixivFetchEngine, makoApiKind)
-        where TEntity : class, IEntry
+        where TEntity : class
         where TRawEntity : class, IPixivNextUrlResponse<TEntity>
         where TFetchEngine : class, IFetchEngine<TEntity>
     {

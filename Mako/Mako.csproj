@@ -30,6 +30,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Mako.SourceGen\Mako.SourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
+        <ProjectReference Include="..\Misaki\Misaki.csproj" />
     </ItemGroup>
 
     <ItemGroup>

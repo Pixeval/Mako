@@ -6,7 +6,7 @@ using Mako.Model;
 
 namespace Mako.Net.Response;
 
-public interface IPixivNextUrlResponse<TEntity> where TEntity : class, IEntry
+public interface IPixivNextUrlResponse<TEntity> where TEntity : class
 {
     [JsonPropertyName("next_url")]
     string? NextUrl { get; set; }

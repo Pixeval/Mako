@@ -3,14 +3,19 @@
 
 using System.Text.Json.Serialization;
 using Mako.Utilities;
+using Misaki;
 
 namespace Mako.Model;
 
 [Factory]
-public partial record Tag
+public partial record Tag : ITag
 {
+    ITagCategory ITag.Category => ITagCategory.Empty;
+
     [JsonPropertyName("name")]
     public required string Name { get; set; } = "";
+
+    string ITag.Description => ToolTip;
 
     [JsonPropertyName("translated_name")]
     public required string? TranslatedName { get; set; }

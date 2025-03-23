@@ -4,11 +4,12 @@
 using System;
 using System.Text.Json.Serialization;
 using Mako.Utilities;
+using Misaki;
 
 namespace Mako.Model;
 
 [Factory]
-public partial record BookmarkTag : IEntry, IEquatable<string>
+public partial record BookmarkTag : IMisakaBase, IEquatable<string>
 {
     [JsonPropertyName("name")]
     public required string Name { get; set; } = "";

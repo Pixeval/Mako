@@ -2,21 +2,15 @@
 // Licensed under the GPL v3 License.
 
 using System;
+using Misaki;
 
 namespace Mako.Model;
 
-public interface IEntry;
-
-public interface IIdEntry : IEntry
-{
-    long Id { get; }
-}
-
-public interface IWorkEntry : IIdEntry
+public interface IWorkEntry : IIdentityInfo
 {
     int TotalView { get; }
 
-    int TotalBookmarks { get; }
+    int TotalFavorite { get; }
 
     bool IsBookmarked { get; set; }
 
@@ -28,7 +22,7 @@ public interface IWorkEntry : IIdEntry
 
     string Title { get; }
 
-    string Caption { get; }
+    string Description { get; }
 
     UserInfo User { get; }
 
@@ -36,10 +30,7 @@ public interface IWorkEntry : IIdEntry
 
     ImageUrls ThumbnailUrls { get; }
 
-    /// <summary>
-    /// 值为2是AI生成
-    /// </summary>
-    int AiType { get; }
+    AiType AiType { get; }
 
     XRestrict XRestrict { get; }
 }

@@ -1,9 +1,12 @@
 // Copyright (c) Pixeval.CoreApi.
 // Licensed under the GPL v3 License.
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using Mako.Utilities;
+using Misaki;
 
 namespace Mako.Model;
 
@@ -28,13 +31,21 @@ public partial record User : IIdEntry
 
 [DebuggerDisplay("{Id}: {Name}")]
 [Factory]
-public partial record UserInfo
+public partial record UserInfo : IUser
 {
     [JsonPropertyName("id")]
     public required long Id { get; set; }
 
+    public string Platform => IIdentityInfo.Pixiv;
+
     [JsonPropertyName("name")]
     public required string Name { get; set; } = "";
+
+    public string Description { get; }
+    public Uri Uri { get; }
+    public IReadOnlyList<IImageFrame> Avatar { get; }
+    public IReadOnlyDictionary<string, Uri> ContactInformation { get; }
+    public IReadOnlyDictionary<string, object> AdditionalInfo { get; }
 
     [JsonPropertyName("account")]
     public required string Account { get; set; } = "";

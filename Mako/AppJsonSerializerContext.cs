@@ -8,6 +8,7 @@ using Mako.Global.Enum;
 using Mako.Model;
 using Mako.Net.Request;
 using Mako.Net.Response;
+using Misaki;
 
 namespace Mako;
 
@@ -58,17 +59,11 @@ namespace Mako;
 
 [JsonSerializable(typeof(BookmarkTag))]
 [JsonSerializable(typeof(Feed))]
-[JsonSerializable(typeof(FeedType))]
-[JsonSerializable(typeof(IEntry))]
-[JsonSerializable(typeof(IIdEntry))]
-[JsonSerializable(typeof(IWorkEntry))]
 [JsonSerializable(typeof(Illustration))]
 [JsonSerializable(typeof(MetaSinglePage))]
 [JsonSerializable(typeof(ImageUrls))]
 [JsonSerializable(typeof(MangaImageUrls))]
 [JsonSerializable(typeof(MetaPage))]
-[JsonSerializable(typeof(XRestrict))]
-[JsonSerializable(typeof(IllustrationType))]
 [JsonSerializable(typeof(Novel))]
 [JsonSerializable(typeof(Series))]
 [JsonSerializable(typeof(NovelContent))]
@@ -85,7 +80,6 @@ namespace Mako;
 [JsonSerializable(typeof(NovelReplaceableGlossary))]
 [JsonSerializable(typeof(ProfileImageUrls))]
 [JsonSerializable(typeof(Spotlight))]
-[JsonSerializable(typeof(SpotlightCategory))]
 [JsonSerializable(typeof(SpotlightDetail))]
 [JsonSerializable(typeof(Tag))]
 [JsonSerializable(typeof(TrendingTag))]
@@ -113,15 +107,6 @@ namespace Mako;
 [JsonSerializable(typeof(ShowAiSettingsRequest))]
 [JsonSerializable(typeof(RestrictedModeSettingsRequest))]
 [JsonSerializable(typeof(ReverseSearchRequest))]
-
-[JsonSerializable(typeof(PrivacyPolicy))]
-[JsonSerializable(typeof(RankOption))]
-[JsonSerializable(typeof(SearchIllustrationTagMatchOption))]
-[JsonSerializable(typeof(SearchNovelTagMatchOption))]
-[JsonSerializable(typeof(TargetFilter))]
-[JsonSerializable(typeof(WorkSortOption))]
-[JsonSerializable(typeof(WorkType))]
-[JsonSerializable(typeof(SimpleWorkType))]
 
 [JsonSerializable(typeof(string[]))]
 [JsonSerializable(typeof(Tag[]))]

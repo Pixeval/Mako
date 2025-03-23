@@ -9,45 +9,20 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
 using Mako.Utilities;
+using Misaki;
 
 namespace Mako.Model;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-[DebuggerDisplay("{Id}: {Title} [{User}]")]
 [Factory]
-public partial record Illustration : IWorkEntry
+public partial record Illustration : WorkBase, IArtworkInfo
 {
-    [JsonPropertyName("id")]
-    public required long Id { get; set; }
-
-    [JsonPropertyName("title")]
-    public required string Title { get; set; } = "";
-
     [JsonPropertyName("type")]
     [JsonConverter(typeof(JsonStringEnumConverter<IllustrationType>))]
     public required IllustrationType Type { get; set; }
 
-    [JsonPropertyName("image_urls")]
-    public required ImageUrls ThumbnailUrls { get; set; }
-
-    [JsonPropertyName("caption")]
-    public required string Caption { get; set; } = "";
-
-    [JsonPropertyName("restrict")]
-    [JsonConverter(typeof(BoolToNumberJsonConverter))]
-    public required bool IsPrivate { get; set; }
-
-    [JsonPropertyName("user")]
-    public required UserInfo User { get; set; }
-
-    [JsonPropertyName("tags")]
-    public required Tag[] Tags { get; set; } = [];
-
     [JsonPropertyName("tools")]
     public required string[] Tools { get; set; } = [];
-
-    [JsonPropertyName("create_date")]
-    public required DateTimeOffset CreateDate { get; set; }
 
     [JsonPropertyName("page_count")]
     public required long PageCount { get; set; }
@@ -61,9 +36,6 @@ public partial record Illustration : IWorkEntry
     [JsonPropertyName("sanity_level")]
     public required long SanityLevel { get; set; }
 
-    [JsonPropertyName("x_restrict")]
-    public required XRestrict XRestrict { get; set; }
-
     [JsonPropertyName("meta_single_page")]
     [EditorBrowsable(EditorBrowsableState.Never)]
     public required MetaSinglePage MetaSinglePage { get; set; }
@@ -73,23 +45,8 @@ public partial record Illustration : IWorkEntry
     [JsonPropertyName("meta_pages")]
     public required MetaPage[] MetaPages { get; set; } = [];
 
-    [JsonPropertyName("total_view")]
-    public required int TotalView { get; set; }
-
-    [JsonPropertyName("total_bookmarks")]
-    public required int TotalBookmarks { get; set; }
-
-    [JsonPropertyName("is_bookmarked")]
-    public required bool IsBookmarked { get; set; }
-
-    [JsonPropertyName("visible")]
-    public required bool Visible { get; set; }
-
-    [JsonPropertyName("is_muted")]
-    public required bool IsMuted { get; set; }
-
     [JsonPropertyName("illust_ai_type")]
-    public required int AiType { get; set; }
+    public override required AiType AiType { get; set; }
 
     [JsonPropertyName("illust_book_style")]
     public required int IllustBookStyle { get; set; }
@@ -99,6 +56,9 @@ public partial record Illustration : IWorkEntry
 
     [MemberNotNullWhen(false, nameof(OriginalSingleUrl))]
     public bool IsManga => PageCount > 1;
+
+    [JsonPropertyName("restriction_attributes")]
+    public string? RestrictionAttributes { get; set; }
 
     public IReadOnlyList<string> MangaOriginalUrls => MetaPages.Select(m => m.ImageUrls.Original).ToArray();
 
@@ -121,6 +81,22 @@ public partial record Illustration : IWorkEntry
     {
         return other?.Id == Id;
     }
+
+    DateTimeOffset IArtworkInfo.UpdateDate => CreateDate;
+
+    DateTimeOffset IArtworkInfo.ModifyDate => CreateDate;
+
+    IPreloadableEnumerable<IUser> IArtworkInfo.Authors => [User];
+
+    IPreloadableEnumerable<IUser> IArtworkInfo.Uploaders => [];
+
+    SafeRating IArtworkInfo.SafeRating => _safeRating;
+
+    ILookup<ITagCategory, ITag> IArtworkInfo.Tags => Tags.ToLookup(_ => ITagCategory.Empty, ITag (t) => t);
+
+    IReadOnlyList<IImageFrame> IArtworkInfo.Thumbnails => _thumbnails;
+
+    IReadOnlyDictionary<string, object> IArtworkInfo.AdditionalInfo => _additionalInfo;
 }
 
 [Factory]
@@ -131,19 +107,6 @@ public partial record MetaSinglePage
     /// </summary>
     [JsonPropertyName("original_image_url")]
     public string? OriginalImageUrl { get; set; } = DefaultImageUrls.ImageNotAvailable;
-}
-
-[Factory]
-public partial record ImageUrls
-{
-    [JsonPropertyName("square_medium")]
-    public required string SquareMedium { get; set; } = DefaultImageUrls.ImageNotAvailable;
-
-    [JsonPropertyName("medium")]
-    public required string Medium { get; set; } = DefaultImageUrls.ImageNotAvailable;
-
-    [JsonPropertyName("large")]
-    public required string Large { get; set; } = DefaultImageUrls.ImageNotAvailable;
 }
 
 [Factory]
@@ -170,18 +133,4 @@ public partial record MetaPage
 
     /// <inheritdoc cref="MangaImageUrls.Original"/>
     public string OriginalUrl => ImageUrls.Original;
-}
-
-public enum XRestrict
-{
-    Ordinary = 0,
-    R18 = 1,
-    R18G = 2
-}
-
-public enum IllustrationType
-{
-    Illust,
-    Manga,
-    Ugoira
 }
