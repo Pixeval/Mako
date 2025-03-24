@@ -4,12 +4,15 @@
 using System;
 using System.Text.Json.Serialization;
 using Mako.Utilities;
+using Misaki;
 
 namespace Mako.Model;
 
 [Factory]
-public partial record Comment : IIdEntry
+public partial record Comment : IIdentityInfo
 {
+    string IIdentityInfo.Platform => IIdentityInfo.Pixiv;
+
     [JsonPropertyName("id")]
     public required long Id { get; set; }
 

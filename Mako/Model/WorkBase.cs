@@ -76,7 +76,7 @@ public abstract record WorkBase : IWorkEntry
     private readonly Series _defaultSeries = new();
 }
 
-file class BoolToNumberJsonConverter : JsonConverter<bool>
+internal class BoolToNumberJsonConverter : JsonConverter<bool>
 {
     public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.GetInt32() is not 0;
 

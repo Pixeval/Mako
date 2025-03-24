@@ -2,11 +2,14 @@
 // Licensed under the GPL v3 License.
 
 using System;
+using Misaki;
 
 namespace Mako.Model;
 
-public record Feed : IIdEntry
+public record Feed : IIdentityInfo
 {
+    string IIdentityInfo.Platform => IIdentityInfo.Pixiv;
+
     /// <summary>
     /// May points to user, illustration or novel
     /// </summary>

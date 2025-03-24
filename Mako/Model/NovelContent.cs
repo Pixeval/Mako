@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mako.Utilities;
+using Misaki;
 
 namespace Mako.Model;
 
@@ -178,8 +179,10 @@ public partial record NovelImageUrls
 }
 
 [Factory]
-public partial record NovelIllustInfo : IIdEntry
+public partial record NovelIllustInfo : IIdentityInfo
 {
+    string IIdentityInfo.Platform => IIdentityInfo.Pixiv;
+
     [JsonPropertyName("visible")]
     public required bool Visible { get; set; }
 

@@ -12,8 +12,10 @@ namespace Mako.Model;
 
 [DebuggerDisplay("{UserInfo}")]
 [Factory]
-public partial record User : IIdEntry
+public partial record User : IIdentityInfo
 {
+    public string Platform => IIdentityInfo.Pixiv;
+
     public long Id => UserInfo.Id;
 
     [JsonPropertyName("user")]
@@ -33,19 +35,23 @@ public partial record User : IIdEntry
 [Factory]
 public partial record UserInfo : IUser
 {
+    public string Platform => IIdentityInfo.Pixiv;
+    
     [JsonPropertyName("id")]
     public required long Id { get; set; }
-
-    public string Platform => IIdentityInfo.Pixiv;
 
     [JsonPropertyName("name")]
     public required string Name { get; set; } = "";
 
-    public string Description { get; }
-    public Uri Uri { get; }
-    public IReadOnlyList<IImageFrame> Avatar { get; }
-    public IReadOnlyDictionary<string, Uri> ContactInformation { get; }
-    public IReadOnlyDictionary<string, object> AdditionalInfo { get; }
+    public virtual string Description { get; set; } = "";
+
+    Uri IUser.Uri { get; }
+
+    IReadOnlyList<IImageFrame> IUser.Avatar { get; }
+
+    IReadOnlyDictionary<string, Uri> IUser.ContactInformation { get; }
+
+    IReadOnlyDictionary<string, object> IUser.AdditionalInfo { get; }
 
     [JsonPropertyName("account")]
     public required string Account { get; set; } = "";

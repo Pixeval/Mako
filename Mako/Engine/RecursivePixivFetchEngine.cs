@@ -97,7 +97,7 @@ internal static class RecursivePixivAsyncEnumerators
 {
     public abstract class BaseRecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind, string initialUrl)
         : RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(pixivFetchEngine, makoApiKind)
-        where TEntity : class
+        where TEntity : class, IMisakaBase
         where TRawEntity : class, IPixivNextUrlResponse<TEntity>
         where TFetchEngine : class, IFetchEngine<TEntity>
     {

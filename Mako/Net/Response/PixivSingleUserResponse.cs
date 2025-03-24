@@ -29,10 +29,10 @@ public partial record PixivSingleUserResponse
 public partial record UserEntity : UserInfo
 {
     /// <summary>
-    /// 比<see cref="UserInfo"/>多了个<see cref="Comment"/>
+    /// 比<see cref="UserInfo"/>多了个<see cref="Description"/>
     /// </summary>
     [JsonPropertyName("comment")]
-    public required string Comment { get; set; } = "";
+    public override required string Description { get; set; } = "";
 }
 
 [Factory]

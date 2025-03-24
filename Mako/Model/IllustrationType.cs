@@ -5,7 +5,7 @@ namespace Mako.Model;
 
 public enum IllustrationType
 {
-    Illustration,
+    Illust,
     Manga,
     Ugoira
 }

@@ -1,12 +1,14 @@
+using System.Runtime.CompilerServices;
+
 namespace Misaki;
 
 public interface IMisakaBase;
 
 public interface IIdentityInfo : IMisakaBase
 {
-    long Id { get; }
-
     string Platform { get; }
+
+    long Id { get; }
 
     const string Pixiv = "pixiv";
 }
@@ -40,15 +42,52 @@ public interface IArtworkInfo : IIdentityInfo
     IReadOnlyDictionary<string, object> AdditionalInfo { get; }
 }
 
-public interface IImageFrame : IMisakaBase
+public interface IImageSize : IMisakaBase
 {
     int Width { get; }
 
     int Height { get; }
+}
 
+public interface IImageFrame : IImageSize
+{
     ulong ByteSize { get; }
 
     Uri Uri { get; }
+}
+
+public record ImageFrame(int Width, int Height) : IImageFrame
+{
+    public ulong ByteSize { get; init; }
+
+    public required Uri Uri { get; init; }
+
+    public ImageFrame(IImageSize frame, int wh, bool isWidth)
+    :this (isWidth ? wh : (int) ((double) wh * frame.Width) / frame.Height,
+            isWidth ? (int) ((double) wh * frame.Height) / frame.Width : wh)
+    {
+    }
+
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
+    public class FixTypeAttribute(FixType fixType) : Attribute
+    {
+        public FixType FixType { get; } = fixType;
+    }
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class SizeAttribute(int width, int height) : Attribute
+    {
+        public int Width { get; } = width;
+
+        public int Height { get; } = height;
+    }
+
+    public enum FixType
+    {
+        FixWidth,
+        FixHeight,
+        FixAll
+    }
 }
 
 public interface ISingleImage : IImageFrame, IArtworkInfo
