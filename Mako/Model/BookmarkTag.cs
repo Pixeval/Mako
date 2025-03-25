@@ -9,10 +9,14 @@ using Misaki;
 namespace Mako.Model;
 
 [Factory]
-public partial record BookmarkTag : IMisakaBase, IEquatable<string>
+public partial record BookmarkTag : ITag, IEquatable<string>
 {
+    ITagCategory ITag.Category => ITagCategory.Empty;
+
     [JsonPropertyName("name")]
     public required string Name { get; set; } = "";
+
+    string ITag.Description => "";
 
     [JsonPropertyName("count")]
     public required int Count { get; set; }

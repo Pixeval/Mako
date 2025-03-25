@@ -29,7 +29,7 @@ namespace Mako.Engine;
 public abstract class AbstractPixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(TFetchEngine pixivFetchEngine,
     MakoApiKind apiKind) : IAsyncEnumerator<TEntity>
     where TFetchEngine : class, IFetchEngine<TEntity>
-    where TEntity : class, IMisakaBase
+    where TEntity : class, IMisakaModel
     where TRawEntity : class
 {
     protected readonly MakoClient MakoClient = pixivFetchEngine.MakoClient;

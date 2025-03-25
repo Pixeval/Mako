@@ -24,6 +24,9 @@ public partial record Novel : WorkBase
     [JsonPropertyName("is_x_restricted")]
     public required bool IsXRestricted { get; set; }
 
+    [JsonPropertyName("total_comments")]
+    public required int TotalComments { get; set; }
+
     [JsonPropertyName("novel_ai_type")]
     public override required AiType AiType { get; set; }
 }

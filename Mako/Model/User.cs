@@ -45,13 +45,16 @@ public partial record UserInfo : IUser
 
     public virtual string Description { get; set; } = "";
 
-    Uri IUser.Uri { get; }
+    Uri IUser.WebsiteUri => new($"https://www.pixiv.net/users/{Id}");
 
-    IReadOnlyList<IImageFrame> IUser.Avatar { get; }
+    IReadOnlyList<IImageFrame> IUser.Avatar =>
+    [
+        new ImageFrame(170, 170) { ImageUri = new Uri(ProfileImageUrls.Medium) }
+    ];
 
-    IReadOnlyDictionary<string, Uri> IUser.ContactInformation { get; }
+    IReadOnlyDictionary<string, Uri> IUser.ContactInformation { get; } = new Dictionary<string, Uri>();
 
-    IReadOnlyDictionary<string, object> IUser.AdditionalInfo { get; }
+    IReadOnlyDictionary<string, object> IUser.AdditionalInfo { get; } = new Dictionary<string, object>();
 
     [JsonPropertyName("account")]
     public required string Account { get; set; } = "";

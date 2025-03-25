@@ -26,5 +26,5 @@ public partial record Tag : ITag
     /// 好像只有小说会用这个属性
     /// </summary>
     [JsonPropertyName("added_by_uploaded_user")]
-    public bool AddedByUploadedUser { get; set; } = false;
+    public bool AddedByUploadedUser { get; set; }
 }

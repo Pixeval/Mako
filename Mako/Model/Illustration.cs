@@ -2,6 +2,7 @@
 // Licensed under the GPL v3 License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -16,7 +17,7 @@ namespace Mako.Model;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 [Factory]
-public partial record Illustration : WorkBase, IArtworkInfo, IImageSize
+public partial record Illustration : WorkBase, ISingleImage, IImageSet, IImageSize
 {
     [JsonPropertyName("type")]
     [JsonConverter(typeof(JsonStringEnumConverter<IllustrationType>))]
@@ -26,7 +27,7 @@ public partial record Illustration : WorkBase, IArtworkInfo, IImageSize
     public required string[] Tools { get; set; } = [];
 
     [JsonPropertyName("page_count")]
-    public required long PageCount { get; set; }
+    public required int PageCount { get; set; }
 
     [JsonPropertyName("width")]
     public required int Width { get; set; }
@@ -72,16 +73,12 @@ public partial record Illustration : WorkBase, IArtworkInfo, IImageSize
         return list;
     }
 
-    public override int GetHashCode()
-    {
-        // ReSharper disable once NonReadonlyMemberInGetHashCode
-        return Id.GetHashCode();
-    }
+    // ReSharper disable once NonReadonlyMemberInGetHashCode
+    public override int GetHashCode() => Id.GetHashCode();
 
-    public virtual bool Equals(Illustration? other)
-    {
-        return other?.Id == Id;
-    }
+    public virtual bool Equals(Illustration? other) => other?.Id == Id;
+
+    Uri IArtworkInfo.WebsiteUri => new Uri($"https://www.pixiv.net/artworks/{Id}");
 
     DateTimeOffset IArtworkInfo.UpdateDate => CreateDate;
 
@@ -94,7 +91,7 @@ public partial record Illustration : WorkBase, IArtworkInfo, IImageSize
     SafeRating IArtworkInfo.SafeRating => XRestrict switch
     {
         XRestrict.R18 => SafeRating.Explicit,
-        XRestrict.R18G => SafeRating.Explicit,
+        XRestrict.R18G => SafeRating.Guro,
         XRestrict.Ordinary => SanityLevel switch
         {
             6 => SafeRating.Questionable,
@@ -125,13 +122,13 @@ public partial record Illustration : WorkBase, IArtworkInfo, IImageSize
                 switch (fixTypeAttribute.FixType)
                 {
                     case ImageFrame.FixType.FixHeight:
-                        yield return new ImageFrame(this, height, false) { Uri = uri };
+                        yield return new ImageFrame(this, height, false) { ImageUri = uri };
                         break;
                     case ImageFrame.FixType.FixWidth:
-                        yield return new ImageFrame(this, width, true) { Uri = uri };
+                        yield return new ImageFrame(this, width, true) { ImageUri = uri };
                         break;
                     case ImageFrame.FixType.FixAll:
-                        yield return new ImageFrame(width, height) { Uri = uri };
+                        yield return new ImageFrame(width, height) { ImageUri = uri };
                         break;
                 }
         }
@@ -139,9 +136,37 @@ public partial record Illustration : WorkBase, IArtworkInfo, IImageSize
 
     IReadOnlyDictionary<string, object> IArtworkInfo.AdditionalInfo => new Dictionary<string, object>();
 
+    public ImageType ImageType => IsManga
+        ? ImageType.ImageSet
+        : IsUgoira
+            ? ImageType.SingleAnimatedImage
+            : ImageType.SingleImage;
+
     public string GetThumbnail(ThumbnailSize size = ThumbnailSize.C540X540Q70, int page = 0, bool isSquare = false) => $"https://i.pximg.net{size.GetDescription()}/img-master/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Id}_p{page}_{(isSquare ? "square" : "master")}1200.jpg";
 
     public string GetOriginal(int page = 0) => $"https://i.pximg.net/img-original/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Id}_p{page}.jpg";
+
+    ulong IImageFrame.ByteSize => 0;
+
+    Uri IImageFrame.ImageUri => new Uri(GetOriginal());
+
+    private int _index = -1;
+
+    [field: AllowNull, MaybeNull]
+    IPreloadableEnumerable<IArtworkInfo> IImageSet.Pages => field ??=
+    [
+        ..PageCount <= 1
+            ? [this]
+            // The API result of manga (a work with multiple illustrations) is a single Illustration object
+            // that only differs from the illustrations of a single work on the MetaPages property, this property
+            // contains the download urls of the manga
+            : MetaPages.Select((m, i) => this with
+            {
+                MetaSinglePage = new() { OriginalImageUrl = m.ImageUrls.Original },
+                ThumbnailUrls = m.ImageUrls,
+                _index = i
+            })
+    ];
 
     public enum ThumbnailSize
     {

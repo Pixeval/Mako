@@ -45,16 +45,13 @@ public abstract record WorkBase : IWorkEntry
     public required ImageUrls ThumbnailUrls { get; set; }
 
     [JsonPropertyName("is_bookmarked")]
-    public required bool IsBookmarked { get; set; }
+    public required bool IsFavorite { get; set; }
 
     [JsonPropertyName("total_bookmarks")]
     public required int TotalFavorite { get; set; }
 
     [JsonPropertyName("total_view")]
     public required int TotalView { get; set; }
-
-    [JsonPropertyName("total_comments")]
-    public required int TotalComments { get; set; }
 
     [JsonPropertyName("visible")]
     public required bool Visible { get; set; }

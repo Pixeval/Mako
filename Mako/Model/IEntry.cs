@@ -8,21 +8,21 @@ namespace Mako.Model;
 
 public interface IWorkEntry : IIdentityInfo
 {
+    string Title { get; }
+
+    string Description { get; }
+
     int TotalView { get; }
 
     int TotalFavorite { get; }
 
-    bool IsBookmarked { get; set; }
+    bool IsFavorite { get; set; }
 
     bool IsPrivate { get; set; }
 
     bool IsMuted { get; set; }
 
     Tag[] Tags { get; }
-
-    string Title { get; }
-
-    string Description { get; }
 
     UserInfo User { get; }
 
