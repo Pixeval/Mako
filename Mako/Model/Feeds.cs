@@ -13,7 +13,9 @@ public record Feed : IIdentityInfo
     /// <summary>
     /// May points to user, illustration or novel
     /// </summary>
-    public long Id { get; set; }
+    public long Identity { get; set; }
+
+    public string Id => Identity.ToString();
 
     /// <summary>
     /// The name of the target of this feed if it has one

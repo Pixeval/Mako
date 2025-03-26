@@ -14,7 +14,9 @@ public partial record Comment : IIdentityInfo
     string IIdentityInfo.Platform => IIdentityInfo.Pixiv;
 
     [JsonPropertyName("id")]
-    public required long Id { get; set; }
+    public required long Identity { get; set; }
+
+    public string Id => Identity.ToString();
 
     [JsonPropertyName("comment")]
     public required string CommentContent { get; set; } = "";

@@ -12,7 +12,9 @@ public record Spotlight : IIdentityInfo
     string IIdentityInfo.Platform => IIdentityInfo.Pixiv;
 
     [JsonPropertyName("id")]
-    public required long Id { get; set; }
+    public required long Identity { get; set; }
+
+    public string Id => Identity.ToString();
 
     [JsonPropertyName("title")]
     public required string Title { get; set; }

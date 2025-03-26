@@ -62,7 +62,7 @@ public partial record Illustration : WorkBase, ISingleImage, IImageSet, IImageSi
     [JsonPropertyName("restriction_attributes")]
     public string? RestrictionAttributes { get; set; }
 
-    public IReadOnlyList<string> MangaOriginalUrls => MetaPages.Select(m => m.ImageUrls.Original).ToArray();
+    public IReadOnlyList<string> MangaOriginalUrls => [.. MetaPages.Select(m => m.ImageUrls.Original)];
 
     public List<string> GetUgoiraOriginalUrls(int frameCount)
     {
@@ -74,11 +74,11 @@ public partial record Illustration : WorkBase, ISingleImage, IImageSet, IImageSi
     }
 
     // ReSharper disable once NonReadonlyMemberInGetHashCode
-    public override int GetHashCode() => Id.GetHashCode();
+    public override int GetHashCode() => Identity.GetHashCode();
 
-    public virtual bool Equals(Illustration? other) => other?.Id == Id;
+    public virtual bool Equals(Illustration? other) => other?.Identity == Identity;
 
-    Uri IArtworkInfo.WebsiteUri => new Uri($"https://www.pixiv.net/artworks/{Id}");
+    Uri IArtworkInfo.WebsiteUri => new($"https://www.pixiv.net/artworks/{Identity}");
 
     DateTimeOffset IArtworkInfo.UpdateDate => CreateDate;
 
@@ -105,7 +105,7 @@ public partial record Illustration : WorkBase, ISingleImage, IImageSet, IImageSi
     ILookup<ITagCategory, ITag> IArtworkInfo.Tags => Tags.ToLookup(_ => ITagCategory.Empty, ITag (t) => t);
 
     [field: AllowNull, MaybeNull]
-    IReadOnlyList<IImageFrame> IArtworkInfo.Thumbnails => field ??= GetImageFrame().ToArray();
+    IReadOnlyList<IImageFrame> IArtworkInfo.Thumbnails => field ??= [.. GetImageFrame()];
 
     private IEnumerable<ImageFrame> GetImageFrame()
     {
@@ -142,13 +142,13 @@ public partial record Illustration : WorkBase, ISingleImage, IImageSet, IImageSi
             ? ImageType.SingleAnimatedImage
             : ImageType.SingleImage;
 
-    public string GetThumbnail(ThumbnailSize size = ThumbnailSize.C540X540Q70, int page = 0, bool isSquare = false) => $"https://i.pximg.net{size.GetDescription()}/img-master/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Id}_p{page}_{(isSquare ? "square" : "master")}1200.jpg";
+    public string GetThumbnail(ThumbnailSize size = ThumbnailSize.C540X540Q70, int page = 0, bool isSquare = false) => $"https://i.pximg.net{size.GetDescription()}/img-master/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Identity}_p{page}_{(isSquare ? "square" : "master")}1200.jpg";
 
-    public string GetOriginal(int page = 0) => $"https://i.pximg.net/img-original/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Id}_p{page}.jpg";
+    public string GetOriginal(int page = 0) => $"https://i.pximg.net/img-original/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Identity}_p{page}.jpg";
 
     ulong IImageFrame.ByteSize => 0;
 
-    Uri IImageFrame.ImageUri => new Uri(GetOriginal());
+    Uri IImageFrame.ImageUri => new(GetOriginal());
 
     private int _index = -1;
 

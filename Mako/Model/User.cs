@@ -16,7 +16,9 @@ public partial record User : IIdentityInfo
 {
     public string Platform => IIdentityInfo.Pixiv;
 
-    public long Id => UserInfo.Id;
+    public long Identity => UserInfo.Identity;
+
+    public string Id => Identity.ToString();
 
     [JsonPropertyName("user")]
     public required UserInfo UserInfo { get; set; }
@@ -31,25 +33,27 @@ public partial record User : IIdentityInfo
     public required bool IsMuted { get; set; }
 }
 
-[DebuggerDisplay("{Id}: {Name}")]
+[DebuggerDisplay("{Identity}: {Name}")]
 [Factory]
 public partial record UserInfo : IUser
 {
     public string Platform => IIdentityInfo.Pixiv;
     
     [JsonPropertyName("id")]
-    public required long Id { get; set; }
+    public required long Identity { get; set; }
+
+    public string Id => Identity.ToString();
 
     [JsonPropertyName("name")]
     public required string Name { get; set; } = "";
 
     public virtual string Description { get; set; } = "";
 
-    Uri IUser.WebsiteUri => new($"https://www.pixiv.net/users/{Id}");
+    Uri IUser.WebsiteUri => new($"https://www.pixiv.net/users/{Identity}");
 
     IReadOnlyList<IImageFrame> IUser.Avatar =>
     [
-        new ImageFrame(170, 170) { ImageUri = new Uri(ProfileImageUrls.Medium) }
+        new ImageFrame(170, 170) { ImageUri = new(ProfileImageUrls.Medium) }
     ];
 
     IReadOnlyDictionary<string, Uri> IUser.ContactInformation { get; } = new Dictionary<string, Uri>();

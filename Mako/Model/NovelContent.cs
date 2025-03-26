@@ -196,11 +196,13 @@ public partial record NovelIllustInfo : IIdentityInfo
     public required NovelUser User { get; set; }
 
     /// <summary>
-    /// 相当于<see cref="Illustration.Id"/>
+    /// 相当于<see cref="WorkBase.Identity"/>
     /// </summary>
     [JsonPropertyName("id")]
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)]
-    public required long Id { get; set; }
+    public required long Identity { get; set; }
+
+    public string Id => Identity.ToString();
 
     /// <summary>
     /// 表示当漫画时，在漫画的页数，从 1 开始

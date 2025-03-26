@@ -9,13 +9,15 @@ using Misaki;
 
 namespace Mako.Model;
 
-[DebuggerDisplay("{Id}: {Title} [{User}]")]
+[DebuggerDisplay("{Identity}: {Title} [{User}]")]
 public abstract record WorkBase : IWorkEntry
 {
     string IIdentityInfo.Platform => IIdentityInfo.Pixiv;
 
     [JsonPropertyName("id")]
-    public required long Id { get; set; }
+    public required long Identity { get; set; }
+
+    public string Id => Identity.ToString();
 
     [JsonPropertyName("title")]
     public required string Title { get; set; } = "";
