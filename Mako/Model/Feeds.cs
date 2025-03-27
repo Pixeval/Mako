@@ -2,20 +2,15 @@
 // Licensed under the GPL v3 License.
 
 using System;
-using Misaki;
 
 namespace Mako.Model;
 
-public record Feed : IIdentityInfo
+public record Feed : IIdEntry
 {
-    string IIdentityInfo.Platform => IIdentityInfo.Pixiv;
-
     /// <summary>
     /// May points to user, illustration or novel
     /// </summary>
-    public long Identity { get; set; }
-
-    public string Id => Identity.ToString();
+    public long Id { get; set; }
 
     /// <summary>
     /// The name of the target of this feed if it has one

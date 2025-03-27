@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mako.Utilities;
-using Misaki;
 
 namespace Mako.Model;
 
@@ -179,10 +178,8 @@ public partial record NovelImageUrls
 }
 
 [Factory]
-public partial record NovelIllustInfo : IIdentityInfo
+public partial record NovelIllustInfo : IIdEntry
 {
-    string IIdentityInfo.Platform => IIdentityInfo.Pixiv;
-
     [JsonPropertyName("visible")]
     public required bool Visible { get; set; }
 
@@ -196,13 +193,11 @@ public partial record NovelIllustInfo : IIdentityInfo
     public required NovelUser User { get; set; }
 
     /// <summary>
-    /// 相当于<see cref="WorkBase.Identity"/>
+    /// 相当于<see cref="WorkBase.Id"/>
     /// </summary>
     [JsonPropertyName("id")]
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)]
-    public required long Identity { get; set; }
-
-    public string Id => Identity.ToString();
+    public required long Id { get; set; }
 
     /// <summary>
     /// 表示当漫画时，在漫画的页数，从 1 开始

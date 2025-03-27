@@ -3,18 +3,13 @@
 
 using System;
 using System.Text.Json.Serialization;
-using Misaki;
 
 namespace Mako.Model;
 
-public record Spotlight : IIdentityInfo
+public record Spotlight : IIdEntry
 {
-    string IIdentityInfo.Platform => IIdentityInfo.Pixiv;
-
     [JsonPropertyName("id")]
-    public required long Identity { get; set; }
-
-    public string Id => Identity.ToString();
+    public required long Id { get; set; }
 
     [JsonPropertyName("title")]
     public required string Title { get; set; }

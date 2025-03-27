@@ -12,13 +12,9 @@ namespace Mako.Model;
 
 [DebuggerDisplay("{UserInfo}")]
 [Factory]
-public partial record User : IIdentityInfo
+public partial record User : IIdEntry
 {
-    public string Platform => IIdentityInfo.Pixiv;
-
-    public long Identity => UserInfo.Identity;
-
-    public string Id => Identity.ToString();
+    public long Id => UserInfo.Id;
 
     [JsonPropertyName("user")]
     public required UserInfo UserInfo { get; set; }
@@ -33,23 +29,19 @@ public partial record User : IIdentityInfo
     public required bool IsMuted { get; set; }
 }
 
-[DebuggerDisplay("{Identity}: {Name}")]
+[DebuggerDisplay("{Id}: {Name}")]
 [Factory]
-public partial record UserInfo : IUser
+public partial record UserInfo : IUser, IIdEntry
 {
-    public string Platform => IIdentityInfo.Pixiv;
-    
     [JsonPropertyName("id")]
-    public required long Identity { get; set; }
-
-    public string Id => Identity.ToString();
+    public required long Id { get; set; }
 
     [JsonPropertyName("name")]
     public required string Name { get; set; } = "";
 
     public virtual string Description { get; set; } = "";
 
-    Uri IUser.WebsiteUri => new($"https://www.pixiv.net/users/{Identity}");
+    Uri IUser.WebsiteUri => new($"https://www.pixiv.net/users/{Id}");
 
     IReadOnlyList<IImageFrame> IUser.Avatar =>
     [

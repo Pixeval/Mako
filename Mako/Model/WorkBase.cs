@@ -5,19 +5,14 @@ using System;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Misaki;
 
 namespace Mako.Model;
 
-[DebuggerDisplay("{Identity}: {Title} [{User}]")]
+[DebuggerDisplay("{Id}: {Title} [{User}]")]
 public abstract record WorkBase : IWorkEntry
 {
-    string IIdentityInfo.Platform => IIdentityInfo.Pixiv;
-
     [JsonPropertyName("id")]
-    public required long Identity { get; set; }
-
-    public string Id => Identity.ToString();
+    public required long Id { get; set; }
 
     [JsonPropertyName("title")]
     public required string Title { get; set; } = "";

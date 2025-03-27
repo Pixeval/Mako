@@ -2,7 +2,6 @@
 // Licensed under the GPL v3 License.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -74,11 +73,11 @@ public partial record Illustration : WorkBase, ISingleImage, IImageSet, IImageSi
     }
 
     // ReSharper disable once NonReadonlyMemberInGetHashCode
-    public override int GetHashCode() => Identity.GetHashCode();
+    public override int GetHashCode() => Id.GetHashCode();
 
-    public virtual bool Equals(Illustration? other) => other?.Identity == Identity;
+    public virtual bool Equals(Illustration? other) => other?.Id == Id;
 
-    Uri IArtworkInfo.WebsiteUri => new($"https://www.pixiv.net/artworks/{Identity}");
+    Uri IArtworkInfo.WebsiteUri => new($"https://www.pixiv.net/artworks/{Id}");
 
     DateTimeOffset IArtworkInfo.UpdateDate => CreateDate;
 
@@ -142,9 +141,9 @@ public partial record Illustration : WorkBase, ISingleImage, IImageSet, IImageSi
             ? ImageType.SingleAnimatedImage
             : ImageType.SingleImage;
 
-    public string GetThumbnail(ThumbnailSize size = ThumbnailSize.C540X540Q70, int page = 0, bool isSquare = false) => $"https://i.pximg.net{size.GetDescription()}/img-master/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Identity}_p{page}_{(isSquare ? "square" : "master")}1200.jpg";
+    public string GetThumbnail(ThumbnailSize size = ThumbnailSize.C540X540Q70, int page = 0, bool isSquare = false) => $"https://i.pximg.net{size.GetDescription()}/img-master/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Id}_p{page}_{(isSquare ? "square" : "master")}1200.jpg";
 
-    public string GetOriginal(int page = 0) => $"https://i.pximg.net/img-original/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Identity}_p{page}.jpg";
+    public string GetOriginal(int page = 0) => $"https://i.pximg.net/img-original/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Id}_p{page}.jpg";
 
     ulong IImageFrame.ByteSize => 0;
 

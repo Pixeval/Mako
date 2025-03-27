@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Mako.Global.Exception;
-using Mako.Model;
 using Mako.Net;
 using Mako.Utilities;
 using Misaki;

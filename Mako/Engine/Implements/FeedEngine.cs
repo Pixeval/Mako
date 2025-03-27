@@ -222,7 +222,7 @@ internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHan
 
                 var feedObject = new Feed
                 {
-                    Identity = feedIdLong,
+                    Id = feedIdLong,
                     FeedThumbnail = feedTargetThumbnail,
                     Type = feedType,
                     PostDate = postDate,

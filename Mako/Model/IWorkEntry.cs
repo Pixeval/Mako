@@ -6,7 +6,16 @@ using Misaki;
 
 namespace Mako.Model;
 
-public interface IWorkEntry : IIdentityInfo
+public interface IIdEntry : IIdentityInfo
+{
+    string IIdentityInfo.Id => Id.ToString();
+
+    string IIdentityInfo.Platform => Pixiv;
+
+    new long Id { get; }
+}
+
+public interface IWorkEntry : IIdEntry
 {
     string Title { get; }
 
