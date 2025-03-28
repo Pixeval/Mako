@@ -7,7 +7,7 @@ using Mako.Utilities;
 namespace Mako.Model;
 
 [Factory]
-public partial record Novel : WorkBase
+public partial record Novel : WorkBase, IWorkEntry
 {
     [JsonPropertyName("is_original")]
     public required bool IsOriginal { get; set; }
@@ -28,5 +28,5 @@ public partial record Novel : WorkBase
     public required int TotalComments { get; set; }
 
     [JsonPropertyName("novel_ai_type")]
-    public override required AiType AiType { get; set; }
+    public required AiType AiType { get; set; }
 }

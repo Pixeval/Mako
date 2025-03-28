@@ -47,7 +47,7 @@ public static partial class MakoHttpOptions
 
     public static void SetNameResolver(string host, string[] nameResolvers)
     {
-        NameResolvers[host] = nameResolvers.Select(IPAddress.Parse).ToArray();
+        NameResolvers[host] = [.. nameResolvers.Select(IPAddress.Parse)];
     }
 
     public static readonly Regex DomainFrontingRequiredHost = MyRegex();

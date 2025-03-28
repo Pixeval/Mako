@@ -27,9 +27,9 @@ public interface IWorkEntry : IIdEntry
 
     bool IsFavorite { get; set; }
 
-    bool IsPrivate { get; set; }
+    bool IsPrivate { get; }
 
-    bool IsMuted { get; set; }
+    bool IsMuted { get; }
 
     Tag[] Tags { get; }
 

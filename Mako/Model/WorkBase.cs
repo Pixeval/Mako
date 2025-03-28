@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 namespace Mako.Model;
 
 [DebuggerDisplay("{Id}: {Title} [{User}]")]
-public abstract record WorkBase : IWorkEntry
+public abstract record WorkBase
 {
     [JsonPropertyName("id")]
     public required long Id { get; set; }
@@ -23,8 +23,6 @@ public abstract record WorkBase : IWorkEntry
     [JsonPropertyName("restrict")]
     [JsonConverter(typeof(BoolToNumberJsonConverter))]
     public required bool IsPrivate { get; set; }
-
-    public abstract AiType AiType { get; set; }
 
     [JsonPropertyName("x_restrict")]
     public required XRestrict XRestrict { get; set; }

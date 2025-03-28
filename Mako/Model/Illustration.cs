@@ -16,7 +16,7 @@ namespace Mako.Model;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 [Factory]
-public partial record Illustration : WorkBase, ISingleImage, IImageSet, IImageSize
+public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageSet, IImageSize
 {
     [JsonPropertyName("type")]
     [JsonConverter(typeof(JsonStringEnumConverter<IllustrationType>))]
@@ -47,7 +47,7 @@ public partial record Illustration : WorkBase, ISingleImage, IImageSet, IImageSi
     public required MetaPage[] MetaPages { get; set; } = [];
 
     [JsonPropertyName("illust_ai_type")]
-    public override required AiType AiType { get; set; }
+    public required AiType AiType { get; set; }
 
     [JsonPropertyName("illust_book_style")]
     public required int IllustBookStyle { get; set; }
@@ -58,8 +58,11 @@ public partial record Illustration : WorkBase, ISingleImage, IImageSet, IImageSi
     [MemberNotNullWhen(false, nameof(OriginalSingleUrl))]
     public bool IsManga => PageCount > 1;
 
+    /// <remarks>
+    /// ["restricted_mode"]
+    /// </remarks>
     [JsonPropertyName("restriction_attributes")]
-    public string? RestrictionAttributes { get; set; }
+    public string[]? RestrictionAttributes { get; set; }
 
     public IReadOnlyList<string> MangaOriginalUrls => [.. MetaPages.Select(m => m.ImageUrls.Original)];
 
