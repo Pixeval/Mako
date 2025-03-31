@@ -12,6 +12,9 @@ namespace Mako.Net.Response;
 [Factory]
 public partial record PixivSingleUserResponse
 {
+    /// <summary>
+    /// 此处<see cref="Model.UserEntity"/>一定有<see cref="Model.UserEntity.Description"/>
+    /// </summary>
     [JsonPropertyName("user")]
     public required UserEntity UserEntity { get; set; }
 
@@ -23,16 +26,6 @@ public partial record PixivSingleUserResponse
 
     [JsonPropertyName("workspace")]
     public required Workspace UserWorkspace { get; set; }
-}
-
-[Factory]
-public partial record UserEntity : UserInfo
-{
-    /// <summary>
-    /// 比<see cref="UserInfo"/>多了个<see cref="Description"/>
-    /// </summary>
-    [JsonPropertyName("comment")]
-    public override required string Description { get; set; } = "";
 }
 
 [Factory]

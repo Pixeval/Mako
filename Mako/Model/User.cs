@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using Mako.Net.Response;
 using Mako.Utilities;
 using Misaki;
 
@@ -17,7 +18,7 @@ public partial record User : IIdEntry
     public long Id => UserInfo.Id;
 
     [JsonPropertyName("user")]
-    public required UserInfo UserInfo { get; set; }
+    public required UserEntity UserInfo { get; set; }
 
     [JsonPropertyName("illusts")]
     public required Illustration[] Illustrations { get; set; } = [];
@@ -31,7 +32,7 @@ public partial record User : IIdEntry
 
 [DebuggerDisplay("{Id}: {Name}")]
 [Factory]
-public partial record UserInfo : IUser, IIdEntry
+public partial record UserEntity : IUser, IIdEntry
 {
     [JsonPropertyName("id")]
     public required long Id { get; set; }
@@ -39,7 +40,11 @@ public partial record UserInfo : IUser, IIdEntry
     [JsonPropertyName("name")]
     public required string Name { get; set; } = "";
 
-    public virtual string Description { get; set; } = "";
+    /// <summary>
+    /// 只在<see cref="PixivSingleUserResponse"/>中才会有此项
+    /// </summary>
+    [JsonPropertyName("comment")]
+    public string Description { get; set; } = "";
 
     Uri IUser.WebsiteUri => new($"https://www.pixiv.net/users/{Id}");
 

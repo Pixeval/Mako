@@ -33,7 +33,7 @@ public interface IWorkEntry : IIdEntry
 
     Tag[] Tags { get; }
 
-    UserInfo User { get; }
+    UserEntity User { get; }
 
     DateTimeOffset CreateDate { get; }
 
