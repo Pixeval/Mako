@@ -20,6 +20,8 @@ public partial record Tag : ITag
     [JsonPropertyName("translated_name")]
     public required string? TranslatedName { get; set; }
 
+    string ITag.TranslatedName => TranslatedName ?? "";
+
     public string ToolTip => TranslatedName ?? Name;
 
     /// <summary>
