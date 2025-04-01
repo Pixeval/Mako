@@ -23,7 +23,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
     public required IllustrationType Type { get; set; }
 
     [JsonPropertyName("tools")]
-    public required string[] Tools { get; set; } = [];
+    public required IReadOnlyList<string> Tools { get; set; } = [];
 
     [JsonPropertyName("page_count")]
     public required int PageCount { get; set; }
@@ -44,7 +44,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
     public string? OriginalSingleUrl => MetaSinglePage.OriginalImageUrl;
 
     [JsonPropertyName("meta_pages")]
-    public required MetaPage[] MetaPages { get; set; } = [];
+    public required IReadOnlyList<MetaPage> MetaPages { get; set; } = [];
 
     [JsonPropertyName("illust_ai_type")]
     public required AiType AiType { get; set; }
@@ -62,7 +62,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
     /// ["restricted_mode"]
     /// </remarks>
     [JsonPropertyName("restriction_attributes")]
-    public string[]? RestrictionAttributes { get; set; }
+    public IReadOnlyList<string>? RestrictionAttributes { get; set; }
 
     public IReadOnlyList<string> MangaOriginalUrls => [.. MetaPages.Select(m => m.ImageUrls.Original)];
 

@@ -2,6 +2,7 @@
 // Licensed under the GPL v3 License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -28,7 +29,7 @@ public abstract record WorkBase
     public required XRestrict XRestrict { get; set; }
 
     [JsonPropertyName("tags")]
-    public required Tag[] Tags { get; set; } = [];
+    public required IReadOnlyList<Tag> Tags { get; set; } = [];
 
     [JsonPropertyName("user")]
     public required UserEntity User { get; set; }

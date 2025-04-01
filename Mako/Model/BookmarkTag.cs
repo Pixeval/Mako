@@ -16,6 +16,8 @@ public partial record BookmarkTag : ITag, IEquatable<string>
     [JsonPropertyName("name")]
     public required string Name { get; set; } = "";
 
+    string ITag.TranslatedName => "";
+
     string ITag.Description => "";
 
     [JsonPropertyName("count")]

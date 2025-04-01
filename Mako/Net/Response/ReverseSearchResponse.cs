@@ -1,6 +1,7 @@
 // Copyright (c) Pixeval.CoreApi.
 // Licensed under the GPL v3 License.
 
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Mako.Utilities;
 
@@ -13,7 +14,7 @@ public partial record ReverseSearchResponse
     public required ReverseSearchResponseHeader Header { get; set; }
 
     [JsonPropertyName("results")]
-    public required Result[] Results { get; set; } = [];
+    public required IReadOnlyList<Result> Results { get; set; } = [];
 }
 
 [Factory]

@@ -14,7 +14,7 @@ public partial record UgoiraMetadataResponse
     [JsonPropertyName("ugoira_metadata")]
     public required UgoiraMetadata UgoiraMetadataInfo { get; set; }
 
-    public int FrameCount => UgoiraMetadataInfo.Frames.Length;
+    public int FrameCount => UgoiraMetadataInfo.Frames.Count;
 
     public IEnumerable<int> Delays => UgoiraMetadataInfo.Frames.Select(t => (int) t.Delay);
 
@@ -32,7 +32,7 @@ public partial record UgoiraMetadata
     public required ZipUrls ZipUrls { get; set; }
 
     [JsonPropertyName("frames")]
-    public required Frame[] Frames { get; set; } = [];
+    public required IReadOnlyList<Frame> Frames { get; set; } = [];
 }
 
 [Factory]

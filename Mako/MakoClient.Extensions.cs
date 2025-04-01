@@ -29,7 +29,7 @@ public partial class MakoClient
             .GetSingleIllustAsync(id)
             .ConfigureAwait(false)).Illust);
 
-    public Task<Tag[]> GetAutoCompletionForKeyword(string word)
+    public Task<IReadOnlyList<Tag>> GetAutoCompletionForKeyword(string word)
         => RunWithLoggerAsync(async t => (await t
             .GetAutoCompletionAsync(word)
             .ConfigureAwait(false))
@@ -121,7 +121,7 @@ public partial class MakoClient
             .RemoveNovelBookmarkAsync(new RemoveNovelBookmarkRequest(id))
             .ConfigureAwait(false));
 
-    public Task<User[]> RelatedUserAsync(long id, TargetFilter filter)
+    public Task<IReadOnlyList<User>> RelatedUserAsync(long id, TargetFilter filter)
         => RunWithLoggerAsync(async t => (await t
                 .RelatedUserAsync(id, filter.GetDescription())
                 .ConfigureAwait(false))
@@ -137,13 +137,13 @@ public partial class MakoClient
             .RemoveFollowUserAsync(new RemoveFollowUserRequest(id))
             .ConfigureAwait(false));
 
-    public Task<TrendingTag[]> GetTrendingTagsAsync(TargetFilter targetFilter)
+    public Task<IReadOnlyList<TrendingTag>> GetTrendingTagsAsync(TargetFilter targetFilter)
         => RunWithLoggerAsync(async t => (await t
                 .GetTrendingTagsAsync(targetFilter.GetDescription())
                 .ConfigureAwait(false))
             .TrendTags);
 
-    public Task<TrendingTag[]> GetTrendingTagsForNovelAsync(TargetFilter targetFilter)
+    public Task<IReadOnlyList<TrendingTag>> GetTrendingTagsForNovelAsync(TargetFilter targetFilter)
         => RunWithLoggerAsync(async t => (await t
                 .GetTrendingTagsForNovelAsync(targetFilter.GetDescription())
                 .ConfigureAwait(false))

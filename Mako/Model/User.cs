@@ -21,10 +21,10 @@ public partial record User : IIdEntry
     public required UserEntity UserInfo { get; set; }
 
     [JsonPropertyName("illusts")]
-    public required Illustration[] Illustrations { get; set; } = [];
+    public required IReadOnlyList<Illustration> Illustrations { get; set; } = [];
 
     [JsonPropertyName("novels")]
-    public required Novel[] Novels { get; set; } = [];
+    public required IReadOnlyList<Novel> Novels { get; set; } = [];
 
     [JsonPropertyName("is_muted")]
     public required bool IsMuted { get; set; }

@@ -16,7 +16,7 @@ namespace Mako;
 
 public partial class MakoClient
 {
-    private Task<T[]> RunWithLoggerAsync<T>(Func<IAppApiEndPoint, Task<T[]>> task)
+    private Task<IReadOnlyList<T>> RunWithLoggerAsync<T>(Func<IAppApiEndPoint, Task<IReadOnlyList<T>>> task)
     {
         return RunWithLoggerAsync(() => task(Provider.GetRequiredService<IAppApiEndPoint>()), () => []);
     }

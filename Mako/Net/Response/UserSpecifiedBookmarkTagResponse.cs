@@ -1,6 +1,7 @@
 // Copyright (c) Pixeval.CoreApi.
 // Licensed under the GPL v3 License.
 
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Mako.Utilities;
 
@@ -23,10 +24,10 @@ public partial record UserSpecifiedBookmarkTagResponse
 public partial record UserSpecifiedBookmarkTagBody
 {
     [JsonPropertyName("public")]
-    public required UserSpecifiedBookmarkTag[] Public { get; set; } = [];
+    public required IReadOnlyList<UserSpecifiedBookmarkTag> Public { get; set; } = [];
 
     [JsonPropertyName("private")]
-    public required UserSpecifiedBookmarkTag[] Private { get; set; } = [];
+    public required IReadOnlyList<UserSpecifiedBookmarkTag> Private { get; set; } = [];
 
     [JsonPropertyName("tooManyBookmark")]
     public required bool TooManyBookmark { get; set; }

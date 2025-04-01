@@ -1,6 +1,7 @@
 // Copyright (c) Pixeval.CoreApi.
 // Licensed under the GPL v3 License.
 
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Mako.Utilities;
 
@@ -16,7 +17,7 @@ public partial record PixivSpotlightDetailResponse
     public required string Message { get; set; } = "";
 
     [JsonPropertyName("body")]
-    public required SpotlightBody[] ResponseBody { get; set; } = [];
+    public required IReadOnlyList<SpotlightBody> ResponseBody { get; set; } = [];
 }
 
 [Factory]
@@ -32,7 +33,7 @@ public partial record SpotlightBody
     public required Entry Entry { get; set; }
 
     [JsonPropertyName("tags")]
-    public required PixivisionTag[] Tags { get; set; } = [];
+    public required IReadOnlyList<PixivisionTag> Tags { get; set; } = [];
 
     [JsonPropertyName("thumbnailUrl")]
     public required string ThumbnailUrl { get; set; } = "";
@@ -62,10 +63,10 @@ public partial record SpotlightBody
     public required string Footer { get; set; } = "";
 
     [JsonPropertyName("illusts")]
-    public required Illust[] Illusts { get; set; } = [];
+    public required IReadOnlyList<Illust> Illusts { get; set; } = [];
 
     [JsonPropertyName("relatedArticles")]
-    public required RelatedArticle[] RelatedArticles { get; set; } = [];
+    public required IReadOnlyList<RelatedArticle> RelatedArticles { get; set; } = [];
 
     [JsonPropertyName("isOnlyOneUser")]
     public required bool IsOnlyOneUser { get; set; }
@@ -115,7 +116,7 @@ public partial record Entry
     public required PixivisionSubcategory PixivisionSubcategory { get; set; }
 
     [JsonPropertyName("tags")]
-    public required PixivisionTag[] Tags { get; set; } = [];
+    public required IReadOnlyList<PixivisionTag> Tags { get; set; } = [];
 
     [JsonPropertyName("article_url")]
     public required string ArticleUrl { get; set; } = "";

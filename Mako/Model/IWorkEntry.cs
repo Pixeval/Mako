@@ -2,6 +2,7 @@
 // Licensed under the GPL v3 License.
 
 using System;
+using System.Collections.Generic;
 using Misaki;
 
 namespace Mako.Model;
@@ -31,7 +32,7 @@ public interface IWorkEntry : IIdEntry
 
     bool IsMuted { get; }
 
-    Tag[] Tags { get; }
+    IReadOnlyList<Tag> Tags { get; }
 
     UserEntity User { get; }
 

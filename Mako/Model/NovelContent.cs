@@ -37,7 +37,7 @@ public partial record NovelContent
     public required string CoverUrl { get; set; } = "";
 
     [JsonPropertyName("tags")]
-    public required string[] Tags { get; set; } = [];
+    public required IReadOnlyList<string> Tags { get; set; } = [];
 
     [JsonPropertyName("caption")]
     public required string Caption { get; set; } = "";
@@ -59,7 +59,7 @@ public partial record NovelContent
     /// </summary>
     [JsonPropertyName("illusts")]
     [JsonConverter(typeof(SpecialDictionaryConverter<NovelIllustInfo>))]
-    public required NovelIllustInfo[] Illusts { get; set; } = [];
+    public required IReadOnlyList<NovelIllustInfo> Illusts { get; set; } = [];
 
     /// <summary>
     /// 临时上传的，没有ID的小说插图
@@ -69,17 +69,17 @@ public partial record NovelContent
     /// </remarks>
     [JsonPropertyName("images")]
     [JsonConverter(typeof(SpecialDictionaryConverter<NovelImage>))]
-    public required NovelImage[] Images { get; set; } = [];
+    public required IReadOnlyList<NovelImage> Images { get; set; } = [];
 
     [JsonPropertyName("seriesNavigation")]
     public required SeriesNavigation? SeriesNavigation { get; set; }
 
     [JsonPropertyName("glossaryItems")]
-    public required NovelReplaceableGlossary[] GlossaryItems { get; set; } = [];
+    public required IReadOnlyList<NovelReplaceableGlossary> GlossaryItems { get; set; } = [];
 
     [JsonPropertyName("replaceableItemIds")]
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)]
-    public required long[] ReplaceableItemIds { get; set; } = [];
+    public required IReadOnlyList<long> ReplaceableItemIds { get; set; } = [];
 
     [JsonPropertyName("aiType")]
     public required int AiType { get; set; }
@@ -227,7 +227,7 @@ public partial record NovelIllust
     public required int Sl { get; set; }
 
     [JsonPropertyName("tags")]
-    public required NovelTag[] Tags { get; set; } = [];
+    public required IReadOnlyList<NovelTag> Tags { get; set; } = [];
 
     [JsonPropertyName("images")]
     public required NovelIllustUrls Images { get; set; }
@@ -292,9 +292,9 @@ public partial record NovelReplaceableGlossary
 /// 当为正常对象时，属性键被包含在属性的值中，故直接抛弃。
 /// </summary>
 /// <typeparam name="T"></typeparam>
-internal class SpecialDictionaryConverter<T> : JsonConverter<T[]>
+internal class SpecialDictionaryConverter<T> : JsonConverter<IReadOnlyList<T>>
 {
-    public override T[]? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override IReadOnlyList<T>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType is JsonTokenType.Null)
             return null;
@@ -311,7 +311,7 @@ internal class SpecialDictionaryConverter<T> : JsonConverter<T[]>
                 case JsonTokenType.StartObject:
                     continue;
                 case JsonTokenType.PropertyName when !reader.Read():
-                    return ThrowHelper.Json<T[]>();
+                    return ThrowHelper.Json<IReadOnlyList<T>>();
                 case JsonTokenType.PropertyName:
                 {
                     var propertyValue = (T) JsonSerializer.Deserialize(ref reader, typeof(T), AppJsonSerializerContext.Default)!;
@@ -323,8 +323,8 @@ internal class SpecialDictionaryConverter<T> : JsonConverter<T[]>
             }
         }
 
-        return ThrowHelper.Json<T[]>();
+        return ThrowHelper.Json<IReadOnlyList<T>>();
     }
 
-    public override void Write(Utf8JsonWriter writer, T[]? value, JsonSerializerOptions options) => ThrowHelper.NotSupported();
+    public override void Write(Utf8JsonWriter writer, IReadOnlyList<T>? value, JsonSerializerOptions options) => ThrowHelper.NotSupported();
 }

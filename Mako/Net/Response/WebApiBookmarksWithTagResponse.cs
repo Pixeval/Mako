@@ -1,6 +1,7 @@
 // Copyright (c) Pixeval.CoreApi.
 // Licensed under the GPL v3 License.
 
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Mako.Utilities;
 
@@ -17,7 +18,7 @@ public partial record WebApiBookmarksWithTagResponse
 public partial record WebApiBookmarksWithTagBody
 {
     [JsonPropertyName("works")]
-    public required Work[] Works { get; set; } = [];
+    public required IReadOnlyList<Work> Works { get; set; } = [];
 }
 
 [Factory]

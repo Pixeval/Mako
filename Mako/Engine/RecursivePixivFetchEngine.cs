@@ -103,7 +103,7 @@ internal static class RecursivePixivAsyncEnumerators
     {
         protected override string InitialUrl => initialUrl;
 
-        protected sealed override bool ValidateResponse(TRawEntity rawEntity) => rawEntity.Entities is { Length: not 0 };
+        protected sealed override bool ValidateResponse(TRawEntity rawEntity) => rawEntity.Entities is { Count: not 0 };
 
         protected sealed override string? NextUrl(TRawEntity? rawEntity) => rawEntity?.NextUrl;
 

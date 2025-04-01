@@ -2,6 +2,7 @@
 // Licensed under the GPL v3 License.
 
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mako.Model;
@@ -105,29 +106,29 @@ namespace Mako;
 [JsonSerializable(typeof(RestrictedModeSettingsRequest))]
 [JsonSerializable(typeof(ReverseSearchRequest))]
 
-[JsonSerializable(typeof(string[]))]
-[JsonSerializable(typeof(Tag[]))]
-[JsonSerializable(typeof(MetaPage[]))]
-[JsonSerializable(typeof(NovelIllustInfo[]))]
-[JsonSerializable(typeof(NovelImage[]))]
-[JsonSerializable(typeof(NovelReplaceableGlossary[]))]
-[JsonSerializable(typeof(long[]))]
-[JsonSerializable(typeof(NovelTag[]))]
-[JsonSerializable(typeof(BookmarkTag[]))]
-[JsonSerializable(typeof(Comment[]))]
-[JsonSerializable(typeof(Illustration[]))]
-[JsonSerializable(typeof(Novel[]))]
-[JsonSerializable(typeof(User[]))]
-[JsonSerializable(typeof(SpotlightBody[]))]
-[JsonSerializable(typeof(PixivisionTag[]))]
-[JsonSerializable(typeof(Illust[]))]
-[JsonSerializable(typeof(RelatedArticle[]))]
-[JsonSerializable(typeof(Spotlight[]))]
-[JsonSerializable(typeof(Result[]))]
-[JsonSerializable(typeof(TrendingTag[]))]
-[JsonSerializable(typeof(Frame[]))]
-[JsonSerializable(typeof(UserSpecifiedBookmarkTag[]))]
-[JsonSerializable(typeof(Work[]))]
+[JsonSerializable(typeof(IReadOnlyList<string>))]
+[JsonSerializable(typeof(IReadOnlyList<Tag>))]
+[JsonSerializable(typeof(IReadOnlyList<MetaPage>))]
+[JsonSerializable(typeof(IReadOnlyList<NovelIllustInfo>))]
+[JsonSerializable(typeof(IReadOnlyList<NovelImage>))]
+[JsonSerializable(typeof(IReadOnlyList<NovelReplaceableGlossary>))]
+[JsonSerializable(typeof(IReadOnlyList<long>))]
+[JsonSerializable(typeof(IReadOnlyList<NovelTag>))]
+[JsonSerializable(typeof(IReadOnlyList<BookmarkTag>))]
+[JsonSerializable(typeof(IReadOnlyList<Comment>))]
+[JsonSerializable(typeof(IReadOnlyList<Illustration>))]
+[JsonSerializable(typeof(IReadOnlyList<Novel>))]
+[JsonSerializable(typeof(IReadOnlyList<User>))]
+[JsonSerializable(typeof(IReadOnlyList<SpotlightBody>))]
+[JsonSerializable(typeof(IReadOnlyList<PixivisionTag>))]
+[JsonSerializable(typeof(IReadOnlyList<Illust>))]
+[JsonSerializable(typeof(IReadOnlyList<RelatedArticle>))]
+[JsonSerializable(typeof(IReadOnlyList<Spotlight>))]
+[JsonSerializable(typeof(IReadOnlyList<Result>))]
+[JsonSerializable(typeof(IReadOnlyList<TrendingTag>))]
+[JsonSerializable(typeof(IReadOnlyList<Frame>))]
+[JsonSerializable(typeof(IReadOnlyList<UserSpecifiedBookmarkTag>))]
+[JsonSerializable(typeof(IReadOnlyList<Work>))]
 public partial class AppJsonSerializerContext : JsonSerializerContext;
 
 public class SnakeCaseLowerEnumConverter<T>() : JsonStringEnumConverter<T>(JsonNamingPolicy.SnakeCaseLower) where T : struct, Enum;

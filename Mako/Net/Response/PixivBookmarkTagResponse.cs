@@ -1,6 +1,7 @@
 // Copyright (c) Pixeval.CoreApi.
 // Licensed under the GPL v3 License.
 
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Mako.Model;
 using Mako.Utilities;
@@ -14,5 +15,5 @@ public partial record PixivBookmarkTagResponse : IPixivNextUrlResponse<BookmarkT
     public required string? NextUrl { get; set; }
 
     [JsonPropertyName("bookmark_tags")]
-    public /*override*/ required BookmarkTag[] Entities { get; set; } = [];
+    public /*override*/ required IReadOnlyList<BookmarkTag> Entities { get; set; } = [];
 }

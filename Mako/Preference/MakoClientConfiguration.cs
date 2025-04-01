@@ -1,6 +1,7 @@
 // Copyright (c) Pixeval.CoreApi.
 // Licensed under the GPL v3 License.
 
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text.Json.Serialization;
@@ -23,7 +24,7 @@ public record MakoClientConfiguration(
     [JsonIgnore] public CultureInfo CultureInfo { get; set; } = CultureInfo;
 
     [JsonPropertyName("userAgent")]
-    public ProductInfoHeaderValue[] UserAgent { get; set; } =
+    public IReadOnlyList<ProductInfoHeaderValue> UserAgent { get; set; } =
     [
         new("Mozilla", "5.0"),
         new("(Windows NT 10.0; Win64; x64)"),

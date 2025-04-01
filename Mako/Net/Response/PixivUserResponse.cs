@@ -1,6 +1,7 @@
 // Copyright (c) Pixeval.CoreApi.
 // Licensed under the GPL v3 License.
 
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Mako.Model;
 using Mako.Utilities;
@@ -14,5 +15,5 @@ public partial record PixivUserResponse : IPixivNextUrlResponse<User>
     public required string? NextUrl { get; set; }
 
     [JsonPropertyName("user_previews")]
-    public /*override*/ required User[] Entities { get; set; } = [];
+    public /*override*/ required IReadOnlyList<User> Entities { get; set; } = [];
 }
