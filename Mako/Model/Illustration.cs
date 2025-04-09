@@ -16,7 +16,7 @@ namespace Mako.Model;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 [Factory]
-public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageSet, IImageSize
+public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageSet
 {
     [JsonPropertyName("type")]
     [JsonConverter(typeof(JsonStringEnumConverter<IllustrationType>))]
@@ -107,7 +107,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
     ILookup<ITagCategory, ITag> IArtworkInfo.Tags => Tags.ToLookup(_ => ITagCategory.Empty, ITag (t) => t);
 
     [field: AllowNull, MaybeNull]
-    IReadOnlyList<IImageFrame> IArtworkInfo.Thumbnails => field ??= [.. GetImageFrame()];
+    IReadOnlyCollection<IImageFrame> IArtworkInfo.Thumbnails => field ??= [.. GetImageFrame()];
 
     private IEnumerable<ImageFrame> GetImageFrame()
     {

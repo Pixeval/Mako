@@ -48,7 +48,7 @@ public partial record UserEntity : IUser, IIdEntry
 
     Uri IUser.WebsiteUri => new($"https://www.pixiv.net/users/{Id}");
 
-    IReadOnlyList<IImageFrame> IUser.Avatar =>
+    IReadOnlyCollection<IImageFrame> IUser.Avatar =>
     [
         new ImageFrame(170, 170) { ImageUri = new(ProfileImageUrls.Medium) }
     ];
