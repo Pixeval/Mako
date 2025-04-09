@@ -56,13 +56,14 @@ public partial class MakoClient
             var rightStack = 0;
             var startIndex = -1;
             var endIndex = -1;
+            var skipBrace = 1;
 
             for (var i = 0; i < contentHtml.Length; ++i)
             {
                 if (contentHtml[i] is '{')
                 {
                     ++leftStack;
-                    if (leftStack < 2)
+                    if (leftStack < 3)
                         startIndex = i;
                 }
                 else if (contentHtml[i] is '}')
@@ -71,7 +72,9 @@ public partial class MakoClient
                     if (rightStack == leftStack)
                     {
                         endIndex = i + 1;
-                        break;
+                        if (skipBrace is 0)
+                            break;
+                        --skipBrace;
                     }
                 }
             }
