@@ -152,10 +152,10 @@ public partial class MakoClient
                 .ConfigureAwait(false))
             .TrendTags);
 
-    public Task<UgoiraMetadataResponse> GetUgoiraMetadataAsync(long id)
-        => RunWithLoggerAsync<UgoiraMetadataResponse>(async t => await t
+    public Task<UgoiraMetadata> GetUgoiraMetadataAsync(long id)
+        => RunWithLoggerAsync(async t => (await t
             .GetUgoiraMetadataAsync(id)
-            .ConfigureAwait(false));
+            .ConfigureAwait(false)).UgoiraMetadataInfo);
 
     public Task<HttpResponseMessage> DeleteIllustCommentAsync(long commentId)
         => RunWithLoggerAsync(async t => await t

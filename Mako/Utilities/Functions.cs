@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Mako.Utilities;
 
-public static class Functions
+internal static class Functions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Func<T, T> Identity<T>()

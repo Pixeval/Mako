@@ -144,6 +144,8 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
             ? ImageType.SingleAnimatedImage
             : ImageType.SingleImage;
 
+    public bool IsAiGenerated => AiType is AiType.AiGenerated;
+
     public string GetThumbnail(ThumbnailSize size = ThumbnailSize.C540X540Q70, int page = 0, bool isSquare = false) => $"https://i.pximg.net{size.GetDescription()}/img-master/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Id}_p{page}_{(isSquare ? "square" : "master")}1200.jpg";
 
     public string GetOriginal(int page = 0) => $"https://i.pximg.net/img-original/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Id}_p{page}.jpg";
@@ -152,7 +154,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
 
     Uri IImageFrame.ImageUri => new(GetOriginal());
 
-    private int _index = -1;
+    public int MangaIndex { get; private set; }
 
     [field: AllowNull, MaybeNull]
     IPreloadableEnumerable<IArtworkInfo> IImageSet.Pages => field ??=
@@ -166,7 +168,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
             {
                 MetaSinglePage = new() { OriginalImageUrl = m.ImageUrls.Original },
                 ThumbnailUrls = m.ImageUrls,
-                _index = i
+                MangaIndex = i
             })
     ];
 
