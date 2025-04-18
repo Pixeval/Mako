@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
 using Mako.Utilities;
@@ -14,7 +15,8 @@ public partial record UgoiraMetadata
     [JsonPropertyName("frames")]
     public required IReadOnlyList<Frame> Frames { get; set; } = [];
 
-    public IEnumerable<int> Delays => Frames.Select(t => (int) t.Delay);
+    [field: AllowNull, MaybeNull]
+    public IReadOnlyList<int> Delays => field ??= [..Frames.Select(t => (int) t.Delay)];
 
     public string MediumUrl => ZipUrls.Medium;
 

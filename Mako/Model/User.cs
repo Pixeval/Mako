@@ -46,7 +46,9 @@ public partial record UserEntity : IUser, IIdEntry
     [JsonPropertyName("comment")]
     public string Description { get; set; } = "";
 
-    Uri IUser.WebsiteUri => new($"https://www.pixiv.net/users/{Id}");
+    public Uri WebsiteUri => new($"https://www.pixiv.net/users/{Id}");
+
+    public Uri AppUri => new($"pixeval://user/{Id}");
 
     IReadOnlyCollection<IImageFrame> IUser.Avatar =>
     [

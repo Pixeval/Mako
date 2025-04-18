@@ -16,7 +16,7 @@ namespace Mako.Model;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 [Factory]
-public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageSet
+public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingleAnimatedImage, IImageSet
 {
     [JsonPropertyName("type")]
     [JsonConverter(typeof(JsonStringEnumConverter<IllustrationType>))]
@@ -80,7 +80,9 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
 
     public virtual bool Equals(Illustration? other) => other?.Id == Id;
 
-    Uri IArtworkInfo.WebsiteUri => new($"https://www.pixiv.net/artworks/{Id}");
+    public Uri WebsiteUri => new($"https://www.pixiv.net/artworks/{Id}");
+
+    public Uri AppUri => new($"pixeval://illust/{Id}");
 
     DateTimeOffset IArtworkInfo.UpdateDate => CreateDate;
 
@@ -107,33 +109,42 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
     ILookup<ITagCategory, ITag> IArtworkInfo.Tags => Tags.ToLookup(_ => ITagCategory.Empty, ITag (t) => t);
 
     [field: AllowNull, MaybeNull]
-    IReadOnlyCollection<IImageFrame> IArtworkInfo.Thumbnails => field ??= [.. GetImageFrame()];
+    IReadOnlyCollection<IImageFrame> IArtworkInfo.Thumbnails => field ??=
+        [
+            GetImageFrame(ThumbnailSize.C540X540Q70, ImageFrame.FixType.FixHeight) with { ImageUri = new(ThumbnailUrls.Medium) },
+            GetImageFrame(ThumbnailSize.C600X1200Q90, ImageFrame.FixType.FixWidth) with { ImageUri = new(ThumbnailUrls.Large) }
+        ];
 
-    private IEnumerable<ImageFrame> GetImageFrame()
+    private IReadOnlyList<ImageFrame> GetImageFrames()
     {
-        var type = typeof(ThumbnailSize);
-        foreach (var value in (ThumbnailSize[]) type.GetEnumValues())
+        var list = new List<ImageFrame>();
+        foreach (var value in ((ThumbnailSize[]) typeof(ThumbnailSize).GetEnumValues()))
         {
-            var fieldInfo = type.GetField(value.ToString());
-            if (fieldInfo?.GetCustomAttributes<ImageFrame.FixTypeAttribute>() is not { } arr
-                || fieldInfo?.GetCustomAttribute<ImageFrame.SizeAttribute>() is not { Width: var width, Height: var height })
+            var fieldInfo = typeof(ThumbnailSize).GetField(value.ToString());
+            if (fieldInfo?.GetCustomAttributes<ImageFrame.FixTypeAttribute>() is not { } arr)
                 continue;
-            var uri = new Uri(GetThumbnail(value));
 
-            foreach (var fixTypeAttribute in arr)
-                switch (fixTypeAttribute.FixType)
-                {
-                    case ImageFrame.FixType.FixHeight:
-                        yield return new ImageFrame(this, height, false) { ImageUri = uri };
-                        break;
-                    case ImageFrame.FixType.FixWidth:
-                        yield return new ImageFrame(this, width, true) { ImageUri = uri };
-                        break;
-                    case ImageFrame.FixType.FixAll:
-                        yield return new ImageFrame(width, height) { ImageUri = uri };
-                        break;
-                }
+            list.AddRange(arr.Select(fixTypeAttribute => GetImageFrame(value, fixTypeAttribute.FixType)));
         }
+
+        return list;
+    }
+
+    private ImageFrame GetImageFrame(ThumbnailSize value, ImageFrame.FixType fixType)
+    {
+        var fieldInfo = typeof(ThumbnailSize).GetField(value.ToString());
+        if (fieldInfo?.GetCustomAttribute<ImageFrame.SizeAttribute>() is not
+                { Width: var width, Height: var height })
+            return ThrowHelper.NotSupported<ImageFrame>(value.ToString());
+        var uri = new Uri(GetThumbnail(value, isSquare: fixType is ImageFrame.FixType.FixAll));
+
+        return fixType switch
+        {
+            ImageFrame.FixType.FixHeight => new ImageFrame(this, height, false) { ImageUri = uri },
+            ImageFrame.FixType.FixWidth => new ImageFrame(this, width, true) { ImageUri = uri },
+            ImageFrame.FixType.FixAll => new ImageFrame(width, height) { ImageUri = uri },
+            _ => ThrowHelper.NotSupported<ImageFrame>(fixType.ToString())
+        };
     }
 
     IReadOnlyDictionary<string, object> IArtworkInfo.AdditionalInfo => new Dictionary<string, object>();
@@ -154,7 +165,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
 
     Uri IImageFrame.ImageUri => new(GetOriginal());
 
-    public int MangaIndex { get; private set; }
+    public int SetIndex { get; private init; }
 
     [field: AllowNull, MaybeNull]
     IPreloadableEnumerable<IArtworkInfo> IImageSet.Pages => field ??=
@@ -168,7 +179,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
             {
                 MetaSinglePage = new() { OriginalImageUrl = m.ImageUrls.Original },
                 ThumbnailUrls = m.ImageUrls,
-                MangaIndex = i
+                SetIndex = i
             })
     ];
 
@@ -270,14 +281,6 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
         C288X288Q80A2,
 
         /// <summary>
-        /// crop
-        /// </summary>
-        [Description("/c/300x200_a2")]
-        [ImageFrame.Size(300, 200)]
-        [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
-        C300X200A2,
-
-        /// <summary>
         /// (height prior) standard
         /// </summary>
         [Description("/c/400x250_80")]
@@ -311,6 +314,14 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, IImageS
         C
 
         /*
+        /// <summary>
+        /// crop
+        /// </summary>
+        [Description("/c/300x200_a2")]
+        [ImageFrame.Size(300, 200)]
+        [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
+        C300X200A2,
+
         /// <summary>
         /// (height prior) standard square webp
         /// </summary>

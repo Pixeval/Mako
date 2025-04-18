@@ -1,7 +1,6 @@
 // Copyright (c) Pixeval.CoreApi.
 // Licensed under the GPL v3 License.
 
-using System;
 using System.Collections.Generic;
 using Misaki;
 
@@ -16,27 +15,15 @@ public interface IIdEntry : IIdentityInfo
     new long Id { get; }
 }
 
-public interface IWorkEntry : IIdEntry
+public interface IWorkEntry : IArtworkInfo, IIdEntry
 {
-    string Title { get; }
-
-    string Description { get; }
-
-    int TotalView { get; }
-
-    int TotalFavorite { get; }
-
-    bool IsFavorite { get; set; }
-
     bool IsPrivate { get; }
 
     bool IsMuted { get; }
 
-    IReadOnlyList<Tag> Tags { get; }
+    new IReadOnlyList<Tag> Tags { get; }
 
     UserEntity User { get; }
-
-    DateTimeOffset CreateDate { get; }
 
     ImageUrls ThumbnailUrls { get; }
 

@@ -12,7 +12,7 @@ using Misaki;
 namespace Mako.Model;
 
 [Factory]
-public partial record Novel : WorkBase, IWorkEntry, IArtworkInfo
+public partial record Novel : WorkBase, IWorkEntry
 {
     [JsonPropertyName("is_original")]
     public required bool IsOriginal { get; set; }
@@ -35,7 +35,11 @@ public partial record Novel : WorkBase, IWorkEntry, IArtworkInfo
     [JsonPropertyName("novel_ai_type")]
     public required AiType AiType { get; set; }
 
-    Uri IArtworkInfo.WebsiteUri => new($"https://www.pixiv.net/novel/show.php?id={Id}");
+    [field: AllowNull, MaybeNull]
+    public Uri WebsiteUri => field ??= new($"https://www.pixiv.net/novel/show.php?id={Id}");
+
+    [field: AllowNull, MaybeNull]
+    public Uri AppUri => field ??= new($"pixeval://novel/{Id}");
 
     DateTimeOffset IArtworkInfo.UpdateDate => CreateDate;
 
@@ -68,4 +72,8 @@ public partial record Novel : WorkBase, IWorkEntry, IArtworkInfo
     public ImageType ImageType => ImageType.Other;
 
     public bool IsAiGenerated => AiType is AiType.AiGenerated;
+
+    public int Width => 0;
+
+    public int Height => 0;
 }
