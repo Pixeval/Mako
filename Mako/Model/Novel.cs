@@ -45,9 +45,9 @@ public partial record Novel : WorkBase, IWorkEntry
 
     DateTimeOffset IArtworkInfo.ModifyDate => CreateDate;
 
-    IPreloadableEnumerable<IUser> IArtworkInfo.Authors => [User];
+    IPreloadableList<IUser> IArtworkInfo.Authors => [User];
 
-    IPreloadableEnumerable<IUser> IArtworkInfo.Uploaders => [];
+    IPreloadableList<IUser> IArtworkInfo.Uploaders => [];
 
     SafeRating IArtworkInfo.SafeRating => XRestrict switch
     {

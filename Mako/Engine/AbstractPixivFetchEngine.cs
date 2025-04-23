@@ -16,7 +16,7 @@ namespace Mako.Engine;
 /// </typeparam>
 public abstract class AbstractPixivFetchEngine<TE>(MakoClient makoClient, EngineHandle? engineHandle) : IFetchEngine<TE>
 {
-    public abstract IAsyncEnumerator<TE> GetAsyncEnumerator(CancellationToken cancellationToken = new()); // the 'CancellationToken' is no longer useful, we use 'EngineHandle' to track the lifetime
+    public abstract IAsyncEnumerator<TE> GetAsyncEnumerator(CancellationToken cancellationToken = default); // the 'CancellationToken' is no longer useful, we use 'EngineHandle' to track the lifetime
 
     /// <summary>
     /// The <see cref="MakoClient" /> that owns this <see cref="IFetchEngine{TE}" />, it

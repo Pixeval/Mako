@@ -10,5 +10,5 @@ public partial record Frame
     public required string File { get; set; } = "";
 
     [JsonPropertyName("delay")]
-    public required long Delay { get; set; }
+    public required int Delay { get; set; }
 }

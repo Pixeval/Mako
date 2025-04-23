@@ -16,10 +16,11 @@ using Mako.Preference;
 using Mako.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Misaki;
 
 namespace Mako;
 
-public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable
+public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, IMisakiService
 {
     /// <summary>
     /// Create a new <see cref="MakoClient" /> based on given <see cref="Configuration" />, <see cref="TokenResponse" />

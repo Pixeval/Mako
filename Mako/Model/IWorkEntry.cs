@@ -10,7 +10,7 @@ public interface IIdEntry : IIdentityInfo
 {
     string IIdentityInfo.Id => Id.ToString();
 
-    string IIdentityInfo.Platform => Pixiv;
+    string IPlatformInfo.Platform => Pixiv;
 
     new long Id { get; }
 }

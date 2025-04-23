@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Mako.Utilities;
 using Misaki;
 
@@ -66,13 +67,13 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
 
     public IReadOnlyList<string> MangaOriginalUrls => [.. MetaPages.Select(m => m.ImageUrls.Original)];
 
-    public List<string> GetUgoiraOriginalUrls(int frameCount)
+    public string[] GetUgoiraOriginalUrls(int frameCount)
     {
         Debug.Assert(IsUgoira);
-        var list = new List<string>();
+        var arr = new string[frameCount];
         for (var i = 0; i < frameCount; ++i)
-            list.Add(OriginalSingleUrl.Replace("ugoira0", $"ugoira{i}"));
-        return list;
+            arr[i] = OriginalSingleUrl.Replace("ugoira0", $"ugoira{i}");
+        return arr;
     }
 
     // ReSharper disable once NonReadonlyMemberInGetHashCode
@@ -88,9 +89,9 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
 
     DateTimeOffset IArtworkInfo.ModifyDate => CreateDate;
 
-    IPreloadableEnumerable<IUser> IArtworkInfo.Authors => [User];
+    IPreloadableList<IUser> IArtworkInfo.Authors => [User];
 
-    IPreloadableEnumerable<IUser> IArtworkInfo.Uploaders => [];
+    IPreloadableList<IUser> IArtworkInfo.Uploaders => [];
 
     SafeRating IArtworkInfo.SafeRating => XRestrict switch
     {
@@ -167,8 +168,54 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
 
     public int SetIndex { get; private init; }
 
+    public SingleAnimatedImageType PreferredAnimatedImageType => SingleAnimatedImageType.MultiFiles;
+
+    public Uri? SingleImageUri => null;
+
+    public UgoiraMetadata? UgoiraMetadata { get; private set; }
+
     [field: AllowNull, MaybeNull]
-    IPreloadableEnumerable<IArtworkInfo> IImageSet.Pages => field ??=
+    public IPreloadableList<(Uri, int)> MultiImageUris => field ??= PreloadableList.ToPreloadableEnumerable<(Uri Uri, int MsDelay)>(
+        async service =>
+        {
+            await GetUgoiraMetadataAsync(service);
+            return UgoiraMetadata.GetUgoiraOriginalUrlsAndMsDelays(OriginalSingleUrl!);
+        });
+
+    [field: AllowNull, MaybeNull]
+    public IPreloadableList<IAnimatedImageFrame> AnimatedThumbnails => field ??=
+        PreloadableList.ToPreloadableEnumerable<IAnimatedImageFrame> (
+            async service =>
+            {
+                await GetUgoiraMetadataAsync(service);
+                return
+                [
+                    new AnimatedImageFrame(new Uri(UgoiraMetadata.MediumUrl))
+                    {
+                        Width = 600,
+                        Height = 600 * Height / Width
+                    },
+                    new AnimatedImageFrame(new Uri(UgoiraMetadata.MediumUrl))
+                    {
+                        Width = 1080 * Width / Height,
+                        Height = 1080
+                    }
+                ];
+            });
+
+    [MemberNotNull(nameof(UgoiraMetadata))]
+    private async Task GetUgoiraMetadataAsync(IMisakiService service)
+    {
+        if (IsUgoira)
+            ThrowHelper.InvalidOperation("Not Ugoira");
+        if (service is not MakoClient makoClient)
+            ThrowHelper.InvalidOperation("Invalid service");
+        else
+            UgoiraMetadata ??= await makoClient.GetUgoiraMetadataAsync(Id);
+    }
+
+    [field: AllowNull, MaybeNull]
+    IPreloadableList<ISingleImage> IImageSet.Pages => field ??=
     [
         ..PageCount <= 1
             ? [this]
