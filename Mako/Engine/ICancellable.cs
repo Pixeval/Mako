@@ -5,5 +5,5 @@ namespace Mako.Engine;
 
 public interface ICancellable
 {
-    bool IsCancelled { get; set; }
+    bool IsCancelled { get; }
 }

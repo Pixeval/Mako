@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Mako.Engine;
 using Mako.Model;
 using Mako.Net;
@@ -34,7 +35,9 @@ public partial class MakoClient
     /// </summary>
     internal ServiceCollection Services { get; } = [];
 
-    internal ServiceProvider Provider { get; }
+    internal ServiceProvider Provider { get; private set; } = null!;
 
-    public bool IsCancelled { get; set; }
+    public bool IsBuilt { get; private set; }
+
+    public bool IsCancelled { get; private set; }
 }

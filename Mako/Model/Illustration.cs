@@ -113,13 +113,14 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     IReadOnlyCollection<IImageFrame> IArtworkInfo.Thumbnails => field ??=
         [
             GetImageFrame(ThumbnailSize.C540X540Q70, ImageFrame.FixType.FixHeight) with { ImageUri = new(ThumbnailUrls.Medium) },
-            GetImageFrame(ThumbnailSize.C600X1200Q90, ImageFrame.FixType.FixWidth) with { ImageUri = new(ThumbnailUrls.Large) }
+            GetImageFrame(ThumbnailSize.C600X1200Q90, ImageFrame.FixType.FixWidth) with { ImageUri = new(ThumbnailUrls.Large) },
+            GetImageFrame(ThumbnailSize.C, ImageFrame.FixType.FixWidth) with { ImageUri = new(ThumbnailUrls.NotCropped) }
         ];
 
     private IReadOnlyList<ImageFrame> GetImageFrames()
     {
         var list = new List<ImageFrame>();
-        foreach (var value in ((ThumbnailSize[]) typeof(ThumbnailSize).GetEnumValues()))
+        foreach (var value in (ThumbnailSize[]) typeof(ThumbnailSize).GetEnumValues())
         {
             var fieldInfo = typeof(ThumbnailSize).GetField(value.ToString());
             if (fieldInfo?.GetCustomAttributes<ImageFrame.FixTypeAttribute>() is not { } arr)
@@ -172,6 +173,8 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
 
     public Uri? SingleImageUri => null;
 
+    public IPreloadableList<int>? ZipImageDelays => null;
+
     public UgoiraMetadata? UgoiraMetadata { get; private set; }
 
     [field: AllowNull, MaybeNull]
@@ -190,12 +193,12 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
                 await GetUgoiraMetadataAsync(service);
                 return
                 [
-                    new AnimatedImageFrame(new Uri(UgoiraMetadata.MediumUrl))
+                    new AnimatedImageFrame(new Uri(UgoiraMetadata.MediumUrl), [..UgoiraMetadata.Delays])
                     {
                         Width = 600,
                         Height = 600 * Height / Width
                     },
-                    new AnimatedImageFrame(new Uri(UgoiraMetadata.MediumUrl))
+                    new AnimatedImageFrame(new Uri(UgoiraMetadata.LargeUrl), [..UgoiraMetadata.Delays])
                     {
                         Width = 1080 * Width / Height,
                         Height = 1080
@@ -206,7 +209,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     [MemberNotNull(nameof(UgoiraMetadata))]
     private async Task GetUgoiraMetadataAsync(IMisakiService service)
     {
-        if (IsUgoira)
+        if (!IsUgoira)
             ThrowHelper.InvalidOperation("Not Ugoira");
         if (service is not MakoClient makoClient)
             ThrowHelper.InvalidOperation("Invalid service");

@@ -35,7 +35,7 @@ public partial record TokenResponse
 
     public static TokenResponse CreateFromRefreshToken(string refreshToken)
     {
-        var tokenResponse = TokenResponse.CreateDefault();
+        var tokenResponse = CreateDefault();
         tokenResponse.RefreshToken = refreshToken;
         return tokenResponse;
     }

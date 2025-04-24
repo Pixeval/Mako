@@ -20,26 +20,26 @@ using Misaki;
 
 namespace Mako;
 
-public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, IMisakiService
+public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, IDownloadHttpClientService
 {
     /// <summary>
     /// Create a new <see cref="MakoClient" /> based on given <see cref="Configuration" />, <see cref="TokenResponse" />
     /// </summary>
-    /// <param name="tokenResponse">The <see cref="TokenResponse" /></param>
     /// <param name="configuration">The <see cref="Configuration" /></param>
     /// <param name="logger"></param>
-    public MakoClient(TokenResponse tokenResponse, MakoClientConfiguration configuration, ILogger logger)
+    public MakoClient(MakoClientConfiguration configuration, ILogger logger)
     {
         Logger = logger;
         Configuration = configuration;
-        Provider = BuildServiceProvider(Services, tokenResponse);
-        IsCancelled = false;
     }
 
-    public MakoClient(string refreshToken, MakoClientConfiguration configuration, ILogger logger)
-        : this(TokenResponse.CreateFromRefreshToken(refreshToken), configuration, logger)
+    public void Build(TokenResponse tokenResponse)
     {
+        IsBuilt = true;
+        Provider = BuildServiceProvider(Services, tokenResponse);
     }
+
+    public void Build(string refreshToken) => Build(TokenResponse.CreateFromRefreshToken(refreshToken));
 
     /// <summary>
     /// Injects necessary dependencies
@@ -175,6 +175,7 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
 
     public void Dispose()
     {
+        IsCancelled = true;
         GC.SuppressFinalize(this);
         Dispose(Services);
         Provider.Dispose();
@@ -189,4 +190,10 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
                 is IDisposable d && !Equals(d))
                 d.Dispose();
     }
+
+    public string Platform => IPlatformInfo.Pixiv;
+
+    public HttpClient GetApiClient() => GetMakoHttpClient(MakoApiKind.AppApi);
+
+    public HttpClient GetImageDownloadClient() => GetMakoHttpClient(MakoApiKind.ImageApi);
 }

@@ -17,4 +17,6 @@ public partial record ImageUrls
 
     [JsonPropertyName("large")]
     public required string Large { get; set; } = DefaultImageUrls.ImageNotAvailable;
+
+    public string NotCropped => Large.Replace("c/600x1200_90/", "");
 }

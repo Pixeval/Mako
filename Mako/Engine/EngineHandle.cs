@@ -26,7 +26,7 @@ public class EngineHandle : ICancellable, INotifyCompletion, ICompletionCallback
     /// <summary>
     /// 指示该句柄对应的搜索引擎是否已经被取消
     /// </summary>
-    public bool IsCancelled { get; set; }
+    public bool IsCancelled { get; private set; }
 
     /// <summary>
     /// 指示该句柄对应的搜索引擎是否已经结束运行
