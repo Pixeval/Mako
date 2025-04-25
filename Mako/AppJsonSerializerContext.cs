@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using Mako.Model;
 using Mako.Net.Request;
 using Mako.Net.Response;
+using Misaki;
 
 namespace Mako;
 
@@ -55,6 +56,7 @@ namespace Mako;
 [JsonSerializable(typeof(ShowAiSettingsResponse))]
 [JsonSerializable(typeof(RestrictedModeSettingsResponse))]
 
+[JsonSerializable(typeof(IArtworkInfo))]
 [JsonSerializable(typeof(BookmarkTag))]
 [JsonSerializable(typeof(Feed))]
 [JsonSerializable(typeof(Illustration))]

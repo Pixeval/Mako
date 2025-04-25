@@ -8,8 +8,10 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Mako.Net.Response;
 using Mako.Utilities;
 using Misaki;
 
@@ -42,8 +44,6 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     [EditorBrowsable(EditorBrowsableState.Never)]
     public required MetaSinglePage MetaSinglePage { get; set; }
 
-    public string? OriginalSingleUrl => MetaSinglePage.OriginalImageUrl;
-
     [JsonPropertyName("meta_pages")]
     public required IReadOnlyList<MetaPage> MetaPages { get; set; } = [];
 
@@ -53,18 +53,41 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     [JsonPropertyName("illust_book_style")]
     public required int IllustBookStyle { get; set; }
 
-    [MemberNotNullWhen(true, nameof(OriginalSingleUrl))]
-    public bool IsUgoira => Type is IllustrationType.Ugoira;
-
-    [MemberNotNullWhen(false, nameof(OriginalSingleUrl))]
-    public bool IsManga => PageCount > 1;
-
     /// <remarks>
     /// ["restricted_mode"]
     /// </remarks>
     [JsonPropertyName("restriction_attributes")]
     public IReadOnlyList<string>? RestrictionAttributes { get; set; }
 
+    // ReSharper disable once NonReadonlyMemberInGetHashCode
+    public override int GetHashCode() => Id.GetHashCode();
+
+    public virtual bool Equals(Illustration? other) => other?.Id == Id;
+
+    #region 额外属性
+
+    [JsonInclude]
+    public UgoiraMetadata? UgoiraMetadata { get; internal set; }
+
+    [JsonInclude]
+    public int SetIndex { get; internal init; }
+
+    #endregion
+
+    #region 帮助类成员
+
+    [JsonIgnore]
+    public string? OriginalSingleUrl => MetaSinglePage.OriginalImageUrl;
+
+    [MemberNotNullWhen(true, nameof(OriginalSingleUrl))]
+    [JsonIgnore]
+    public bool IsUgoira => Type is IllustrationType.Ugoira;
+
+    [MemberNotNullWhen(false, nameof(OriginalSingleUrl))]
+    [JsonIgnore]
+    public bool IsManga => PageCount > 1;
+
+    [JsonIgnore]
     public IReadOnlyList<string> MangaOriginalUrls => [.. MetaPages.Select(m => m.ImageUrls.Original)];
 
     public string[] GetUgoiraOriginalUrls(int frameCount)
@@ -76,23 +99,31 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         return arr;
     }
 
-    // ReSharper disable once NonReadonlyMemberInGetHashCode
-    public override int GetHashCode() => Id.GetHashCode();
+    #endregion
 
-    public virtual bool Equals(Illustration? other) => other?.Id == Id;
+    #region Misaki成员及其相关帮助类成员
 
-    public Uri WebsiteUri => new($"https://www.pixiv.net/artworks/{Id}");
+    [field: AllowNull, MaybeNull]
+    [JsonIgnore]
+    public Uri WebsiteUri => field ??= new($"https://www.pixiv.net/artworks/{Id}");
 
-    public Uri AppUri => new($"pixeval://illust/{Id}");
+    [field: AllowNull, MaybeNull]
+    [JsonIgnore]
+    public Uri AppUri => field ??= new($"pixeval://illust/{Id}");
 
+    [JsonIgnore]
     DateTimeOffset IArtworkInfo.UpdateDate => CreateDate;
 
+    [JsonIgnore]
     DateTimeOffset IArtworkInfo.ModifyDate => CreateDate;
 
+    [JsonIgnore]
     IPreloadableList<IUser> IArtworkInfo.Authors => [User];
 
+    [JsonIgnore]
     IPreloadableList<IUser> IArtworkInfo.Uploaders => [];
 
+    [JsonIgnore]
     SafeRating IArtworkInfo.SafeRating => XRestrict switch
     {
         XRestrict.R18 => SafeRating.Explicit,
@@ -107,9 +138,11 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         _ => SafeRating.NotSpecified
     };
 
+    [JsonIgnore]
     ILookup<ITagCategory, ITag> IArtworkInfo.Tags => Tags.ToLookup(_ => ITagCategory.Empty, ITag (t) => t);
 
     [field: AllowNull, MaybeNull]
+    [JsonIgnore]
     IReadOnlyCollection<IImageFrame> IArtworkInfo.Thumbnails => field ??=
         [
             GetImageFrame(ThumbnailSize.C540X540Q70, ImageFrame.FixType.FixHeight) with { ImageUri = new(ThumbnailUrls.Medium) },
@@ -149,35 +182,38 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         };
     }
 
+    [JsonIgnore]
     IReadOnlyDictionary<string, object> IArtworkInfo.AdditionalInfo => new Dictionary<string, object>();
 
+    [JsonIgnore]
     public ImageType ImageType => IsManga
         ? ImageType.ImageSet
         : IsUgoira
             ? ImageType.SingleAnimatedImage
             : ImageType.SingleImage;
 
+    [JsonIgnore]
     public bool IsAiGenerated => AiType is AiType.AiGenerated;
 
     public string GetThumbnail(ThumbnailSize size = ThumbnailSize.C540X540Q70, int page = 0, bool isSquare = false) => $"https://i.pximg.net{size.GetDescription()}/img-master/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Id}_p{page}_{(isSquare ? "square" : "master")}1200.jpg";
 
-    public string GetOriginal(int page = 0) => $"https://i.pximg.net/img-original/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Id}_p{page}.jpg";
-
+    [JsonIgnore]
     ulong IImageFrame.ByteSize => 0;
 
-    Uri IImageFrame.ImageUri => new(GetOriginal());
+    [JsonIgnore]
+    Uri IImageFrame.ImageUri => new(MetaSinglePage.OriginalImageUrl!);
 
-    public int SetIndex { get; private init; }
-
+    [JsonIgnore]
     public SingleAnimatedImageType PreferredAnimatedImageType => SingleAnimatedImageType.MultiFiles;
 
+    [JsonIgnore]
     public Uri? SingleImageUri => null;
 
+    [JsonIgnore]
     public IPreloadableList<int>? ZipImageDelays => null;
 
-    public UgoiraMetadata? UgoiraMetadata { get; private set; }
-
     [field: AllowNull, MaybeNull]
+    [JsonIgnore]
     public IPreloadableList<(Uri, int)> MultiImageUris => field ??= PreloadableList.ToPreloadableEnumerable<(Uri Uri, int MsDelay)>(
         async service =>
         {
@@ -186,6 +222,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         });
 
     [field: AllowNull, MaybeNull]
+    [JsonIgnore]
     public IPreloadableList<IAnimatedImageFrame> AnimatedThumbnails => field ??=
         PreloadableList.ToPreloadableEnumerable<IAnimatedImageFrame> (
             async service =>
@@ -218,6 +255,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     }
 
     [field: AllowNull, MaybeNull]
+    [JsonIgnore]
     IPreloadableList<ISingleImage> IImageSet.Pages => field ??=
     [
         ..PageCount <= 1
@@ -232,6 +270,14 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
                 SetIndex = i
             })
     ];
+
+    public string Serialize() => JsonSerializer.Serialize(this, typeof(Illustration), AppJsonSerializerContext.Default);
+
+    public static ISerializable Deserialize(string data) => (Illustration) JsonSerializer.Deserialize(data, typeof(Illustration), AppJsonSerializerContext.Default)!;
+
+    public string SerializeKey => typeof(Illustration).FullName!;
+
+    #endregion
 
     public enum ThumbnailSize
     {
@@ -436,12 +482,16 @@ public partial record MetaPage
     [JsonPropertyName("image_urls")]
     public required MangaImageUrls ImageUrls { get; set; }
 
+    [JsonIgnore]
     public string SquareMediumUrl => ImageUrls.SquareMedium;
 
+    [JsonIgnore]
     public string MediumUrl => ImageUrls.Medium;
 
+    [JsonIgnore]
     public string LargeUrl => ImageUrls.Large;
 
     /// <inheritdoc cref="MangaImageUrls.Original"/>
+    [JsonIgnore]
     public string OriginalUrl => ImageUrls.Original;
 }

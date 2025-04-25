@@ -10,18 +10,22 @@ namespace Mako.Model;
 [Factory]
 public partial record Tag : ITag
 {
+    [JsonIgnore]
     ITagCategory ITag.Category => ITagCategory.Empty;
 
     [JsonPropertyName("name")]
     public required string Name { get; set; } = "";
 
+    [JsonIgnore]
     string ITag.Description => ToolTip;
 
     [JsonPropertyName("translated_name")]
     public required string? TranslatedName { get; set; }
 
+    [JsonIgnore]
     string ITranslatedName.TranslatedName => TranslatedName ?? "";
 
+    [JsonIgnore]
     public string ToolTip => TranslatedName ?? Name;
 
     /// <summary>

@@ -61,12 +61,12 @@ public abstract record WorkBase
         get;
         set
         {
-            if (value != _defaultSeries)
+            if (value != _DefaultSeries)
                 field = value;
         }
     }
 
-    private readonly Series _defaultSeries = new();
+    private static readonly Series _DefaultSeries = new();
 }
 
 internal class BoolToNumberJsonConverter : JsonConverter<bool>
