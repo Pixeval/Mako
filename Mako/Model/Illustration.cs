@@ -70,7 +70,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     public UgoiraMetadata? UgoiraMetadata { get; internal set; }
 
     [JsonInclude]
-    public int SetIndex { get; internal init; }
+    public int SetIndex { get; internal set; }
 
     #endregion
 
@@ -86,18 +86,6 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     [MemberNotNullWhen(false, nameof(OriginalSingleUrl))]
     [JsonIgnore]
     public bool IsManga => PageCount > 1;
-
-    [JsonIgnore]
-    public IReadOnlyList<string> MangaOriginalUrls => [.. MetaPages.Select(m => m.ImageUrls.Original)];
-
-    public string[] GetUgoiraOriginalUrls(int frameCount)
-    {
-        Debug.Assert(IsUgoira);
-        var arr = new string[frameCount];
-        for (var i = 0; i < frameCount; ++i)
-            arr[i] = OriginalSingleUrl.Replace("ugoira0", $"ugoira{i}");
-        return arr;
-    }
 
     #endregion
 
@@ -141,43 +129,28 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     [JsonIgnore]
     ILookup<ITagCategory, ITag> IArtworkInfo.Tags => Tags.ToLookup(_ => ITagCategory.Empty, ITag (t) => t);
 
-    [field: AllowNull, MaybeNull]
     [JsonIgnore]
-    IReadOnlyCollection<IImageFrame> IArtworkInfo.Thumbnails => field ??=
-        [
-            GetImageFrame(ThumbnailSize.C540X540Q70, ImageFrame.FixType.FixHeight) with { ImageUri = new(ThumbnailUrls.Medium) },
-            GetImageFrame(ThumbnailSize.C600X1200Q90, ImageFrame.FixType.FixWidth) with { ImageUri = new(ThumbnailUrls.Large) },
-            GetImageFrame(ThumbnailSize.C, ImageFrame.FixType.FixWidth) with { ImageUri = new(ThumbnailUrls.NotCropped) }
-        ];
+    IReadOnlyCollection<IImageFrame> IArtworkInfo.Thumbnails =>
+    [
+        GetImageFrame(ThumbnailSize.C540X540Q70, ImageFrame.FixType.FixHeight, ThumbnailUrls.Medium),
+        GetImageFrame(ThumbnailSize.C600X1200Q90, ImageFrame.FixType.FixWidth, ThumbnailUrls.Large),
+        GetImageFrame(ThumbnailSize.C, ImageFrame.FixType.FixWidth)
+    ];
 
-    private IReadOnlyList<ImageFrame> GetImageFrames()
-    {
-        var list = new List<ImageFrame>();
-        foreach (var value in (ThumbnailSize[]) typeof(ThumbnailSize).GetEnumValues())
-        {
-            var fieldInfo = typeof(ThumbnailSize).GetField(value.ToString());
-            if (fieldInfo?.GetCustomAttributes<ImageFrame.FixTypeAttribute>() is not { } arr)
-                continue;
-
-            list.AddRange(arr.Select(fixTypeAttribute => GetImageFrame(value, fixTypeAttribute.FixType)));
-        }
-
-        return list;
-    }
-
-    private ImageFrame GetImageFrame(ThumbnailSize value, ImageFrame.FixType fixType)
+    private ImageFrame GetImageFrame(ThumbnailSize value, ImageFrame.FixType fixType, string? uri = null)
     {
         var fieldInfo = typeof(ThumbnailSize).GetField(value.ToString());
         if (fieldInfo?.GetCustomAttribute<ImageFrame.SizeAttribute>() is not
                 { Width: var width, Height: var height })
             return ThrowHelper.NotSupported<ImageFrame>(value.ToString());
-        var uri = new Uri(GetThumbnail(value, isSquare: fixType is ImageFrame.FixType.FixAll));
+        uri ??= ThumbnailUrls.Large.Replace("c/600x1200_90/",
+            fieldInfo?.GetCustomAttribute<DescriptionAttribute>()?.Description);
 
         return fixType switch
         {
-            ImageFrame.FixType.FixHeight => new ImageFrame(this, height, false) { ImageUri = uri },
-            ImageFrame.FixType.FixWidth => new ImageFrame(this, width, true) { ImageUri = uri },
-            ImageFrame.FixType.FixAll => new ImageFrame(width, height) { ImageUri = uri },
+            ImageFrame.FixType.FixHeight => new(this, height, false) { ImageUri = new(uri) },
+            ImageFrame.FixType.FixWidth => new(this, width, true) { ImageUri = new(uri) },
+            ImageFrame.FixType.FixAll => new(width, height) { ImageUri = new(uri) },
             _ => ThrowHelper.NotSupported<ImageFrame>(fixType.ToString())
         };
     }
@@ -195,13 +168,11 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     [JsonIgnore]
     public bool IsAiGenerated => AiType is AiType.AiGenerated;
 
-    public string GetThumbnail(ThumbnailSize size = ThumbnailSize.C540X540Q70, int page = 0, bool isSquare = false) => $"https://i.pximg.net{size.GetDescription()}/img-master/img/{CreateDate:yyyy/MM/dd/HH/mm/ss}/{Id}_p{page}_{(isSquare ? "square" : "master")}1200.jpg";
-
     [JsonIgnore]
     ulong IImageFrame.ByteSize => 0;
 
     [JsonIgnore]
-    Uri IImageFrame.ImageUri => new(MetaSinglePage.OriginalImageUrl!);
+    Uri IImageFrame.ImageUri => new(OriginalSingleUrl!);
 
     [JsonIgnore]
     public SingleAnimatedImageType PreferredAnimatedImageType => SingleAnimatedImageType.MultiFiles;
@@ -267,6 +238,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
             {
                 MetaSinglePage = new() { OriginalImageUrl = m.ImageUrls.Original },
                 ThumbnailUrls = m.ImageUrls,
+                PageCount = 1,
                 SetIndex = i
             })
     ];
@@ -284,7 +256,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (official square_medium) (height prior) standard square
         /// </summary>
-        [Description("/c/360x360_70")]
+        [Description("c/360x360_70/")]
         [ImageFrame.Size(360, 360)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
@@ -293,7 +265,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (official medium) (height prior) standard square
         /// </summary>
-        [Description("/c/540x540_70")]
+        [Description("c/540x540_70/")]
         [ImageFrame.Size(540, 540)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
@@ -302,7 +274,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (official large) (width prior) standard
         /// </summary>
-        [Description("/c/600x1200_90")]
+        [Description("c/600x1200_90/")]
         [ImageFrame.Size(600, 1200)]
         [ImageFrame.FixType(ImageFrame.FixType.FixWidth)]
         C600X1200Q90,
@@ -310,7 +282,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (height prior) standard square
         /// </summary>
-        [Description("/c/100x100")]
+        [Description("c/100x100/")]
         [ImageFrame.Size(100, 100)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
@@ -319,7 +291,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (height prior) standard square
         /// </summary>
-        [Description("/c/128x128")]
+        [Description("c/128x128/")]
         [ImageFrame.Size(128, 128)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
@@ -328,7 +300,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (height prior) standard square
         /// </summary>
-        [Description("/c/150x150")]
+        [Description("c/150x150/")]
         [ImageFrame.Size(150, 150)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
@@ -337,7 +309,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (height prior) standard square
         /// </summary>
-        [Description("/c/240x240")]
+        [Description("c/240x240/")]
         [ImageFrame.Size(240, 240)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
@@ -346,7 +318,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (width prior) standard
         /// </summary>
-        [Description("/c/240x480")]
+        [Description("c/240x480/")]
         [ImageFrame.Size(240, 480)]
         [ImageFrame.FixType(ImageFrame.FixType.FixWidth)]
         C240X480,
@@ -354,7 +326,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// square
         /// </summary>
-        [Description("/c/250x250_80_a2")]
+        [Description("c/250x250_80_a2/")]
         [ImageFrame.Size(250, 250)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
         C250X250Q80A2,
@@ -362,7 +334,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (height prior) standard square
         /// </summary>
-        [Description("/c/260x260_80")]
+        [Description("c/260x260_80/")]
         [ImageFrame.Size(260, 260)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
@@ -371,7 +343,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// square
         /// </summary>
-        [Description("/c/288x288_80_a2")]
+        [Description("c/288x288_80_a2/")]
         [ImageFrame.Size(288, 288)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
         C288X288Q80A2,
@@ -379,7 +351,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (height prior) standard
         /// </summary>
-        [Description("/c/400x250_80")]
+        [Description("c/400x250_80/")]
         [ImageFrame.Size(400, 250)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
         C400X250Q80,
@@ -387,7 +359,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (height prior) standard
         /// </summary>
-        [Description("/c/600x600")]
+        [Description("c/600x600/")]
         [ImageFrame.Size(600, 600)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
         C600X600,
@@ -395,7 +367,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (width prior) standard
         /// </summary>
-        [Description("/c/768x1200_80")]
+        [Description("c/768x1200_80/")]
         [ImageFrame.Size(768, 1200)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
         C768X1200Q80,
@@ -403,7 +375,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// standard square (1200x1200)
         /// </summary>
-        [Description("/")]
+        [Description("")]
         [ImageFrame.Size(1200, 1200)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
@@ -413,7 +385,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// crop
         /// </summary>
-        [Description("/c/300x200_a2")]
+        [Description("c/300x200_a2/")]
         [ImageFrame.Size(300, 200)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
         C300X200A2,
@@ -421,7 +393,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (height prior) standard square webp
         /// </summary>
-        [Description("/c/360x360_10_webp")]
+        [Description("c/360x360_10_webp/")]
         [ImageFrame.Size(360, 360)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
@@ -430,7 +402,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (height prior) standard square webp
         /// </summary>
-        [Description("/c/540x540_10_webp")]
+        [Description("c/540x540_10_webp/")]
         [ImageFrame.Size(540, 540)]
         [ImageFrame.FixType(ImageFrame.FixType.FixHeight)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
@@ -439,7 +411,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (width prior) standard webp (square gives 600x600)
         /// </summary>
-        [Description("/c/600x1200_90_webp")]
+        [Description("c/600x1200_90_webp/")]
         [ImageFrame.Size(600, 600)]
         [ImageFrame.FixType(ImageFrame.FixType.FixWidth)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
@@ -448,7 +420,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// crop webp
         /// </summary>
-        [Description("/c/1080x600_10_a2_u1_webp")]
+        [Description("c/1080x600_10_a2_u1_webp/")]
         [ImageFrame.Size(1080, 600)]
         [ImageFrame.FixType(ImageFrame.FixType.FixAll)]
         C1080X600Q10A2U1Webp

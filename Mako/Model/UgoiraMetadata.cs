@@ -29,7 +29,7 @@ public partial record UgoiraMetadata
     {
         var arr = new string[Frames.Count];
         for (var i = 0; i < Frames.Count; ++i)
-            arr[i] = (originalSingleUrl.Replace("ugoira0", $"ugoira{i}"));
+            arr[i] = originalSingleUrl.Replace("ugoira0", $"ugoira{i}");
         return arr;
     }
 
