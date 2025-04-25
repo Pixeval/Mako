@@ -4,14 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Mako.Net.Response;
 using Mako.Utilities;
 using Misaki;
 
@@ -220,7 +218,10 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         if (!IsUgoira)
             ThrowHelper.InvalidOperation("Not Ugoira");
         if (service is not MakoClient makoClient)
+        {
             ThrowHelper.InvalidOperation("Invalid service");
+            UgoiraMetadata = null!;
+        }
         else
             UgoiraMetadata ??= await makoClient.GetUgoiraMetadataAsync(Id);
     }
