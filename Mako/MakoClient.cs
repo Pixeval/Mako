@@ -76,7 +76,7 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
                     }
                 })
             .AddSingleton<PixivTokenProvider>(t => new(t, firstTokenResponse))
-            .AddLogging(t => t.AddDebug())
+            // .AddLogging(t => t.AddDebug())
             .AddWebApiClient()
             .UseSourceGeneratorHttpApiActivator()
             .ConfigureHttpApi(t => t.PrependJsonSerializerContext(AppJsonSerializerContext.Default));

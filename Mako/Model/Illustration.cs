@@ -183,47 +183,41 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
 
     [field: AllowNull, MaybeNull]
     [JsonIgnore]
-    public IPreloadableList<(Uri, int)> MultiImageUris => field ??= PreloadableList.ToPreloadableEnumerable<(Uri Uri, int MsDelay)>(
-        async service =>
-        {
-            await GetUgoiraMetadataAsync(service);
-            return UgoiraMetadata.GetUgoiraOriginalUrlsAndMsDelays(OriginalSingleUrl!);
-        });
+    public IPreloadableList<(Uri, int)> MultiImageUris => field ??=
+        PreloadableList.ToPreloadableEnumerable<(Uri, int), UgoiraMetadata>(
+            UgoiraMetadata,
+            GetUgoiraMetadataAsync,
+            ugoiraMetadata => ugoiraMetadata.GetUgoiraOriginalUrlsAndMsDelays(OriginalSingleUrl!));
 
     [field: AllowNull, MaybeNull]
     [JsonIgnore]
     public IPreloadableList<IAnimatedImageFrame> AnimatedThumbnails => field ??=
-        PreloadableList.ToPreloadableEnumerable<IAnimatedImageFrame> (
-            async service =>
-            {
-                await GetUgoiraMetadataAsync(service);
-                return
-                [
-                    new AnimatedImageFrame(new Uri(UgoiraMetadata.MediumUrl), [..UgoiraMetadata.Delays])
-                    {
-                        Width = 600,
-                        Height = 600 * Height / Width
-                    },
-                    new AnimatedImageFrame(new Uri(UgoiraMetadata.LargeUrl), [..UgoiraMetadata.Delays])
-                    {
-                        Width = 1080 * Width / Height,
-                        Height = 1080
-                    }
-                ];
-            });
+        PreloadableList.ToPreloadableEnumerable<IAnimatedImageFrame, UgoiraMetadata>(
+            UgoiraMetadata,
+            GetUgoiraMetadataAsync,
+            ugoiraMetadata =>
+            [
+                new AnimatedImageFrame(new Uri(ugoiraMetadata.MediumUrl), [.. ugoiraMetadata.Delays])
+                {
+                    Width = 600,
+                    Height = 600 * Height / Width
+                },
+                new AnimatedImageFrame(new Uri(ugoiraMetadata.LargeUrl), [.. ugoiraMetadata.Delays])
+                {
+                    Width = 1080 * Width / Height,
+                    Height = 1080
+                }
+            ]);
 
     [MemberNotNull(nameof(UgoiraMetadata))]
-    private async Task GetUgoiraMetadataAsync(IMisakiService service)
+    private async Task<UgoiraMetadata> GetUgoiraMetadataAsync(IMisakiService service)
     {
         if (!IsUgoira)
             ThrowHelper.InvalidOperation("Not Ugoira");
-        if (service is not MakoClient makoClient)
-        {
-            ThrowHelper.InvalidOperation("Invalid service");
-            UgoiraMetadata = null!;
-        }
-        else
-            UgoiraMetadata ??= await makoClient.GetUgoiraMetadataAsync(Id);
+        return UgoiraMetadata ??=
+            service is MakoClient makoClient
+                ? await makoClient.GetUgoiraMetadataAsync(Id)
+                : ThrowHelper.InvalidOperation<UgoiraMetadata>("Invalid service");
     }
 
     [field: AllowNull, MaybeNull]
