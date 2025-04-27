@@ -97,5 +97,6 @@ public partial record Novel : WorkBase, IWorkEntry
 
     public static ISerializable Deserialize(string data) => (Novel) JsonSerializer.Deserialize(data, typeof(Novel), AppJsonSerializerContext.Default)!;
 
+    [JsonIgnore]
     public string SerializeKey => typeof(Novel).FullName!;
 }

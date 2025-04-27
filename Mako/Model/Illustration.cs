@@ -217,7 +217,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         return UgoiraMetadata ??=
             service is MakoClient makoClient
                 ? await makoClient.GetUgoiraMetadataAsync(Id)
-                : ThrowHelper.InvalidOperation<UgoiraMetadata>("Invalid service");
+                : ThrowHelper.InvalidOperation<UgoiraMetadata>("Invalid service")!;
     }
 
     [field: AllowNull, MaybeNull]
@@ -242,6 +242,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
 
     public static ISerializable Deserialize(string data) => (Illustration) JsonSerializer.Deserialize(data, typeof(Illustration), AppJsonSerializerContext.Default)!;
 
+    [JsonIgnore]
     public string SerializeKey => typeof(Illustration).FullName!;
 
     #endregion

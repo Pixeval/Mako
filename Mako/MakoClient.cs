@@ -20,7 +20,7 @@ using Misaki;
 
 namespace Mako;
 
-public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, IDownloadHttpClientService
+public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, IDownloadHttpClientService, IGetArtworkService, IPostFavoriteService
 {
     /// <summary>
     /// Create a new <see cref="MakoClient" /> based on given <see cref="Configuration" />, <see cref="TokenResponse" />

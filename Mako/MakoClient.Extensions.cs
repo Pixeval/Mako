@@ -1,6 +1,7 @@
 // Copyright (c) Pixeval.CoreApi.
 // Licensed under the GPL v3 License.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -13,6 +14,7 @@ using Mako.Net.Request;
 using Mako.Net.Response;
 using Mako.Utilities;
 using Microsoft.Extensions.DependencyInjection;
+using Misaki;
 using WebApiClientCore.Parameters;
 
 namespace Mako;
@@ -28,6 +30,8 @@ public partial class MakoClient
         => RunWithLoggerAsync(async t => (await t
             .GetSingleIllustAsync(id)
             .ConfigureAwait(false)).Illust);
+
+    public async Task<IArtworkInfo> GetArtworkAsync(string id) => await GetIllustrationFromIdAsync(long.Parse(id));
 
     public Task<IReadOnlyList<Tag>> GetAutoCompletionForKeyword(string word)
         => RunWithLoggerAsync(async t => (await t
@@ -99,6 +103,24 @@ public partial class MakoClient
                 .AddIllustBookmarkAsync(new AddIllustBookmarkRequest(privacyPolicy, id, urlTags))
                 .ConfigureAwait(false);
         });
+
+    public async Task<bool> PostFavoriteAsync(string id, bool favorite)
+    {
+        var l = long.Parse(id);
+        try
+        {
+            if (favorite)
+                await PostIllustrationBookmarkAsync(l, PrivacyPolicy.Public);
+            else
+                await RemoveIllustrationBookmarkAsync(l);
+
+            return favorite;
+        }
+        catch
+        {
+            return !favorite;
+        }
+    }
 
     /// <summary>
     /// Sends a request to the Pixiv to remove it from the bookmark
