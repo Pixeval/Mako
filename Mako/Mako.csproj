@@ -24,13 +24,13 @@
         <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.4.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.4" />
+        <PackageReference Include="Misaki" Version="1.0.0" />
         <PackageReference Include="System.Linq.Async" Version="6.0.1" />
         <PackageReference Include="WebApiClientCore" PrivateAssets="True" Version="2.1.5" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Mako.SourceGen\Mako.SourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
-        <ProjectReference Include="..\Misaki\Misaki\Misaki.csproj" />
     </ItemGroup>
 
     <ItemGroup>
