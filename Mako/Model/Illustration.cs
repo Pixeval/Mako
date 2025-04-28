@@ -98,12 +98,6 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     public Uri AppUri => field ??= new($"pixeval://illust/{Id}");
 
     [JsonIgnore]
-    DateTimeOffset IArtworkInfo.UpdateDate => CreateDate;
-
-    [JsonIgnore]
-    DateTimeOffset IArtworkInfo.ModifyDate => CreateDate;
-
-    [JsonIgnore]
     IPreloadableList<IUser> IArtworkInfo.Authors => [User];
 
     [JsonIgnore]

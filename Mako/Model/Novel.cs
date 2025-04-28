@@ -45,12 +45,6 @@ public partial record Novel : WorkBase, IWorkEntry
     public Uri AppUri => field ??= new($"pixeval://novel/{Id}");
 
     [JsonIgnore]
-    DateTimeOffset IArtworkInfo.UpdateDate => CreateDate;
-
-    [JsonIgnore]
-    DateTimeOffset IArtworkInfo.ModifyDate => CreateDate;
-
-    [JsonIgnore]
     IPreloadableList<IUser> IArtworkInfo.Authors => [User];
 
     [JsonIgnore]
