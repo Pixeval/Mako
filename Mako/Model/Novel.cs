@@ -72,10 +72,10 @@ public partial record Novel : WorkBase, IWorkEntry
     [JsonIgnore]
     IReadOnlyCollection<IImageFrame> IArtworkInfo.Thumbnails => field ??=
     [
-        new ImageFrame(128 / 2, 128) { ImageUri = new(ThumbnailUrls.SquareMedium) },
-        new ImageFrame(352 / 2, 352) { ImageUri = new(ThumbnailUrls.Medium) },
-        new ImageFrame(480 / 2, 480) { ImageUri = new(ThumbnailUrls.Large) },
-        new ImageFrame(1200 / 2, 1200) { ImageUri = new(ThumbnailUrls.NotCropped) }
+        new ImageFrame(new ImageSize(128 / 2, 128)) { ImageUri = new(ThumbnailUrls.SquareMedium) },
+        new ImageFrame(new ImageSize(352 / 2, 352)) { ImageUri = new(ThumbnailUrls.Medium) },
+        new ImageFrame(new ImageSize(480 / 2, 480)) { ImageUri = new(ThumbnailUrls.Large) },
+        new ImageFrame(new ImageSize(1200 / 2, 1200)) { ImageUri = new(ThumbnailUrls.NotCropped) }
     ];
 
     [JsonIgnore]

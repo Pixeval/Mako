@@ -52,7 +52,7 @@ public partial record UserEntity : IUser, IIdEntry
 
     IReadOnlyCollection<IImageFrame> IUser.Avatar =>
     [
-        new ImageFrame(170, 170) { ImageUri = new(ProfileImageUrls.Medium) }
+        new ImageFrame(new ImageSize(170, 170)) { ImageUri = new(ProfileImageUrls.Medium) }
     ];
 
     IReadOnlyDictionary<string, Uri> IUser.ContactInformation { get; } = new Dictionary<string, Uri>();
