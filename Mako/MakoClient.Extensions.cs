@@ -1,7 +1,6 @@
 // Copyright (c) Pixeval.CoreApi.
 // Licensed under the GPL v3 License.
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
