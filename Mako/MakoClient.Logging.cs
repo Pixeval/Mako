@@ -18,22 +18,22 @@ public partial class MakoClient
 {
     private Task<IReadOnlyList<T>> RunWithLoggerAsync<T>(Func<IAppApiEndPoint, Task<IReadOnlyList<T>>> task)
     {
-        return RunWithLoggerAsync(() => task(Provider.GetRequiredService<IAppApiEndPoint>()), () => []);
+        return RunWithLoggerAsync(() => task(Provider.GetRequiredService<IAppApiEndPoint>()), []);
     }
 
     private Task<bool> RunWithLoggerAsync(Func<IAppApiEndPoint, Task<bool>> task)
     {
-        return RunWithLoggerAsync(() => task(Provider.GetRequiredService<IAppApiEndPoint>()), () => false);
+        return RunWithLoggerAsync(() => task(Provider.GetRequiredService<IAppApiEndPoint>()), false);
     }
 
     private Task<IEnumerable<T>> RunWithLoggerAsync<T>(Func<IAppApiEndPoint, Task<IEnumerable<T>>> task)
     {
-        return RunWithLoggerAsync(() => task(Provider.GetRequiredService<IAppApiEndPoint>()), () => []);
+        return RunWithLoggerAsync(() => task(Provider.GetRequiredService<IAppApiEndPoint>()), []);
     }
 
     private Task<HttpResponseMessage> RunWithLoggerAsync(Func<IAppApiEndPoint, Task<HttpResponseMessage>> task)
     {
-        return RunWithLoggerAsync(() => task(Provider.GetRequiredService<IAppApiEndPoint>()), () => new(HttpStatusCode.RequestTimeout));
+        return RunWithLoggerAsync(() => task(Provider.GetRequiredService<IAppApiEndPoint>()), new HttpResponseMessage(HttpStatusCode.RequestTimeout));
     }
 
     private async Task RunWithLoggerAsync(Func<IAppApiEndPoint, Task> task)
@@ -59,9 +59,14 @@ public partial class MakoClient
         return RunWithLoggerAsync(task, T.CreateDefault);
     }
 
+    private Task<IReadOnlyList<T>> RunWithLoggerAsync<T>(Func<Task<IReadOnlyList<T>>> task) where T : IDefaultFactory<T>
+    {
+        return RunWithLoggerAsync(task, []);
+    }
+
     private Task<HttpResponseMessage> RunWithLoggerAsync(Func<Task<HttpResponseMessage>> task)
     {
-        return RunWithLoggerAsync(task, () => new(HttpStatusCode.RequestTimeout));
+        return RunWithLoggerAsync(task, new HttpResponseMessage(HttpStatusCode.RequestTimeout));
     }
 
     private Task<T> RunWithLoggerAsync<T>(Func<Task<Result<T>>> task, Func<T> createDefault)
@@ -94,6 +99,21 @@ public partial class MakoClient
         {
             LogException(e);
             return createDefault();
+        }
+    }
+
+    private async Task<T> RunWithLoggerAsync<T>(Func<Task<T>> task, T createDefault)
+    {
+        try
+        {
+            EnsureNotCancelled();
+
+            return await task();
+        }
+        catch (Exception e)
+        {
+            LogException(e);
+            return createDefault;
         }
     }
 

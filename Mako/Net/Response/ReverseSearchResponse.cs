@@ -37,17 +37,25 @@ public partial record Result
 [Factory]
 public partial record Data
 {
-    [JsonPropertyName("title")]
-    public required string Title { get; set; } = "";
-
     [JsonPropertyName("pixiv_id")]
-    public required long PixivId { get; set; }
+    [JsonNumberHandling(JsonNumberHandling.WriteAsString | JsonNumberHandling.AllowReadingFromString)]
+    public long? PixivId { get; set; }
 
-    [JsonPropertyName("member_name")]
-    public required string MemberName { get; set; } = "";
+    [JsonPropertyName("danbooru_id")]
+    [JsonNumberHandling(JsonNumberHandling.WriteAsString | JsonNumberHandling.AllowReadingFromString)]
+    public long? DanbooruId { get; set; }
 
-    [JsonPropertyName("member_id")]
-    public required long MemberId { get; set; }
+    [JsonPropertyName("yandere_id")]
+    [JsonNumberHandling(JsonNumberHandling.WriteAsString | JsonNumberHandling.AllowReadingFromString)]
+    public long? YandereId { get; set; }
+
+    [JsonPropertyName("gelbooru_id")]
+    [JsonNumberHandling(JsonNumberHandling.WriteAsString | JsonNumberHandling.AllowReadingFromString)]
+    public long? GelbooruId { get; set; }
+
+    [JsonPropertyName("sankaku_id")]
+    [JsonNumberHandling(JsonNumberHandling.WriteAsString | JsonNumberHandling.AllowReadingFromString)]
+    public long? SankakuId { get; set; }
 }
 
 [Factory]
@@ -58,5 +66,15 @@ public partial record ResultHeader
     public required double Similarity { get; set; }
 
     [JsonPropertyName("index_id")]
-    public required long IndexId { get; set; }
+    public required IndexType IndexId { get; set; }
+}
+
+public enum IndexType
+{
+    Pixiv = 5,
+    PixivHistorical = 6,
+    Danbooru = 9,
+    Yandere = 12,
+    Gelbooru = 25,
+    Sankaku = 27
 }

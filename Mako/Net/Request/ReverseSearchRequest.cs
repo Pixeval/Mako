@@ -10,12 +10,14 @@ public class ReverseSearchRequest(string apiKey)
     [JsonPropertyName("api_key")]
     public string ApiKey { get; } = apiKey;
 
-    [JsonPropertyName("dbmask")]
-    public string DbMask { get; } = "96";
+    [JsonPropertyName("db")]
+    public int Db { get; } = 999;
 
     [JsonPropertyName("output_type")]
-    public string OutputType { get; } = "2";
+    public OutputTypeEnum OutputType { get; } = OutputTypeEnum.Json;
 
-    [JsonPropertyName("numres")]
-    public string NumberResult { get; } = "1";
+    public enum OutputTypeEnum
+    {
+        Html, Xml, Json
+    }
 }

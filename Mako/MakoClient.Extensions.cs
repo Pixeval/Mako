@@ -169,8 +169,8 @@ public partial class MakoClient
 
     public Task<IReadOnlyList<TrendingTag>> GetTrendingTagsForNovelAsync(TargetFilter targetFilter)
         => RunWithLoggerAsync(async t => (await t
-                .GetTrendingTagsForNovelAsync(targetFilter.GetDescription())
-                .ConfigureAwait(false))
+            .GetTrendingTagsForNovelAsync(targetFilter.GetDescription())
+            .ConfigureAwait(false))
             .TrendTags);
 
     public Task<UgoiraMetadata> GetUgoiraMetadataAsync(long id)
@@ -230,7 +230,11 @@ public partial class MakoClient
     public Task<HttpResponseMessage> PostRestrictedModeSettingsAsync(bool isRestrictedModeEnabled)
         => RunWithLoggerAsync(async t => await t.PostRestrictedModeSettingsAsync(new RestrictedModeSettingsRequest(isRestrictedModeEnabled)));
 
-    public Task<ReverseSearchResponse> ReverseSearchAsync(Stream imgStream, string apiKey)
-        => RunWithLoggerAsync(async () => await Provider.GetRequiredService<IReverseSearchApiEndPoint>()
-            .GetSauceAsync(new FormDataFile(imgStream, "img"), new ReverseSearchRequest(apiKey)));
+    public Task<IReadOnlyList<Result>> ReverseSearchAsync(Stream imgStream, string apiKey)
+        => RunWithLoggerAsync(async () =>
+        {
+            var result = await Provider.GetRequiredService<IReverseSearchApiEndPoint>()
+                .GetSauceAsync(new FormDataFile(imgStream, "img"), new ReverseSearchRequest(apiKey));
+            return result.Header.Status is 0 ? result.Results : [];
+        });
 }

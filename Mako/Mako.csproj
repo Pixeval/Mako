@@ -34,12 +34,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="MakoClient.*.cs">
-            <DependentUpon>MakoClient.cs</DependentUpon>
-        </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
         <None Include="..\LICENSE">
             <Pack>True</Pack>
             <PackagePath></PackagePath>
