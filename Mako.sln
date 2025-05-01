@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mako", "Mako\Mako.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mako.SourceGen", "Mako.SourceGen\Mako.SourceGen.csproj", "{03870969-D27E-9FFB-47FD-33000B4CB4B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Misaki", "Misaki\Misaki\Misaki.csproj", "{61E0F6EC-1E0B-BE0A-A2B7-437E187B0239}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{03870969-D27E-9FFB-47FD-33000B4CB4B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03870969-D27E-9FFB-47FD-33000B4CB4B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03870969-D27E-9FFB-47FD-33000B4CB4B9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{61E0F6EC-1E0B-BE0A-A2B7-437E187B0239}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{61E0F6EC-1E0B-BE0A-A2B7-437E187B0239}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{61E0F6EC-1E0B-BE0A-A2B7-437E187B0239}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{61E0F6EC-1E0B-BE0A-A2B7-437E187B0239}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
