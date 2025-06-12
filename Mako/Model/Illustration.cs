@@ -68,7 +68,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     public UgoiraMetadata? UgoiraMetadata { get; internal set; }
 
     [JsonInclude]
-    public int SetIndex { get; internal set; }
+    public int SetIndex { get; internal set; } = -1;
 
     #endregion
 
@@ -79,11 +79,11 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
 
     [MemberNotNullWhen(true, nameof(OriginalSingleUrl))]
     [JsonIgnore]
-    public bool IsUgoira => Type is IllustrationType.Ugoira;
+    public bool IsPicGif => Type is IllustrationType.Ugoira;
 
     [MemberNotNullWhen(false, nameof(OriginalSingleUrl))]
     [JsonIgnore]
-    public bool IsManga => PageCount > 1;
+    public bool IsPicSet => PageCount > 1 || SetIndex > -1;
 
     #endregion
 
@@ -141,10 +141,13 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     [JsonIgnore]
     IReadOnlyDictionary<string, object> IArtworkInfo.AdditionalInfo => new Dictionary<string, object>();
 
+    /// <summary>
+    /// TODO: 也许可以给图集里的一页单独一个枚举？
+    /// </summary>
     [JsonIgnore]
-    public ImageType ImageType => IsManga
+    public ImageType ImageType => IsPicSet
         ? ImageType.ImageSet
-        : IsUgoira
+        : IsPicGif
             ? ImageType.SingleAnimatedImage
             : ImageType.SingleImage;
 
@@ -193,7 +196,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     [MemberNotNull(nameof(UgoiraMetadata))]
     private async Task<UgoiraMetadata> GetUgoiraMetadataAsync(IMisakiService service)
     {
-        if (!IsUgoira)
+        if (!IsPicGif)
             ThrowHelper.InvalidOperation("Not Ugoira");
         return UgoiraMetadata ??=
             service is MakoClient makoClient
@@ -214,7 +217,6 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
             {
                 MetaSinglePage = new() { OriginalImageUrl = m.ImageUrls.Original },
                 ThumbnailUrls = m.ImageUrls,
-                PageCount = 1,
                 SetIndex = i
             })
     ];
