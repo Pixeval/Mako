@@ -84,7 +84,7 @@ public static partial class MakoHttpOptions
         });
     }
 
-    public static async Task<IPAddress[]> GetAddressesAsync(string host, CancellationToken token)
+    public static async Task<IPAddress[]> GetAddressesAsync(string host, CancellationToken token = default)
     {
         if (!NameResolvers.TryGetValue(host, out var ips))
             ips = await Dns.GetHostAddressesAsync(host, token);
