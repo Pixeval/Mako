@@ -84,21 +84,30 @@ public static partial class MakoHttpOptions
         });
     }
 
-    public static async Task<IPAddress[]> GetAddressesAsync(string host, CancellationToken token = default)
-    {
-        if (!NameResolvers.TryGetValue(host, out var ips))
-            ips = await Dns.GetHostAddressesAsync(host, token);
-        return ips;
-    }
-
     private static async ValueTask<Stream> DomainFrontingConnectCallback(SocketsHttpConnectionContext context, CancellationToken token)
+        => await CreateConnectionAsync(context.InitialRequestMessage.RequestUri!.Host, token).ConfigureAwait(false);
+
+    private static async Task<IPAddress[]> GetAddressesAsync(string host, CancellationToken token = default) 
+        => NameResolvers.TryGetValue(host, out var ips) 
+            ? ips 
+            : await Dns.GetHostAddressesAsync(host, token).ConfigureAwait(false);
+
+    public static async Task<SslStream> CreateConnectionAsync(string host, CancellationToken token = default)
     {
-        var sockets = new Socket(SocketType.Stream, ProtocolType.Tcp); // disposed by networkStream
-        var host = context.InitialRequestMessage.RequestUri!.Host;
-        await sockets.ConnectAsync(await GetAddressesAsync(host, token), 443, token).ConfigureAwait(false);
-        var networkStream = new NetworkStream(sockets, true); // disposed by sslStream
-        var sslStream = new SslStream(networkStream, false, (_, _, _, _) => true);
-        await sslStream.AuthenticateAsClientAsync("").ConfigureAwait(false);
-        return sslStream;
+        var client = new TcpClient(); // disposed by netStream
+        var ipAddresses = await GetAddressesAsync(host, token).ConfigureAwait(false);
+        await client.ConnectAsync(ipAddresses, 443, token).ConfigureAwait(false);
+        var netStream = client.GetStream(); // disposed by sslStream
+        var sslStream = new SslStream(netStream, false, (_, _, _, _) => true);
+        try
+        {
+            await sslStream.AuthenticateAsClientAsync("").ConfigureAwait(false);
+            return sslStream;
+        }
+        catch
+        {
+            await sslStream.DisposeAsync().ConfigureAwait(false);
+            throw;
+        }
     }
 }
