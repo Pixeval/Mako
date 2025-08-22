@@ -13,7 +13,7 @@ namespace Mako.Engine.Implements;
 internal class IllustrationRankingEngine(
     MakoClient makoClient,
     RankOption rankOption,
-    DateTime dateTime,
+    DateOnly dateOnly,
     TargetFilter targetFilter,
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
@@ -24,5 +24,5 @@ internal class IllustrationRankingEngine(
             $"/v1/illust/ranking" +
             $"?filter={targetFilter.GetDescription()}" +
             $"&mode={rankOption.GetDescription()}" +
-            $"&date={dateTime:yyyy-MM-dd}");
+            $"&date={dateOnly:yyyy-MM-dd}");
 }

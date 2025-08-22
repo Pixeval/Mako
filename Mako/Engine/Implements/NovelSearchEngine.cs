@@ -18,7 +18,6 @@ namespace Mako.Engine.Implements;
 /// <param name="matchOption"></param>
 /// <param name="tag"></param>
 /// <param name="sortOption"></param>
-/// <param name="searchDuration"></param>
 /// <param name="targetFilter"></param>
 /// <param name="startDate"></param>
 /// <param name="endDate"></param>
@@ -32,8 +31,8 @@ internal class NovelSearchEngine(
     string tag,
     WorkSortOption sortOption,
     TargetFilter targetFilter,
-    DateTimeOffset? startDate,
-    DateTimeOffset? endDate,
+    DateOnly? startDate,
+    DateOnly? endDate,
     bool mergePlainKeywordResults,
     bool includeTranslatedTagResults,
     bool? aiType)

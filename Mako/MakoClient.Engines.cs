@@ -74,8 +74,11 @@ public partial class MakoClient
     /// <param name="endDate">The ending date filtering the searching results</param>
     /// <param name="aiType"></param>
     /// <returns>
-    /// The <see cref="IllustrationSearchEngine" /> iterator containing the searching results.
+    /// The <see cref="IFetchEngine{T}" /> iterator containing the searching results.
     /// </returns>
+    /// <exception cref="DateOutOfRangeException">
+    /// Throw this exception if the date is not valid.
+    /// </exception>
     public IFetchEngine<Illustration> SearchIllustrations(
         string tag,
         SearchIllustrationTagMatchOption matchOption = SearchIllustrationTagMatchOption.TitleAndCaption,
@@ -89,9 +92,18 @@ public partial class MakoClient
         if (sortOption is WorkSortOption.PopularityDescending && !Me.IsPremium)
             sortOption = WorkSortOption.DoNotSort;
 
-        return new IllustrationSearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, sortOption, targetFilter, startDate, endDate, aiType);
+        var startDateOnly = startDate?.ToJapanTime().ToDateOnly();
+        var endDateOnly = endDate?.ToJapanTime().ToDateOnly();
+        var japanToday = DateTimeHelper.JapanToday;
+
+        // startDate 和 endDate 只能同时为或不为 null，所以实际上startDateOnly > japanToday无用
+        if (startDateOnly > endDateOnly || endDateOnly > japanToday || startDateOnly > japanToday)
+            ThrowHelper.Throw(new DateOutOfRangeException());
+
+        return new IllustrationSearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, sortOption, targetFilter, startDateOnly, endDateOnly, aiType);
     }
 
+    /// <inheritdoc cref="SearchIllustrations"/>
     public IFetchEngine<Novel> SearchNovels(
         string tag,
         SearchNovelTagMatchOption matchOption = SearchNovelTagMatchOption.Text,
@@ -107,7 +119,15 @@ public partial class MakoClient
         if (sortOption is WorkSortOption.PopularityDescending && !Me.IsPremium)
             sortOption = WorkSortOption.DoNotSort;
 
-        return new NovelSearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, sortOption, targetFilter, startDate, endDate, mergePlainKeywordResults, includeTranslatedTagResults, aiType);
+        var startDateOnly = startDate?.ToJapanTime().ToDateOnly();
+        var endDateOnly = endDate?.ToJapanTime().ToDateOnly();
+        var japanToday = DateTimeHelper.JapanToday;
+
+        // startDate 和 endDate 只能同时为或不为 null，所以实际上startDateOnly > japanToday无用
+        if (startDateOnly > endDateOnly || endDateOnly > japanToday || startDateOnly > japanToday)
+            ThrowHelper.Throw(new DateOutOfRangeException());
+
+        return new NovelSearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, sortOption, targetFilter, startDateOnly, endDateOnly, mergePlainKeywordResults, includeTranslatedTagResults, aiType);
     }
 
     /// <summary>
@@ -116,7 +136,7 @@ public partial class MakoClient
     /// <param name="keyword">The text in searching</param>
     /// <param name="targetFilter">The <see cref="TargetFilter" /> option targeting android or ios</param>
     /// <returns>
-    /// The <see cref="UserSearchEngine" /> containing the search results for users.
+    /// The <see cref="IFetchEngine{T}" /> containing the search results for users.
     /// </returns>
     public IFetchEngine<User> SearchUser(
         string keyword,
@@ -127,37 +147,43 @@ public partial class MakoClient
     }
 
     /// <summary>
-    /// Request ranking illustrations in Pixiv.
+    /// Request ranking in Pixiv.
     /// </summary>
     /// <param name="rankOption">The option of which the <see cref="RankOption" /> of rankings</param>
     /// <param name="dateTime">The date of rankings</param>
     /// <param name="targetFilter">The <see cref="TargetFilter" /> option targeting android or ios</param>
     /// <returns>
-    /// The <see cref="IllustrationRankingEngine" /> containing rankings.
+    /// The <see cref="IFetchEngine{T}" /> containing rankings.
     /// </returns>
-    /// <exception cref="RankingDateOutOfRangeException">
+    /// <exception cref="DateOutOfRangeException">
     /// Throw this exception if the date is not valid.
     /// </exception>
-    public IFetchEngine<Illustration> IllustrationRanking(RankOption rankOption, DateTime dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
+    public IFetchEngine<Illustration> IllustrationRanking(RankOption rankOption, DateTimeOffset dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureNotCancelled();
-        if (DateTime.Today - dateTime.Date < TimeSpan.Zero)
-        {
-            ThrowHelper.Throw(new RankingDateOutOfRangeException());
-        }
+        var dateOnly = dateTime.ToJapanTime().ToDateOnly();
+        if (GetRankingMaxDate().ToDateOnly() < dateOnly)
+            ThrowHelper.Throw(new DateOutOfRangeException());
 
-        return new IllustrationRankingEngine(this, rankOption, dateTime, targetFilter, new EngineHandle(CancelInstance));
+        return new IllustrationRankingEngine(this, rankOption, dateOnly, targetFilter, new EngineHandle(CancelInstance));
     }
 
-    public IFetchEngine<Novel> NovelRanking(RankOption rankOption, DateTime dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
+    /// <inheritdoc cref="IllustrationRanking" />
+    public IFetchEngine<Novel> NovelRanking(RankOption rankOption, DateTimeOffset dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureNotCancelled();
-        if (DateTime.Today - dateTime.Date < TimeSpan.Zero)
-        {
-            ThrowHelper.Throw(new RankingDateOutOfRangeException());
-        }
+        var dateOnly = dateTime.ToJapanTime().ToDateOnly();
+        if (GetRankingMaxDate().ToDateOnly() < dateOnly)
+            ThrowHelper.Throw(new DateOutOfRangeException());
 
-        return new NovelRankingEngine(this, rankOption, dateTime, targetFilter, new EngineHandle(CancelInstance));
+        return new NovelRankingEngine(this, rankOption, dateOnly, targetFilter, new EngineHandle(CancelInstance));
+    }
+
+    public static DateTimeOffset GetRankingMaxDate()
+    {
+        // 榜单在日本时间（东九区）每天中午12点更新昨日榜单
+        // 即在西三区每天凌晨0点更新
+        return DateTimeOffset.Now.ToOffset(TimeSpan.FromHours(-3)).Date - TimeSpan.FromDays(1);
     }
 
     /// <summary>
@@ -166,7 +192,7 @@ public partial class MakoClient
     /// <param name="recommendContentType">The <see cref="WorkType" />Option for illust or manga (not novel)</param>
     /// <param name="targetFilter">The <see cref="TargetFilter" /> option targeting android or ios</param>
     /// <param name="maxBookmarkIdForRecommend">Max bookmark id for recommendation</param>
-    /// <param name="minBookmarkIdForRecentIllust">Min bookmark id for recent illust</param>
+    /// <param name="minBookmarkIdForRecentIllustration">Min bookmark id for recent illust</param>
     /// <returns>
     /// The <see cref="RecommendIllustrationEngine" /> containing recommended illustrations.
     /// </returns>
@@ -174,10 +200,10 @@ public partial class MakoClient
         TargetFilter targetFilter = TargetFilter.ForAndroid,
         WorkType? recommendContentType = null,
         uint? maxBookmarkIdForRecommend = null,
-        uint? minBookmarkIdForRecentIllust = null)
+        uint? minBookmarkIdForRecentIllustration = null)
     {
         EnsureNotCancelled();
-        return new RecommendIllustrationEngine(this, recommendContentType, targetFilter, maxBookmarkIdForRecommend, minBookmarkIdForRecentIllust, new EngineHandle(CancelInstance));
+        return new RecommendIllustrationEngine(this, recommendContentType, targetFilter, maxBookmarkIdForRecommend, minBookmarkIdForRecentIllustration, new EngineHandle(CancelInstance));
     }
 
     public IFetchEngine<Illustration> RecommendationMangas(

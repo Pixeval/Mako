@@ -29,8 +29,8 @@ internal class IllustrationSearchEngine(
     string tag,
     WorkSortOption sortOption,
     TargetFilter targetFilter,
-    DateTimeOffset? startDate,
-    DateTimeOffset? endDate,
+    DateOnly? startDate,
+    DateOnly? endDate,
     bool? aiType)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
 {
