@@ -16,7 +16,7 @@ internal class RecommendNovelEngine(
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Novel>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Novel<RecommendNovelEngine>(this,
             "/v1/novel/recommended"
             + $"?filter={filter.GetDescription()}"

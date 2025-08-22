@@ -12,7 +12,7 @@ namespace Mako.Engine.Implements;
 internal class RecommendIllustratorEngine(MakoClient makoClient, TargetFilter targetFilter, EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<User>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.User<RecommendIllustratorEngine>(
             this,
             "/v1/user/recommended" +

@@ -12,7 +12,7 @@ namespace Mako.Engine.Implements;
 public class RecentPostedIllustrationEngine(MakoClient makoClient, PrivacyPolicy privacyPolicy, EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Illustration<RecentPostedIllustrationEngine>(
             this,
             "/v2/illust/follow" +

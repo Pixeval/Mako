@@ -39,7 +39,7 @@ internal class NovelSearchEngine(
     bool? aiType)
     : AbstractPixivFetchEngine<Novel>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())
+    public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = default)
     {
         return new RecursivePixivAsyncEnumerators.Novel<NovelSearchEngine>(
             this,

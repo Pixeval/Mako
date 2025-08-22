@@ -11,7 +11,7 @@ internal class SpotlightEngine(MakoClient makoClient, EngineHandle? engineHandle
     : AbstractPixivFetchEngine<Spotlight>(makoClient, engineHandle)
 {
     public override IAsyncEnumerator<Spotlight> GetAsyncEnumerator(
-        CancellationToken cancellationToken = new CancellationToken()) =>
+        CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Spotlight<SpotlightEngine>(
             this,
             "/v1/spotlight/articles");

@@ -19,7 +19,7 @@ namespace Mako.Engine.Implements;
 
 internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHandle) : AbstractPixivFetchEngine<Feed>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Feed> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())
+    public override IAsyncEnumerator<Feed> GetAsyncEnumerator(CancellationToken cancellationToken = default)
     {
         return new UserFeedsAsyncEnumerator(this, MakoApiKind.WebApi);
     }

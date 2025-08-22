@@ -141,7 +141,7 @@ public partial class MakoClient
     public IFetchEngine<Illustration> IllustrationRanking(RankOption rankOption, DateTime dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureNotCancelled();
-        if (DateTime.Today - dateTime.Date < TimeSpan.FromDays(2))
+        if (DateTime.Today - dateTime.Date < TimeSpan.Zero)
         {
             ThrowHelper.Throw(new RankingDateOutOfRangeException());
         }
@@ -152,7 +152,7 @@ public partial class MakoClient
     public IFetchEngine<Novel> NovelRanking(RankOption rankOption, DateTime dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureNotCancelled();
-        if (DateTime.Today - dateTime.Date < TimeSpan.FromDays(2))
+        if (DateTime.Today - dateTime.Date < TimeSpan.Zero)
         {
             ThrowHelper.Throw(new RankingDateOutOfRangeException());
         }

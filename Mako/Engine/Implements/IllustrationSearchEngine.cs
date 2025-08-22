@@ -34,7 +34,7 @@ internal class IllustrationSearchEngine(
     bool? aiType)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())
+    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
     {
         return new RecursivePixivAsyncEnumerators.Illustration<IllustrationSearchEngine>(
             this,

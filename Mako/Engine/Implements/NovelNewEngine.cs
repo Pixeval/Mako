@@ -16,7 +16,7 @@ internal class NovelNewEngine(
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Novel>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Novel<NovelNewEngine>(this,
             "/v1/novel/new"
             + $"?filter={filter.GetDescription()}"

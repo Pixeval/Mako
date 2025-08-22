@@ -30,7 +30,7 @@ internal class IllustrationBookmarkEngine(
     EngineHandle? engineHandle = null)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Illustration<IllustrationBookmarkEngine>(
             this,
             "/v1/user/bookmarks/illust"

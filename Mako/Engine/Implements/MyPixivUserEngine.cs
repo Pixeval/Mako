@@ -10,7 +10,7 @@ namespace Mako.Engine.Implements;
 internal class MyPixivUserEngine(MakoClient makoClient, long userId, EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<User>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.User<MyPixivUserEngine>(
             this,
             "/v1/user/mypixiv" +

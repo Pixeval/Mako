@@ -9,7 +9,7 @@ namespace Mako.Engine;
 public class ComputedFetchEngine<T>(IAsyncEnumerable<T> result, MakoClient makoClient, EngineHandle engineHandle)
     : IFetchEngine<T>
 {
-    public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())
+    public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
     {
         return result.GetAsyncEnumerator(cancellationToken);
     }

@@ -18,7 +18,7 @@ internal class IllustrationRankingEngine(
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Illustration<IllustrationRankingEngine>(
             this,
             $"/v1/illust/ranking" +

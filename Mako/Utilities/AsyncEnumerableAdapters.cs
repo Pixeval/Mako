@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Mako.Utilities;
 
-public class AdaptedAsyncEnumerator<T>(IEnumerator<T> outerEnumerator, CancellationToken cancellationToken = new CancellationToken())
+public class AdaptedAsyncEnumerator<T>(IEnumerator<T> outerEnumerator, CancellationToken cancellationToken = default)
     : IAsyncEnumerator<T>
 {
     public ValueTask DisposeAsync()

@@ -16,7 +16,7 @@ internal class FetchEngineSelector<T, R>(IFetchEngine<T> delegateEngine, Func<T,
 
     public int RequestedPages { get; set; } = 0;
 
-    public IAsyncEnumerator<R> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())
+    public IAsyncEnumerator<R> GetAsyncEnumerator(CancellationToken cancellationToken = default)
     {
         return new FetchEngineSelectorAsyncEnumerator(delegateEngine.GetAsyncEnumerator(cancellationToken), selector)!;
     }

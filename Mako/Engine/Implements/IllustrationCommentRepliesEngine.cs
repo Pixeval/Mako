@@ -10,7 +10,7 @@ namespace Mako.Engine.Implements;
 public class IllustrationCommentRepliesEngine(string commentId, MakoClient makoClient, EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Comment>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Comment> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<Comment> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Comment<IllustrationCommentRepliesEngine>(
             this,
             "/v2/illust/comment/replies" +

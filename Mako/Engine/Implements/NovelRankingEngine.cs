@@ -18,7 +18,7 @@ internal class NovelRankingEngine(
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Novel>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Novel<NovelRankingEngine>(
             this,
             "/v1/novel/ranking" +

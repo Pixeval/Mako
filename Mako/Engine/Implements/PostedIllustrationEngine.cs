@@ -12,7 +12,7 @@ namespace Mako.Engine.Implements;
 internal class PostedIllustrationEngine(MakoClient makoClient, long uid, WorkType type, TargetFilter targetFilter, EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Illustration<PostedIllustrationEngine>(
             this,
             "/v1/user/illusts"

@@ -17,7 +17,7 @@ internal class IllustrationNewEngine(
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Illustration<IllustrationNewEngine>(this,
             "/v1/illust/new"
             + $"?content_type={contentType.GetDescription()}"

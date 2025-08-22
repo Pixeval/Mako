@@ -13,7 +13,7 @@ public class UserSearchEngine(MakoClient makoClient, TargetFilter targetFilter,
         string keyword, EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<User>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.User<UserSearchEngine>(
             this,
             "/v1/search/user" +

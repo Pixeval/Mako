@@ -18,7 +18,7 @@ internal class RecommendIllustrationEngine(
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Illustration<RecommendIllustrationEngine>(this,
             "/v1/illust/recommended"
             + $"?filter={filter.GetDescription()}"

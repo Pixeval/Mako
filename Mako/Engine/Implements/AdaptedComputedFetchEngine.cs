@@ -32,7 +32,7 @@ public class AdaptedComputedFetchEngine<T>(IEnumerable<T> outer) : IFetchEngine<
 
     public int RequestedPages { get; set; }
 
-    public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())
+    public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
     {
         return new AdaptedAsyncEnumerator<T>(_outer.GetEnumerator(), cancellationToken);
     }

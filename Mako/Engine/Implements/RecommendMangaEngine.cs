@@ -15,7 +15,7 @@ internal class RecommendMangaEngine(
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Illustration<RecommendMangaEngine>(this,
             $"/v1/manga/recommended" +
             $"?filter={filter.GetDescription()}");

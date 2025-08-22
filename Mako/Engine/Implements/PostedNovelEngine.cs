@@ -13,7 +13,7 @@ public class PostedNovelEngine(MakoClient makoClient, long uid, TargetFilter tar
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Novel>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken()) =>
+    public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Novel<PostedNovelEngine>(this,
             "/v1/user/novels" +
             $"?user_id={uid}" +
