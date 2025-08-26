@@ -67,9 +67,27 @@ public enum RankOption
     [Description("week_r18g")]
     WeekR18G,
 
+    /// <summary>
+    /// Novel 不支持
+    /// </summary>
     [Description("day_ai")]
     DayAi,
 
+    /// <summary>
+    /// Novel 不支持
+    /// </summary>
     [Description("day_r18_ai")]
-    DayR18Ai
+    DayR18Ai,
+
+    /// <summary>
+    /// Illustration 不支持
+    /// </summary>
+    [Description("week_ai")]
+    WeekAi,
+
+    /// <summary>
+    /// Illustration 不支持
+    /// </summary>
+    [Description("week_ai_r18")]
+    WeekAiR18
 }
