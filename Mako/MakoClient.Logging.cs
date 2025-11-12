@@ -147,7 +147,7 @@ public partial class MakoClient
                     return null;
                 case "":
                 {
-                    var now = DateTime.Now;
+                    var now = DateTime.UtcNow;
                     if (now < CoolDown)
                         return HttpClient.DefaultProxy;
                     CoolDown = now.AddSeconds(2);
@@ -159,5 +159,5 @@ public partial class MakoClient
         }
     }
 
-    private static DateTime CoolDown { get; set; } = DateTime.Now.AddSeconds(2);
+    private static DateTime CoolDown { get; set; } = DateTime.UtcNow.AddSeconds(2);
 }

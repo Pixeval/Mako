@@ -12,6 +12,7 @@ public abstract class MakoClientSupportedHttpMessageHandler(MakoClient makoClien
 
     public HttpMessageInvoker GetHttpMessageInvoker(bool domainFronting)
     {
+        // TODO: HttpMessageInvoker是否应该复用？
         return domainFronting ? MakoHttpOptions.CreateHttpMessageInvoker() : MakoHttpOptions.CreateDirectHttpMessageInvoker(MakoClient);
     }
 }
