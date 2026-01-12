@@ -45,7 +45,7 @@ public static partial class MakoHttpOptions
         [OAuthHost] = []
     };
 
-    public static void SetNameResolver(string host, string[] nameResolvers)
+    public static void SetNameResolver(string host, IReadOnlyCollection<string> nameResolvers)
     {
         NameResolvers[host] = [.. nameResolvers.Select(IPAddress.Parse)];
     }

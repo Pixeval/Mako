@@ -172,7 +172,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     [field: AllowNull, MaybeNull]
     [JsonIgnore]
     public IPreloadableList<(Uri, int)> MultiImageUris => field ??=
-        PreloadableList.ToPreloadableEnumerable<(Uri, int), UgoiraMetadata>(
+        PreloadableList.ToPreloadableList<(Uri, int), UgoiraMetadata>(
             UgoiraMetadata,
             GetUgoiraMetadataAsync,
             ugoiraMetadata => ugoiraMetadata.GetUgoiraOriginalUrlsAndMsDelays(OriginalSingleUrl!));
@@ -180,7 +180,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     [field: AllowNull, MaybeNull]
     [JsonIgnore]
     public IPreloadableList<IAnimatedImageFrame> AnimatedThumbnails => field ??=
-        PreloadableList.ToPreloadableEnumerable<IAnimatedImageFrame, UgoiraMetadata>(
+        PreloadableList.ToPreloadableList<IAnimatedImageFrame, UgoiraMetadata>(
             UgoiraMetadata,
             GetUgoiraMetadataAsync,
             ugoiraMetadata =>
@@ -197,11 +197,10 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     private async Task<UgoiraMetadata> GetUgoiraMetadataAsync(IMisakiService service)
     {
         if (!IsPicGif)
-            ThrowHelper.InvalidOperation("Not Ugoira");
-        return UgoiraMetadata ??=
-            service is MakoClient makoClient
-                ? await makoClient.GetUgoiraMetadataAsync(Id)
-                : ThrowHelper.InvalidOperation<UgoiraMetadata>("Invalid service")!;
+            throw new InvalidOperationException("Not Ugoira");
+        if (service is not MakoClient makoClient)
+            throw new InvalidOperationException("Invalid service");
+        return UgoiraMetadata ??= await makoClient.GetUgoiraMetadataAsync(Id);
     }
 
     [field: AllowNull, MaybeNull]

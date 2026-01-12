@@ -1,10 +1,10 @@
-﻿// Copyright (c) Pixeval.CoreApi.
+// Copyright (c) Pixeval.CoreApi.
 // Licensed under the GPL v3 License.
 
 namespace Mako.Global;
 
 /// <summary>
-/// Indicates that the each of its implementation contains a <see cref="MakoClient" />
+/// Indicates that each of its implementation contains a <see cref="MakoClient" />
 /// that is to be used as a context provider, whereby "context provider" mostly refers to
 /// the properties that are required when performing some context-aware tasks, such as the
 /// access token while sending a request to app-api.pixiv.net

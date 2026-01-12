@@ -21,8 +21,6 @@ namespace Mako.Engine.Implements;
 /// <param name="outer">The <see cref="IEnumerable{T}" /> that is going to be delegated</param>
 public class AdaptedComputedFetchEngine<T>(IEnumerable<T> outer) : IFetchEngine<T>
 {
-    private readonly IEnumerable<T> _outer = outer;
-
     public MakoClient MakoClient => ThrowHelper.NotSupported<MakoClient>();
 
     // The 'AdaptedFetchEngine' is specialized for an "already computed" 'IFetchEngine'
@@ -34,6 +32,6 @@ public class AdaptedComputedFetchEngine<T>(IEnumerable<T> outer) : IFetchEngine<
 
     public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
     {
-        return new AdaptedAsyncEnumerator<T>(_outer.GetEnumerator(), cancellationToken);
+        return new AdaptedAsyncEnumerator<T>(outer.GetEnumerator(), cancellationToken);
     }
 }

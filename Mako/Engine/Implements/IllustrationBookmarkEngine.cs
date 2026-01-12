@@ -17,7 +17,7 @@ namespace Mako.Engine.Implements;
 /// Creates a <see cref="IllustrationBookmarkEngine" />
 /// </remarks>
 /// <param name="makoClient">The <see cref="MakoClient" /> that owns this object</param>
-/// <param name="uid">Id of the user</param>
+/// <param name="uid">ID of the user</param>
 /// <param name="privacyPolicy">The privacy option</param>
 /// <param name="targetFilter">Indicates the target API of the fetch operation</param>
 /// <param name="engineHandle"></param>

@@ -107,7 +107,7 @@ internal static class RecursivePixivAsyncEnumerators
 
         protected sealed override string? NextUrl(TRawEntity? rawEntity) => rawEntity?.NextUrl;
 
-        protected sealed override IEnumerator<TEntity>? GetNewEnumerator(TRawEntity? rawEntity) => (rawEntity?.Entities as IEnumerable<TEntity>)?.GetEnumerator();
+        protected sealed override IEnumerator<TEntity>? GetNewEnumerator(TRawEntity? rawEntity) => rawEntity?.Entities?.GetEnumerator();
     }
 
     public class User<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)

@@ -17,14 +17,17 @@ public static class SyntaxHelper
     internal const string DisableSourceGeneratorAttribute = AttributeNamespace + "DisableSourceGeneratorAttribute";
     internal const string FrozenDictionaryTypeName = "global::System.Collections.Frozen.FrozenDictionary";
 
-    public static bool HasAttribute(this ISymbol s, string attributeFqName)
+    extension(ISymbol s)
     {
-        return s.GetAttributes().Any(als => als.AttributeClass?.ToDisplayString() == attributeFqName);
-    }
+        public bool HasAttribute(string attributeFqName)
+        {
+            return s.GetAttributes().Any(als => als.AttributeClass?.ToDisplayString() == attributeFqName);
+        }
 
-    public static AttributeData? GetAttribute(this ISymbol mds, string attributeFqName)
-    {
-        return mds.GetAttributes().FirstOrDefault(attr => attr?.AttributeClass?.ToDisplayString() == attributeFqName);
+        public AttributeData? GetAttribute(string attributeFqName)
+        {
+            return s.GetAttributes().FirstOrDefault(attr => attr?.AttributeClass?.ToDisplayString() == attributeFqName);
+        }
     }
 
     /// <summary>
