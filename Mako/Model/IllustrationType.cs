@@ -1,5 +1,5 @@
 // Copyright (c) Mako.
-// Licensed under the GPL v3 License.
+// Licensed under the MIT License.
 
 namespace Mako.Model;
 

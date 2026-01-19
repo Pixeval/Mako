@@ -1,5 +1,5 @@
-// Copyright (c) Pixeval.SourceGen.
-// Licensed under the GPL v3 License.
+// Copyright (c) Mako.SourceGen.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;

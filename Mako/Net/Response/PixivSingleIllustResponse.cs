@@ -1,5 +1,5 @@
-// Copyright (c) Pixeval.CoreApi.
-// Licensed under the GPL v3 License.
+// Copyright (c) Mako.
+// Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
 using Mako.Model;

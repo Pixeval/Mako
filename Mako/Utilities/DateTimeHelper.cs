@@ -1,3 +1,6 @@
+// Copyright (c) Mako.
+// Licensed under the MIT License.
+
 using System;
 
 namespace Mako.Utilities;
