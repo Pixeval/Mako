@@ -12,11 +12,10 @@ using Mako.Global.Exception;
 using Mako.Model;
 using Mako.Net;
 using Mako.Net.EndPoints;
-using Mako.Preference;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Misaki;
-    
+
 namespace Mako;
 
 public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, IDownloadHttpClientService, IGetArtworkService, IPostFavoriteService
@@ -26,7 +25,7 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
     /// </summary>
     /// <param name="configuration">The <see cref="Configuration" /></param>
     /// <param name="logger"></param>
-    public MakoClient(MakoClientConfiguration configuration, ILogger logger)
+    public MakoClient(MakoConfiguration configuration, ILogger logger)
     {
         Logger = logger;
         Configuration = configuration;

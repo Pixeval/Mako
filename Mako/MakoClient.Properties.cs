@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using Mako.Engine;
 using Mako.Model;
 using Mako.Net;
-using Mako.Preference;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -25,7 +24,7 @@ public partial class MakoClient
 
     public TokenUser? TryGetMe() => Provider.GetService<PixivTokenProvider>()?.Me;
 
-    public MakoClientConfiguration Configuration { get; set; }
+    public MakoConfiguration Configuration { get; set; }
 
     public ILogger Logger { get; }
 

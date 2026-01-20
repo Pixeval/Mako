@@ -4,25 +4,24 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http.Headers;
-using System.Text.Json.Serialization;
 
-namespace Mako.Preference;
+namespace Mako;
 
 /// <summary>
 /// Contains all the user-configurable keys
 /// </summary>
-public record MakoClientConfiguration(
+public record MakoConfiguration(
     bool DomainFronting,
     string? Proxy,
     string? Cookie,
     string? MirrorHost,
+    int ApiRequestCooldown,
     CultureInfo CultureInfo)
 {
-    public MakoClientConfiguration() : this(false, "", "", "", CultureInfo.CurrentCulture) { }
+    public MakoConfiguration() : this(false, "", "", "", 800, CultureInfo.CurrentCulture) { }
 
-    [JsonIgnore] public CultureInfo CultureInfo { get; set; } = CultureInfo;
+    public CultureInfo CultureInfo { get; set; } = CultureInfo;
 
-    [JsonPropertyName("userAgent")]
     public IReadOnlyList<ProductInfoHeaderValue> UserAgent { get; set; } =
     [
         new("Mozilla", "5.0"),
@@ -34,18 +33,16 @@ public record MakoClientConfiguration(
         new("Edg", "133.0.0.0")
     ];
 
-    [JsonPropertyName("domainFronting")]
     public bool DomainFronting { get; set; } = DomainFronting;
 
-    [JsonPropertyName("proxy")]
     public string? Proxy { get; set; } = Proxy;
 
-    [JsonPropertyName("cookie")]
     public string? Cookie { get; set; } = Cookie;
+
+    public int ApiRequestCooldown { get; set; } = ApiRequestCooldown;
 
     /// <summary>
     /// Mirror server's host of image downloading
     /// </summary>
-    [JsonPropertyName("mirrorHost")]
     public string? MirrorHost { get; set; } = MirrorHost;
 }
