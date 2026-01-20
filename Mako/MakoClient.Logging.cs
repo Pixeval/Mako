@@ -69,24 +69,6 @@ public partial class MakoClient
         return RunWithLoggerAsync(task, new HttpResponseMessage(HttpStatusCode.RequestTimeout));
     }
 
-    private Task<T> RunWithLoggerAsync<T>(Func<Task<Result<T>>> task, Func<T> createDefault)
-    {
-        return RunWithLoggerAsync(async () =>
-        {
-            var result = await task();
-            switch (result)
-            {
-                case Result<T>.Success { Value: var value }:
-                    return value;
-                case Result<T>.Failure { Cause: { } e }:
-                    LogException(e);
-                    return createDefault();
-                default:
-                    return ThrowHelper.ArgumentOutOfRange<Result<T>, T>(result);
-            }
-        }, createDefault);
-    }
-
     private async Task<T> RunWithLoggerAsync<T>(Func<Task<T>> task, Func<T> createDefault)
     {
         try
@@ -117,11 +99,6 @@ public partial class MakoClient
         }
     }
 
-    private Task<T> RunWithLoggerAsync<T>(Func<Task<Result<T>>> task) where T : IDefaultFactory<T>
-    {
-        return RunWithLoggerAsync(task, T.CreateDefault);
-    }
-
     internal void LogException(Exception e) => Logger.LogError(e, "MakoClient Exception");
 
     [DynamicDependency("ConstructSystemProxy", "SystemProxyInfo", "System.Net.Http")]
@@ -131,7 +108,7 @@ public partial class MakoClient
         var method = type?.GetMethod("ConstructSystemProxy");
         var @delegate = method?.CreateDelegate<Func<IWebProxy>>();
 
-        _GetCurrentSystemProxy = @delegate ?? ThrowHelper.Throw<MissingMethodException, Func<IWebProxy>>(new("Unable to find proxy functions"));
+        _GetCurrentSystemProxy = @delegate ?? throw new MissingMethodException("Unable to find proxy functions");
         HttpClient.DefaultProxy = _GetCurrentSystemProxy();
     }
 

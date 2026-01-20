@@ -10,98 +10,53 @@ namespace Mako.Utilities;
 
 public static class Jsons
 {
-    public static IEnumerable<JsonProperty> EnumerateObjectOrEmpty(this JsonElement? element)
+    extension(JsonElement? jsonElement)
     {
-        return element?.EnumerateObject() as IEnumerable<JsonProperty> ?? [];
-    }
-
-    extension(JsonProperty jsonElement)
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public JsonElement GetProperty(string prop)
-        {
-            return jsonElement.Value.GetProperty(prop);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public JsonElement? GetPropertyOrNull(string prop)
-        {
-            return jsonElement.Value.TryGetProperty(prop, out var result) ? result : null;
-        }
+        public IEnumerable<JsonProperty> EnumerateObjectOrEmpty() => jsonElement?.EnumerateObject() as IEnumerable<JsonProperty> ?? [];
     }
 
     extension(JsonElement jsonElement)
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetPropertyString()
-        {
-            return jsonElement.ToString();
-        }
+        public string? GetPropertyString() => jsonElement.GetString();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetPropertyString(string prop)
-        {
-            return jsonElement.GetProperty(prop).ToString();
-        }
+        public string? GetPropertyString(string prop) => jsonElement.GetProperty(prop).GetString();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public JsonElement? GetPropertyOrNull(string prop)
-        {
-            return jsonElement.TryGetProperty(prop, out var result) ? result : null;
-        }
+        public JsonElement? GetPropertyOrNull(string prop) => jsonElement.TryGetProperty(prop, out var result) ? result : null;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public long GetPropertyLong(string prop)
-        {
-            return jsonElement.GetProperty(prop).GetInt64();
-        }
+        public long GetPropertyLong(string prop) => jsonElement.GetProperty(prop).GetInt64();
     }
 
     extension(JsonProperty jsonProperty)
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetPropertyString()
-        {
-            return jsonProperty.Value.ToString();
-        }
+        public JsonElement GetProperty(string prop) => jsonProperty.Value.GetProperty(prop);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string GetPropertyString(string prop)
-        {
-            return jsonProperty.Value.GetProperty(prop).ToString();
-        }
+        public JsonElement? GetPropertyOrNull(string prop) => jsonProperty.Value.TryGetProperty(prop, out var result) ? result : null;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public long GetPropertyLong(string prop)
-        {
-            return jsonProperty.Value.GetProperty(prop).GetInt64();
-        }
-    }
-
-    extension(JsonProperty jsonProperty)
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public DateTimeOffset GetPropertyDateTimeOffset()
-        {
-            return jsonProperty.Value.GetDateTimeOffset();
-        }
+        public string GetPropertyString() => jsonProperty.Value.ToString();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public DateTimeOffset GetPropertyDateTimeOffset(string prop)
-        {
-            return jsonProperty.Value.GetProperty(prop).GetDateTimeOffset();
-        }
+        public string GetPropertyString(string prop) => jsonProperty.Value.GetProperty(prop).ToString();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public DateTime GetPropertyDateTime()
-        {
-            return jsonProperty.Value.GetDateTime();
-        }
+        public long GetPropertyLong(string prop) => jsonProperty.Value.GetProperty(prop).GetInt64();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public DateTime GetPropertyDateTime(string prop)
-        {
-            return jsonProperty.Value.GetProperty(prop).GetDateTime();
-        }
+        public DateTimeOffset GetPropertyDateTimeOffset() => jsonProperty.Value.GetDateTimeOffset();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public DateTimeOffset GetPropertyDateTimeOffset(string prop) => jsonProperty.Value.GetProperty(prop).GetDateTimeOffset();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public DateTime GetPropertyDateTime() => jsonProperty.Value.GetDateTime();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public DateTime GetPropertyDateTime(string prop) => jsonProperty.Value.GetProperty(prop).GetDateTime();
     }
 }

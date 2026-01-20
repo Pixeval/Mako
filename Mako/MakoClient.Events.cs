@@ -8,9 +8,11 @@ namespace Mako;
 
 public partial class MakoClient
 {
-    public event EventHandler<Exception>? TokenRefreshedFailed;
+    public event EventHandler<MakoClient, Exception>? TokenRefreshedFailed;
 
-    public event EventHandler<TokenUser>? TokenRefreshed;
+    public event EventHandler<MakoClient, TokenUser>? TokenRefreshed;
+
+    public event EventHandler<MakoClient, EventArgs>? RateLimitEncountered;
 
     internal void OnTokenRefreshedFailed(Exception e)
     {
@@ -20,5 +22,10 @@ public partial class MakoClient
     internal void OnTokenRefreshed(TokenUser user)
     {
         TokenRefreshed?.Invoke(this, user);
+    }
+
+    internal void OnRateLimitEncountered()
+    {
+        RateLimitEncountered?.Invoke(this, EventArgs.Empty);
     }
 }

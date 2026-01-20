@@ -1,136 +1,122 @@
 // Copyright (c) Mako.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
-using System.Linq;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Mako.Global.Exception;
 using Mako.Model;
 using Mako.Net;
 using Mako.Net.Response;
-using Mako.Utilities;
 using Misaki;
 
 namespace Mako.Engine;
 
-internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind)
-    : AbstractPixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(pixivFetchEngine, makoApiKind)
+internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
+    : AbstractPixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(pixivFetchEngine, MakoApiKind.AppApi)
     where TEntity : class, IMisakiModel
-    where TRawEntity : class
+    where TRawEntity : class, IPixivNextUrlResponse<TEntity>
     where TFetchEngine : class, IFetchEngine<TEntity>
 {
-    private TRawEntity? RawEntity { get; set; }
+    private TRawEntity? CurrentEntity { get; set; }
 
-    protected abstract string? NextUrl(TRawEntity? rawEntity);
-
-    protected abstract string InitialUrl { get; }
-
-    protected abstract IEnumerator<TEntity>? GetNewEnumerator(TRawEntity? rawEntity);
-
-    protected virtual bool HasNextPage()
-    {
-        return !string.IsNullOrEmpty(NextUrl(RawEntity));
-    }
+    protected string InitialUrl => initialUrl;
 
     public override async ValueTask<bool> MoveNextAsync()
     {
-        if (IsCancellationRequested)
-        {
-            PixivFetchEngine.EngineHandle.Complete(); // Set the state of the 'PixivFetchEngine' to Completed
+        if (IsCancellationRequested || PixivFetchEngine.EngineHandle.IsCompleted)
             return false;
-        }
 
-        if (RawEntity is null)
+        if (CurrentEntity is null)
         {
-            switch (await GetJsonResponseAsync(InitialUrl).ConfigureAwait(false))
-            {
-                case Result<TRawEntity>.Success(var raw):
-                    Update(raw);
-                    break;
-                case Result<TRawEntity>.Failure(var exception):
-                    if (exception is not null)
-                    {
-                        MakoClient.LogException(exception);
-                    }
-
-                    PixivFetchEngine.EngineHandle.Complete();
-                    return false;
-            }
+            if (await GetJsonResponseAsync(InitialUrl).ConfigureAwait(false) is { } raw)
+                Update(raw);
+            else
+                return false;
         }
 
         if (CurrentEntityEnumerator!.MoveNext()) // If the enumerator can proceeds then return true
-        {
             return true;
-        }
 
-        if (!HasNextPage()) // Check if there are more pages, return false if not
+        if (string.IsNullOrEmpty(CurrentEntity.NextUrl)) // Check if there are more pages, return false if not
         {
             PixivFetchEngine.EngineHandle.Complete();
             return false;
         }
 
-        if (await GetJsonResponseAsync(NextUrl(RawEntity)!).ConfigureAwait(false) is Result<TRawEntity>.Success(var value)) // Else request a new page
+        if (await GetJsonResponseAsync(CurrentEntity.NextUrl).ConfigureAwait(false) is { } value) // Else request a new page
         {
             if (IsCancellationRequested)
-            {
-                PixivFetchEngine.EngineHandle.Complete();
                 return false;
-            }
 
             Update(value);
-            _ = CurrentEntityEnumerator.MoveNext();
-            return true;
+            return CurrentEntityEnumerator.MoveNext();
         }
 
-        PixivFetchEngine.EngineHandle.Complete();
+        // 遇到异常直接停止，但不标记为完成或取消
         return false;
     }
 
+    [MemberNotNull(nameof(CurrentEntity))]
     private void Update(TRawEntity rawEntity)
     {
-        RawEntity = rawEntity;
-        CurrentEntityEnumerator = GetNewEnumerator(rawEntity) ?? Enumerable.Empty<TEntity>().GetEnumerator();
+        CurrentEntity = rawEntity;
+        CurrentEntityEnumerator = rawEntity.Entities.GetEnumerator();
         ++PixivFetchEngine.RequestedPages;
+    }
+
+    protected async Task<TRawEntity?> GetJsonResponseAsync(string url)
+    {
+        try
+        {
+            var responseMessage = await ApiClient.GetAsync(url).ConfigureAwait(false);
+            if (!responseMessage.IsSuccessStatusCode)
+            {
+                MakoClient.LogException(await MakoNetworkException.FromHttpResponseMessageAsync(responseMessage, MakoClient.Configuration.DomainFronting).ConfigureAwait(false));
+                return null;
+            }
+
+            var json = await responseMessage.Content.ReadFromJsonAsync(typeof(TRawEntity), AppJsonSerializerContext.Default).ConfigureAwait(false);
+
+            if (json is TRawEntity result)
+                return result;
+
+            MakoClient.LogException(new MakoNetworkException(url, MakoClient.Configuration.DomainFronting, "Result is null", (int) responseMessage.StatusCode));
+        }
+        catch (Exception e)
+        {
+            MakoClient.LogException(new MakoNetworkException(url, MakoClient.Configuration.DomainFronting, e.Message, (int?) (e as HttpRequestException)?.StatusCode ?? -1));
+        }
+
+        return null;
     }
 }
 
 internal static class RecursivePixivAsyncEnumerators
 {
-    public abstract class BaseRecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(TFetchEngine pixivFetchEngine, MakoApiKind makoApiKind, string initialUrl)
-        : RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(pixivFetchEngine, makoApiKind)
-        where TEntity : class, IMisakiModel
-        where TRawEntity : class, IPixivNextUrlResponse<TEntity>
-        where TFetchEngine : class, IFetchEngine<TEntity>
-    {
-        protected override string InitialUrl => initialUrl;
-
-        protected sealed override bool ValidateResponse(TRawEntity rawEntity) => rawEntity.Entities is { Count: not 0 };
-
-        protected sealed override string? NextUrl(TRawEntity? rawEntity) => rawEntity?.NextUrl;
-
-        protected sealed override IEnumerator<TEntity>? GetNewEnumerator(TRawEntity? rawEntity) => rawEntity?.Entities?.GetEnumerator();
-    }
-
     public class User<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : BaseRecursivePixivAsyncEnumerator<User, PixivUserResponse, TFetchEngine>(pixivFetchEngine, MakoApiKind.AppApi, initialUrl)
+        : RecursivePixivAsyncEnumerator<User, PixivUserResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
         where TFetchEngine : class, IFetchEngine<User>;
 
     public class Illustration<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : BaseRecursivePixivAsyncEnumerator<Illustration, PixivIllustrationResponse, TFetchEngine>(pixivFetchEngine, MakoApiKind.AppApi, initialUrl)
+        : RecursivePixivAsyncEnumerator<Illustration, PixivIllustrationResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
         where TFetchEngine : class, IFetchEngine<Illustration>;
 
     public class Novel<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : BaseRecursivePixivAsyncEnumerator<Novel, PixivNovelResponse, TFetchEngine>(pixivFetchEngine, MakoApiKind.AppApi, initialUrl)
+        : RecursivePixivAsyncEnumerator<Novel, PixivNovelResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
         where TFetchEngine : class, IFetchEngine<Novel>;
 
     public class Comment<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : BaseRecursivePixivAsyncEnumerator<Comment, PixivCommentResponse, TFetchEngine>(pixivFetchEngine, MakoApiKind.AppApi, initialUrl)
+        : RecursivePixivAsyncEnumerator<Comment, PixivCommentResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
         where TFetchEngine : class, IFetchEngine<Comment>;
 
     public class BookmarkTag<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : BaseRecursivePixivAsyncEnumerator<BookmarkTag, PixivBookmarkTagResponse, TFetchEngine>(pixivFetchEngine, MakoApiKind.AppApi, initialUrl)
+        : RecursivePixivAsyncEnumerator<BookmarkTag, PixivBookmarkTagResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
         where TFetchEngine : class, IFetchEngine<BookmarkTag>;
 
     public class Spotlight<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : BaseRecursivePixivAsyncEnumerator<Spotlight, PixivSpotlightResponse, TFetchEngine>(pixivFetchEngine, MakoApiKind.AppApi, initialUrl)
+        : RecursivePixivAsyncEnumerator<Spotlight, PixivSpotlightResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
         where TFetchEngine : class, IFetchEngine<Spotlight>;
 }

@@ -134,7 +134,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         var fieldInfo = typeof(ThumbnailSize).GetField(value.ToString());
         if (fieldInfo?.GetCustomAttribute<ImageFrame.SizeAttribute>() is not
                 { Width: var width, Height: var height })
-            return ThrowHelper.NotSupported<ImageFrame>(value.ToString());
+            throw new NotSupportedException(value.ToString());
         return IImageSize.Uniform(this, width, height);
     }
 

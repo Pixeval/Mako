@@ -311,7 +311,7 @@ internal class SpecialDictionaryConverter<T> : JsonConverter<IReadOnlyList<T>>
                 case JsonTokenType.StartObject:
                     continue;
                 case JsonTokenType.PropertyName when !reader.Read():
-                    return ThrowHelper.Json<IReadOnlyList<T>>();
+                    throw new JsonException();
                 case JsonTokenType.PropertyName:
                 {
                     var propertyValue = (T) JsonSerializer.Deserialize(ref reader, typeof(T), AppJsonSerializerContext.Default)!;
@@ -323,8 +323,8 @@ internal class SpecialDictionaryConverter<T> : JsonConverter<IReadOnlyList<T>>
             }
         }
 
-        return ThrowHelper.Json<IReadOnlyList<T>>();
+        throw new JsonException();
     }
 
-    public override void Write(Utf8JsonWriter writer, IReadOnlyList<T>? value, JsonSerializerOptions options) => ThrowHelper.NotSupported();
+    public override void Write(Utf8JsonWriter writer, IReadOnlyList<T>? value, JsonSerializerOptions options) => throw new NotSupportedException();
 }

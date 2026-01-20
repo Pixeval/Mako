@@ -28,7 +28,7 @@ internal class PixivImageHttpMessageHandler(MakoClient makoClient) : MakoClientS
             {
                 _ when Uri.CheckHostName(mirror) is not UriHostNameType.Unknown => new UriBuilder(requestUri) { Host = mirror }.Uri,
                 _ when Uri.IsWellFormedUriString(mirror, UriKind.Absolute) => new Uri(mirror).Let(mirrorUri => new UriBuilder(requestUri) { Host = mirrorUri.Host, Scheme = mirrorUri.Scheme }).Uri,
-                _ => ThrowHelper.UriFormat<Uri>("Expecting a valid Host or URI")
+                _ => throw new UriFormatException("Expecting a valid Host or URI")
             };
         }
 

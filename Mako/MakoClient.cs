@@ -13,11 +13,10 @@ using Mako.Model;
 using Mako.Net;
 using Mako.Net.EndPoints;
 using Mako.Preference;
-using Mako.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Misaki;
-
+    
 namespace Mako;
 
 public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, IDownloadHttpClientService, IGetArtworkService, IPostFavoriteService
@@ -51,44 +50,42 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
             .AddSingleton(this)
             .AddSingleton<PixivApiHttpMessageHandler>()
             .AddSingleton<PixivImageHttpMessageHandler>()
-            .AddKeyedSingleton<HttpClient, MakoHttpClient>(MakoApiKind.AppApi,
-                (s, _) => new(s.GetRequiredService<PixivApiHttpMessageHandler>())
-                {
-                    BaseAddress = new Uri(MakoHttpOptions.AppApiBaseUrl)
-                })
-            .AddKeyedSingleton<HttpClient, MakoHttpClient>(MakoApiKind.WebApi,
-                (s, _) => new(s.GetRequiredService<PixivApiHttpMessageHandler>())
-                {
-                    BaseAddress = new Uri(MakoHttpOptions.WebApiBaseUrl),
-                })
-            .AddKeyedSingleton<HttpClient, MakoHttpClient>(MakoApiKind.AuthApi,
-                (s, _) => new(s.GetRequiredService<PixivApiHttpMessageHandler>())
-                {
-                    BaseAddress = new Uri(MakoHttpOptions.OAuthBaseUrl)
-                })
-            .AddKeyedSingleton<HttpClient, MakoHttpClient>(MakoApiKind.ImageApi,
-                (s, _) => new(s.GetRequiredService<PixivImageHttpMessageHandler>())
-                {
-                    DefaultRequestHeaders =
-                    {
-                        Referrer = new Uri("https://www.pixiv.net"),
-                        UserAgent = { new("PixivIOSApp", "5.8.7") }
-                    }
-                })
+            .AddHttpClient(nameof(MakoApiKind.ImageApi))
+            .ConfigureHttpClient(client =>
+            {
+                client.DefaultRequestHeaders.Referrer = new Uri("https://www.pixiv.net");
+                client.DefaultRequestHeaders.UserAgent.Add(new("PixivIOSApp", "5.8.7"));
+            })
+            .ConfigurePrimaryHttpMessageHandler<PixivImageHttpMessageHandler>();
+
+        _ = serviceCollection
+            .AddHttpClient(nameof(MakoApiKind.AppApi))
+            .ConfigureHttpClient(client => client.BaseAddress = new Uri(MakoHttpOptions.AppApiBaseUrl))
+            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+
+        _ = serviceCollection
+            .AddHttpClient(nameof(MakoApiKind.WebApi))
+            .ConfigureHttpClient(client => client.BaseAddress = new Uri(MakoHttpOptions.WebApiBaseUrl))
+            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+
+        _ = serviceCollection
+            .AddHttpClient(nameof(MakoApiKind.AuthApi))
+            .ConfigureHttpClient(client => client.BaseAddress = new Uri(MakoHttpOptions.OAuthBaseUrl))
+            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+
+        _ = serviceCollection
             .AddSingleton<PixivTokenProvider>(t => new(t, firstTokenResponse))
-            // .AddLogging(t => t.AddDebug())
             .AddWebApiClient()
             .UseSourceGeneratorHttpApiActivator()
             .ConfigureHttpApi(t => t.PrependJsonSerializerContext(AppJsonSerializerContext.Default));
 
         _ = serviceCollection.AddHttpApi<IAppApiEndPoint>()
-            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>()
-            .AddStandardResilienceHandler();
+            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+
         _ = serviceCollection.AddHttpApi<IAuthEndPoint>()
-            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>()
-            .AddStandardResilienceHandler();
-        _ = serviceCollection.AddHttpApi<IReverseSearchApiEndPoint>()
-            .AddStandardResilienceHandler();
+            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+
+        _ = serviceCollection.AddHttpApi<IReverseSearchApiEndPoint>();
 
         return serviceCollection.BuildServiceProvider();
     }
@@ -110,9 +107,7 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
     private void EnsureNotCancelled()
     {
         if (IsCancelled)
-        {
-            ThrowHelper.InvalidOperation($"MakoClient({Id}) has been cancelled");
-        }
+                throw new InvalidOperationException($"MakoClient({Id}) has been cancelled");
     }
 
     /// <summary>
@@ -142,7 +137,7 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
     private void CheckPrivacyPolicy(long uid, PrivacyPolicy privacyPolicy)
     {
         if (privacyPolicy is PrivacyPolicy.Private && Me.Id != uid)
-            ThrowHelper.Throw(new IllegalPrivatePolicyException(uid));
+            throw new IllegalPrivatePolicyException(uid);
     }
 
     /// <summary>
@@ -163,7 +158,8 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
     /// <returns>The <see cref="HttpClient" /> corresponding to <paramref name="makoApiKind" /></returns>
     public HttpClient GetMakoHttpClient(MakoApiKind makoApiKind)
     {
-        return Provider.GetRequiredKeyedService<HttpClient>(makoApiKind);
+        var factory = Provider.GetRequiredService<IHttpClientFactory>();
+        return factory.CreateClient(makoApiKind.ToString());
     }
 
     public async ValueTask DisposeAsync()

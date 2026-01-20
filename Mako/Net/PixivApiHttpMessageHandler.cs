@@ -1,6 +1,7 @@
 // Copyright (c) Mako.
 // Licensed under the MIT License.
 
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -24,15 +25,15 @@ internal class PixivApiHttpMessageHandler(MakoClient makoClient) : MakoClientSup
             MakoHttpOptions.UseHttpScheme(request);
 
         headers.UserAgent.AddRange(MakoClient.Configuration.UserAgent);
-        headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(MakoClient.Configuration.CultureInfo.Name));
+        headers.AcceptLanguage.Add(new(MakoClient.Configuration.CultureInfo.Name));
 
         switch (host)
         {
             case MakoHttpOptions.AppApiHost:
                 var provider = MakoClient.Provider.GetRequiredService<PixivTokenProvider>();
-                var tokenResponse = await provider.GetTokenAsync();
+                var tokenResponse = await provider.GetTokenAsync().ConfigureAwait(false);
                 if (tokenResponse is null)
-                    ThrowHelper.Throw(new MakoTokenRefreshFailedException());
+                    throw new MakoTokenRefreshFailedException();
                 headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
                 break;
             case MakoHttpOptions.WebApiHost:
@@ -40,7 +41,13 @@ internal class PixivApiHttpMessageHandler(MakoClient makoClient) : MakoClientSup
                 break;
         }
 
-        return await GetHttpMessageInvoker(domainFronting)
-            .SendAsync(request, cancellationToken);
+        var result = await GetHttpMessageInvoker(domainFronting)
+            .SendAsync(request, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (result.StatusCode is HttpStatusCode.TooManyRequests)
+            MakoClient.OnRateLimitEncountered();
+
+        return result;
     }
 }

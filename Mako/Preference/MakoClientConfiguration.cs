@@ -12,14 +12,13 @@ namespace Mako.Preference;
 /// Contains all the user-configurable keys
 /// </summary>
 public record MakoClientConfiguration(
-    int ConnectionTimeout,
     bool DomainFronting,
     string? Proxy,
     string? Cookie,
     string? MirrorHost,
     CultureInfo CultureInfo)
 {
-    public MakoClientConfiguration() : this(5000, false, "", "", "", CultureInfo.CurrentCulture) { }
+    public MakoClientConfiguration() : this(false, "", "", "", CultureInfo.CurrentCulture) { }
 
     [JsonIgnore] public CultureInfo CultureInfo { get; set; } = CultureInfo;
 
@@ -34,9 +33,6 @@ public record MakoClientConfiguration(
         new("Safari", "537.36"),
         new("Edg", "133.0.0.0")
     ];
-
-    [JsonPropertyName("connectionTimeout")]
-    public int ConnectionTimeout { get; set; } = ConnectionTimeout;
 
     [JsonPropertyName("domainFronting")]
     public bool DomainFronting { get; set; } = DomainFronting;

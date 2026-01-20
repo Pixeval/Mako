@@ -34,7 +34,7 @@ public partial class MakoClient
     /// </summary>
     internal ServiceCollection Services { get; } = [];
 
-    internal ServiceProvider Provider { get; private set; } = null!;
+    public ServiceProvider Provider { get; private set; } = null!;
 
     public bool IsBuilt { get; private set; }
 

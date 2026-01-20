@@ -13,58 +13,44 @@ using Mako.Global.Exception;
 using Mako.Model;
 using Mako.Net;
 using Mako.Utilities;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Mako.Engine.Implements;
 
 internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHandle) : AbstractPixivFetchEngine<Feed>(makoClient, engineHandle)
 {
-    public override IAsyncEnumerator<Feed> GetAsyncEnumerator(CancellationToken cancellationToken = default)
-    {
-        return new UserFeedsAsyncEnumerator(this, MakoApiKind.WebApi);
-    }
+    public override IAsyncEnumerator<Feed> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
+        new UserFeedsAsyncEnumerator(this);
 
-    private partial class UserFeedsAsyncEnumerator
-        (FeedEngine pixivFetchEngine, MakoApiKind apiKind) : AbstractPixivAsyncEnumerator<Feed, string, FeedEngine>(pixivFetchEngine, apiKind)
+    private partial class UserFeedsAsyncEnumerator(FeedEngine pixivFetchEngine)
+        : AbstractPixivAsyncEnumerator<Feed, string, FeedEngine>(pixivFetchEngine, MakoApiKind.WebApi)
     {
         private FeedRequestContext? _feedRequestContext;
         private string? _tt;
 
         public override async ValueTask<bool> MoveNextAsync()
         {
+            if (IsCancellationRequested || PixivFetchEngine.EngineHandle.IsCompleted)
+                return false;
+
             if (_feedRequestContext is null)
             {
-                switch (await GetResponseAsync(BuildRequestUrl()).ConfigureAwait(false))
+                if (await GetResponseAsync(RequestUrl).ConfigureAwait(false) is { } response)
                 {
-                    case Result<string>.Success(var response):
-                        if (TryParsePreloadJsonFromHtml(response, out var result))
-                        {
-                            await UpdateAsync(result).ConfigureAwait(false);
-                            _tt = TtRegex().Match(response).Groups["tt"].Value;
-                            _feedRequestContext = ExtractRequestContextFromHtml(response);
-                        }
-                        else
-                        {
-                            PixivFetchEngine.EngineHandle.Complete();
-                            return false;
-                        }
-
-                        break;
-                    case Result<string>.Failure(var exception):
-                        if (exception is not null)
-                        {
-                            MakoClient.LogException(exception);
-                        }
-
-                        PixivFetchEngine.EngineHandle.Complete();
+                    if (TryParsePreloadJsonFromHtml(response, out var result))
+                    {
+                        await UpdateAsync(result).ConfigureAwait(false);
+                        _tt = TtRegex.Match(response).Groups["tt"].Value;
+                        _feedRequestContext = ExtractRequestContextFromHtml(response);
+                    }
+                    else
                         return false;
                 }
+                else
+                    return false;
             }
 
             if (CurrentEntityEnumerator!.MoveNext())
-            {
                 return true;
-            }
 
             if (_feedRequestContext!.IsLastPage)
             {
@@ -72,20 +58,16 @@ internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHan
                 return false;
             }
 
-            if (await GetResponseAsync(BuildRequestUrl()).ConfigureAwait(false) is Result<string>.Success(var json)) // Else request a new page
+            if (await GetResponseAsync(RequestUrl).ConfigureAwait(false) is { } json) // Else request a new page
             {
                 if (IsCancellationRequested)
-                {
-                    PixivFetchEngine.EngineHandle.Complete();
                     return false;
-                }
 
                 await UpdateAsync(ParseFeedJson(JsonDocument.Parse(json).RootElement.GetProperty("stacc"))).ConfigureAwait(false);
                 _feedRequestContext = ExtractRequestContextFromJsonElement(JsonDocument.Parse(json).RootElement.GetProperty("stacc"));
                 return true;
             }
 
-            PixivFetchEngine.EngineHandle.Complete();
             return false;
         }
 
@@ -129,7 +111,7 @@ internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHan
 
         private static bool TryExtractPreloadJson(string html, out string json)
         {
-            var match = PreloadRegex().Match(html);
+            var match = PreloadRegex.Match(html);
             if (match.Success)
             {
                 json = match.Groups["json"].Value;
@@ -167,6 +149,7 @@ internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHan
                     "add_favorite" => FeedType.AddFavorite,
                     _ => null
                 };
+
                 var feedTargetId = feedType switch
                 {
                     FeedType.AddBookmark or FeedType.PostIllust => status.Value.GetProperty("ref_illust").GetPropertyString("id"),
@@ -174,6 +157,7 @@ internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHan
                     FeedType.AddNovelBookmark => status.Value.GetProperty("ref_novel").GetPropertyString("id"),
                     _ => null
                 };
+
                 if (feedTargetId is null)
                 {
                     return null; // a feed with null target ID is considered useless because we cannot track its target
@@ -198,9 +182,11 @@ internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHan
                         ?.GetString(),
                     _ => null
                 };
+
                 var postDate = DateTime.ParseExact(status.Value.GetPropertyString("post_date")!, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AllowWhiteSpaces);
                 var postUserId = status.Value.GetProperty("post_user").GetPropertyLong("id").ToString();
                 var postUser = users.FirstOrNull(u => u.Name == postUserId);
+
                 if (!postUser.HasValue)
                 {
                     return null;
@@ -256,41 +242,39 @@ internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHan
             PixivFetchEngine.RequestedPages++;
         }
 
-        protected override bool ValidateResponse(string rawEntity)
-        {
-            return ThrowHelper.NotSupported<bool>();
-        }
+        private string RequestUrl => _feedRequestContext is null
+            ? "/stacc?mode=unify"
+            : $"/stacc/my/home/all/activity/{_feedRequestContext.Sid}/.json"
+              + $"?mode={_feedRequestContext.Mode}"
+              + $"&unify_token={_feedRequestContext.UnifyToken}"
+              + $"&tt={_tt}";
 
-        private string BuildRequestUrl()
-        {
-            return _feedRequestContext is null
-                ? "/stacc?mode=unify"
-                : $"/stacc/my/home/all/activity/{_feedRequestContext.Sid}/.json"
-                  + $"?mode={_feedRequestContext.Mode}"
-                  + $"&unify_token={_feedRequestContext.UnifyToken}"
-                  + $"&tt={_tt}";
-        }
-
-        private async Task<Result<string>> GetResponseAsync(string url)
+        private async Task<string?> GetResponseAsync(string url)
         {
             try
             {
-                var responseMessage = await MakoClient.Provider.GetRequiredKeyedService<HttpClient>(MakoApiKind.WebApi).GetAsync(url).ConfigureAwait(false);
-                return responseMessage.IsSuccessStatusCode 
-                    ? Result<string>.AsSuccess(await responseMessage.Content.ReadAsStringAsync()) 
-                    : Result<string>.AsFailure(new MakoNetworkException(url, MakoClient.Configuration.DomainFronting, await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false), (int)responseMessage.StatusCode));
+                var responseMessage = await ApiClient.GetAsync(url).ConfigureAwait(false);
+                if (responseMessage.IsSuccessStatusCode)
+                    return await responseMessage.Content.ReadAsStringAsync();
+
+                MakoClient.LogException(new MakoNetworkException(url,
+                    MakoClient.Configuration.DomainFronting,
+                    await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false),
+                    (int) responseMessage.StatusCode));
+                return null;
             }
-            catch (HttpRequestException e)
+            catch (Exception e)
             {
-                return Result<string>.AsFailure(new MakoNetworkException(url, MakoClient.Configuration.DomainFronting, e.Message, (int?) e.StatusCode ?? -1));
+                MakoClient.LogException(new MakoNetworkException(url, MakoClient.Configuration.DomainFronting, e.Message, (int?) (e as HttpRequestException)?.StatusCode ?? -1));
+                return null;
             }
         }
 
         [GeneratedRegex("tt: \"(?<tt>.*)\"")]
-        private static partial Regex TtRegex();
+        private static partial Regex TtRegex { get; }
 
         [GeneratedRegex(@"pixiv\.stacc\.env\.preload\.stacc \= (?<json>.*);")]
-        private static partial Regex PreloadRegex();
+        private static partial Regex PreloadRegex { get; }
     }
 
     /// <summary>

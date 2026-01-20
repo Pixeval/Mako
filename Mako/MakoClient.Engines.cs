@@ -98,7 +98,7 @@ public partial class MakoClient
 
         // startDate 和 endDate 只能同时为或不为 null，所以实际上startDateOnly > japanToday无用
         if (startDateOnly > endDateOnly || endDateOnly > japanToday || startDateOnly > japanToday)
-            ThrowHelper.Throw(new DateOutOfRangeException());
+            throw new DateOutOfRangeException();
 
         return new IllustrationSearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, sortOption, targetFilter, startDateOnly, endDateOnly, aiType);
     }
@@ -125,7 +125,7 @@ public partial class MakoClient
 
         // startDate 和 endDate 只能同时为或不为 null，所以实际上startDateOnly > japanToday无用
         if (startDateOnly > endDateOnly || endDateOnly > japanToday || startDateOnly > japanToday)
-            ThrowHelper.Throw(new DateOutOfRangeException());
+            throw new DateOutOfRangeException();
 
         return new NovelSearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, sortOption, targetFilter, startDateOnly, endDateOnly, mergePlainKeywordResults, includeTranslatedTagResults, aiType);
     }
@@ -163,7 +163,7 @@ public partial class MakoClient
         EnsureNotCancelled();
         var dateOnly = dateTime.ToJapanTime().ToDateOnly();
         if (GetRankingMaxDate().ToDateOnly() < dateOnly)
-            ThrowHelper.Throw(new DateOutOfRangeException());
+            throw new DateOutOfRangeException();
 
         return new IllustrationRankingEngine(this, rankOption, dateOnly, targetFilter, new EngineHandle(CancelInstance));
     }
@@ -174,7 +174,7 @@ public partial class MakoClient
         EnsureNotCancelled();
         var dateOnly = dateTime.ToJapanTime().ToDateOnly();
         if (GetRankingMaxDate().ToDateOnly() < dateOnly)
-            ThrowHelper.Throw(new DateOutOfRangeException());
+            throw new DateOutOfRangeException();
 
         return new NovelRankingEngine(this, rankOption, dateOnly, targetFilter, new EngineHandle(CancelInstance));
     }
@@ -331,7 +331,7 @@ public partial class MakoClient
             (PrivacyPolicy.Public, SimpleWorkType.IllustAndManga) => await IllustrationBookmarkTag(uid, policy).ToListAsync(),
             (PrivacyPolicy.Private, SimpleWorkType.Novel) => await NovelBookmarkTag(uid, policy).ToListAsync(),
             (PrivacyPolicy.Public, SimpleWorkType.Novel) => await NovelBookmarkTag(uid, policy).ToListAsync(),
-            _ => ThrowHelper.ArgumentOutOfRange<(PrivacyPolicy, SimpleWorkType), List<BookmarkTag>>((policy, type))
+            _ => throw new ArgumentOutOfRangeException(null, (policy, type), null)
         };
 
         var allTag = new BookmarkTag
