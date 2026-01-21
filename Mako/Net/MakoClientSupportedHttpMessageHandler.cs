@@ -19,7 +19,7 @@ public abstract class MakoClientSupportedHttpMessageHandler(MakoClient makoClien
     {
         if (domainFronting)
         {
-            _domainFrontingInvoker ??= MakoHttpOptions.CreateHttpMessageInvoker();
+            _domainFrontingInvoker ??= MakoClient.CreateHttpMessageInvoker();
             return _domainFrontingInvoker;
         }
 
@@ -28,7 +28,7 @@ public abstract class MakoClientSupportedHttpMessageHandler(MakoClient makoClien
         if (_directInvoker is null || _lastCachedProxy != currentProxy)
         {
             _directInvoker?.Dispose();
-            _directInvoker = MakoHttpOptions.CreateDirectHttpMessageInvoker(MakoClient);
+            _directInvoker = MakoClient.CreateDirectHttpMessageInvoker();
             _lastCachedProxy = currentProxy;
         }
 

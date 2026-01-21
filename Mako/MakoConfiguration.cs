@@ -3,7 +3,9 @@
 
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net;
 using System.Net.Http.Headers;
+using Mako.Net;
 
 namespace Mako;
 
@@ -45,4 +47,14 @@ public record MakoConfiguration(
     /// Mirror server's host of image downloading
     /// </summary>
     public string? MirrorHost { get; set; } = MirrorHost;
+
+    public Dictionary<string, IPAddress[]> NameResolvers { get; } = new()
+    {
+        [MakoHttpOptions.ImageHost] = [],
+        [MakoHttpOptions.WebApiHost] = [],
+        [MakoHttpOptions.AccountHost] = [],
+        [MakoHttpOptions.AppApiHost] = [],
+        [MakoHttpOptions.ImageHost2] = [],
+        [MakoHttpOptions.OAuthHost] = []
+    };
 }
