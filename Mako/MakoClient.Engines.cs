@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Mako.Engine;
 using Mako.Engine.Implements;
 using Mako.Global.Enum;
@@ -323,27 +321,15 @@ public partial class MakoClient
         return new IllustrationBookmarkTagEngine(this, uid, privacyPolicy, new EngineHandle(CancelInstance));
     }
 
-    public async Task<List<BookmarkTag>> GetBookmarkTagAsync(long uid, SimpleWorkType type, PrivacyPolicy policy)
-    {
-        var array = (policy, type) switch
+    public IFetchEngine<BookmarkTag> GetBookmarkTag(long uid, SimpleWorkType type, PrivacyPolicy policy) =>
+        (policy, type) switch
         {
-            (PrivacyPolicy.Private, SimpleWorkType.IllustAndManga) => await IllustrationBookmarkTag(uid, policy).ToListAsync(),
-            (PrivacyPolicy.Public, SimpleWorkType.IllustAndManga) => await IllustrationBookmarkTag(uid, policy).ToListAsync(),
-            (PrivacyPolicy.Private, SimpleWorkType.Novel) => await NovelBookmarkTag(uid, policy).ToListAsync(),
-            (PrivacyPolicy.Public, SimpleWorkType.Novel) => await NovelBookmarkTag(uid, policy).ToListAsync(),
+            (PrivacyPolicy.Private, SimpleWorkType.IllustAndManga) => IllustrationBookmarkTag(uid, policy),
+            (PrivacyPolicy.Public, SimpleWorkType.IllustAndManga) => IllustrationBookmarkTag(uid, policy),
+            (PrivacyPolicy.Private, SimpleWorkType.Novel) => NovelBookmarkTag(uid, policy),
+            (PrivacyPolicy.Public, SimpleWorkType.Novel) => NovelBookmarkTag(uid, policy),
             _ => throw new ArgumentOutOfRangeException(null, (policy, type), null)
         };
-
-        var allTag = new BookmarkTag
-        {
-            Name = BookmarkTag.AllCountedTagString,
-            Count = array.Sum(t => t.Count)
-        };
-
-        array.Insert(0, allTag);
-
-        return array;
-    }
 
     public IFetchEngine<BookmarkTag> NovelBookmarkTag(long uid, PrivacyPolicy privacyPolicy)
     {

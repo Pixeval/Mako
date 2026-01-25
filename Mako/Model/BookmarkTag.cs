@@ -23,8 +23,6 @@ public partial record BookmarkTag : ITag, IEquatable<string>
     [JsonPropertyName("count")]
     public required int Count { get; set; }
 
-    public static string AllCountedTagString { get; set; } = null!;
-
     public override string ToString() => $"{Name} ({Count})";
 
     public virtual bool Equals(BookmarkTag? other)

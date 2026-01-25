@@ -200,7 +200,9 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
             throw new InvalidOperationException("Not Ugoira");
         if (service is not MakoClient makoClient)
             throw new InvalidOperationException("Invalid service");
+#pragma warning disable CS8774 // 退出时，成员必须具有非 null 值。 傻逼编译器不知道为什么报警告
         return UgoiraMetadata ??= await makoClient.GetUgoiraMetadataAsync(Id);
+#pragma warning restore CS8774
     }
 
     [field: AllowNull, MaybeNull]
