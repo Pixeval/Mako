@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using Mako.Utilities;
 
 namespace Mako.Model;
@@ -58,7 +59,7 @@ public partial record NovelContent
     /// 可以在主站找到原图的插图
     /// </summary>
     [JsonPropertyName("illusts")]
-    [JsonConverter(typeof(SpecialDictionaryConverter<NovelIllustInfo>))]
+    [JsonConverter(typeof(NovelIllustInfoDictionaryConverter))]
     public required IReadOnlyList<NovelIllustInfo> Illusts { get; set; } = [];
 
     /// <summary>
@@ -68,7 +69,7 @@ public partial record NovelContent
     /// key: <see cref="NovelImage.NovelImageId"/>
     /// </remarks>
     [JsonPropertyName("images")]
-    [JsonConverter(typeof(SpecialDictionaryConverter<NovelImage>))]
+    [JsonConverter(typeof(NovelImageDictionaryConverter))]
     public required IReadOnlyList<NovelImage> Images { get; set; } = [];
 
     [JsonPropertyName("seriesNavigation")]
@@ -287,12 +288,18 @@ public partial record NovelReplaceableGlossary
     public required string Cover { get; set; } = DefaultImageUrls.ImageNotAvailable;
 }
 
+internal class NovelIllustInfoDictionaryConverter()
+    : SpecialDictionaryConverter<NovelIllustInfo>(AppJsonSerializerContext.Default.NovelIllustInfo);
+
+internal class NovelImageDictionaryConverter()
+    : SpecialDictionaryConverter<NovelImage>(AppJsonSerializerContext.Default.NovelImage);
+
 /// <summary>
 /// 当为空对象时，表现为空数组。
 /// 当为正常对象时，属性键被包含在属性的值中，故直接抛弃。
 /// </summary>
 /// <typeparam name="T"></typeparam>
-internal class SpecialDictionaryConverter<T> : JsonConverter<IReadOnlyList<T>>
+internal class SpecialDictionaryConverter<T>(JsonTypeInfo<T> info) : JsonConverter<IReadOnlyList<T>>
 {
     public override IReadOnlyList<T>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -314,7 +321,7 @@ internal class SpecialDictionaryConverter<T> : JsonConverter<IReadOnlyList<T>>
                     throw new JsonException();
                 case JsonTokenType.PropertyName:
                 {
-                    var propertyValue = (T) JsonSerializer.Deserialize(ref reader, typeof(T), AppJsonSerializerContext.Default)!;
+                    var propertyValue = JsonSerializer.Deserialize(ref reader, info)!;
                     list.Add(propertyValue);
                     break;
                 }
