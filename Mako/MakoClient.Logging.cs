@@ -40,7 +40,7 @@ public partial class MakoClient
     {
         try
         {
-            EnsureNotCancelled();
+            EnsureBuilt();
             await task(Provider.GetRequiredService<IAppApiEndPoint>());
         }
         catch (Exception e)
@@ -73,7 +73,7 @@ public partial class MakoClient
     {
         try
         {
-            EnsureNotCancelled();
+            EnsureBuilt();
 
             return await task();
         }
@@ -88,7 +88,7 @@ public partial class MakoClient
     {
         try
         {
-            EnsureNotCancelled();
+            EnsureBuilt();
 
             return await task();
         }
@@ -102,6 +102,10 @@ public partial class MakoClient
     internal void LogException(Exception e) => Logger.LogError(e, "MakoClient Exception");
 
     [DynamicDependency("ConstructSystemProxy", "SystemProxyInfo", "System.Net.Http")]
+    [UnconditionalSuppressMessage("Trimming", "IL2026",
+        Justification = $"System.Net.Http.SystemProxyInfo have been preserved by {nameof(DynamicDependencyAttribute)}")]
+    [UnconditionalSuppressMessage("Trimming", "IL2075",
+        Justification = $"System.Net.Http.SystemProxyInfo.ConstructSystemProxy have been preserved by {nameof(DynamicDependencyAttribute)}")]
     static MakoClient()
     {
         var type = typeof(HttpClient).Assembly.GetType("System.Net.Http.SystemProxyInfo");

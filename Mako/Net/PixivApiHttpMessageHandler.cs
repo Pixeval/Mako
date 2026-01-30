@@ -5,12 +5,9 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Mako.Global.Exception;
 using Mako.Utilities;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Mako.Net;
 
@@ -18,6 +15,7 @@ internal class PixivApiHttpMessageHandler : MakoClientSupportedHttpMessageHandle
 {
     public PixivApiHttpMessageHandler(MakoClient makoClient) : base(makoClient)
     {
+        // PixivApiHttpMessageHandler should be singleton
         Debug.Assert(!_SingletonFlag);
         _SingletonFlag = true;
     }
@@ -52,11 +50,7 @@ internal class PixivApiHttpMessageHandler : MakoClientSupportedHttpMessageHandle
             switch (host)
             {
                 case MakoHttpOptions.AppApiHost:
-                    var provider = MakoClient.Provider.GetRequiredService<PixivTokenProvider>();
-                    var tokenResponse = await provider.GetTokenAsync().ConfigureAwait(false);
-                    if (tokenResponse is null)
-                        throw new MakoTokenRefreshFailedException();
-                    headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
+                    Debug.Assert(headers.Authorization is not null);
                     break;
                 case MakoHttpOptions.WebApiHost:
                     _ = headers.TryAddWithoutValidation("Cookie", MakoClient.Configuration.Cookie);

@@ -30,7 +30,7 @@ public partial class MakoClient
             .GetSingleIllustAsync(id)
             .ConfigureAwait(false)).Illust);
 
-    public async Task<IArtworkInfo> GetArtworkAsync(string id) => await GetIllustrationFromIdAsync(long.Parse(id));
+    async Task<IArtworkInfo> IGetArtworkService.GetArtworkAsync(string id) => await GetIllustrationFromIdAsync(long.Parse(id));
 
     public Task<IReadOnlyList<Tag>> GetAutoCompletionForKeyword(string word)
         => RunWithLoggerAsync(async t => (await t
@@ -84,7 +84,7 @@ public partial class MakoClient
 
             var span = contentHtml[startIndex..endIndex];
 
-            return JsonSerializer.Deserialize(span, AppJsonSerializerContext.Default.NovelContent)!;
+            return JsonSerializer.Deserialize(span, MakoJsonSerializerContext.Default.NovelContent)!;
         });
 
     /// <summary>
@@ -103,7 +103,7 @@ public partial class MakoClient
                 .ConfigureAwait(false);
         });
 
-    public async Task<bool> PostFavoriteAsync(string id, bool favorite)
+    async Task<bool> IPostFavoriteService.PostFavoriteAsync(string id, bool favorite)
     {
         var l = long.Parse(id);
         try

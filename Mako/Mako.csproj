@@ -25,6 +25,7 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
         <PackageReference Include="Misaki" Version="1.0.0.5" />
         <PackageReference Include="WebApiClientCore" PrivateAssets="True" Version="2.1.5" />
+        <PackageReference Include="WebApiClientCore.Extensions.OAuths" Version="2.1.5" />
     </ItemGroup>
 
     <ItemGroup>

@@ -10,7 +10,7 @@ public partial class MakoClient
 {
     public event EventHandler<MakoClient, Exception>? TokenRefreshedFailed;
 
-    public event EventHandler<MakoClient, TokenUser>? TokenRefreshed;
+    public event EventHandler<MakoClient, TokenResponse?>? TokenRefreshed;
 
     public event EventHandler<MakoClient, EventArgs>? RateLimitEncountered;
 
@@ -19,9 +19,9 @@ public partial class MakoClient
         TokenRefreshedFailed?.Invoke(this, e);
     }
 
-    internal void OnTokenRefreshed(TokenUser user)
+    internal void OnTokenRefreshed(TokenResponse? response)
     {
-        TokenRefreshed?.Invoke(this, user);
+        TokenRefreshed?.Invoke(this, response);
     }
 
     internal void OnRateLimitEncountered()

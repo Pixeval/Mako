@@ -4,9 +4,7 @@
 using System.Text.Json.Serialization;
 
 namespace Mako.Net.Request;
-// ReSharper disable UnusedMember.Global
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable MemberCanBeMadeStatic.Global
 #pragma warning disable CA1822
 public class RefreshSessionRequest(string? refreshToken)
 {

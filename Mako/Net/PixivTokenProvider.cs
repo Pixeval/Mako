@@ -2,50 +2,45 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using Mako.Model;
 using Mako.Net.EndPoints;
 using Mako.Net.Request;
 using Microsoft.Extensions.DependencyInjection;
+using WebApiClientCore.Extensions.OAuths;
+using WebApiClientCore.Extensions.OAuths.TokenProviders;
 
 namespace Mako.Net;
 
-public class PixivTokenProvider(IServiceProvider serviceProvider, TokenResponse firstTokenResponse)
+internal class RefreshTokenOption
 {
-    private readonly SemaphoreSlim _asyncRoot = new(1, 1);
+    public string? RefreshToken { get; set; }
+}
 
-    private DateTime _lastRefreshTime = DateTime.Now;
+internal class PixivTokenProvider(IServiceProvider serviceProvider) : TokenProvider(serviceProvider)
+{
+    private MakoClient MakoClient { get; } = serviceProvider.GetRequiredService<MakoClient>();
 
-    public TokenUser Me => _tokenResponse.User;
-
-    private TokenResponse _tokenResponse = firstTokenResponse;
-
-    public async Task<TokenResponse?> GetTokenAsync()
+    /// <inheritdoc />
+    protected override async Task<TokenResult?> RequestTokenAsync(IServiceProvider serviceProvider)
     {
-        await _asyncRoot.WaitAsync().ConfigureAwait(false);
-        try
-        {
-            if (string.IsNullOrWhiteSpace(_tokenResponse.AccessToken)
-                || DateTime.Now > _lastRefreshTime + TimeSpan.FromSeconds(_tokenResponse.ExpiresIn))
-            {
-                var token = await serviceProvider.GetRequiredService<IAuthEndPoint>()
-                    .RefreshAsync(new RefreshSessionRequest(_tokenResponse.RefreshToken)).ConfigureAwait(false);
-                _tokenResponse = token;
-                _lastRefreshTime = DateTime.Now;
-                serviceProvider.GetRequiredService<MakoClient>().OnTokenRefreshed(_tokenResponse.User);
-            }
+        var refreshToken = serviceProvider.GetRequiredService<RefreshTokenOption>().RefreshToken;
 
-            return _tokenResponse;
-        }
-        catch (Exception e)
-        {
-            serviceProvider.GetRequiredService<MakoClient>().OnTokenRefreshedFailed(e);
+        if (string.IsNullOrWhiteSpace(refreshToken))
             return null;
-        }
-        finally
+
+        var tokenResponse = await serviceProvider.GetRequiredService<IAuthEndPoint>().RefreshAsync(new RefreshSessionRequest(refreshToken)).ConfigureAwait(false);
+
+        MakoClient.SetTokenInternal(tokenResponse);
+
+        return new()
         {
-            _ = _asyncRoot.Release();
-        }
+            Access_token = tokenResponse.AccessToken,
+            Expires_in = tokenResponse.ExpiresIn,
+            Token_type = tokenResponse.TokenType is "bearer" ? "Bearer" : tokenResponse.TokenType,
+            Refresh_token = tokenResponse.RefreshToken
+        };
     }
+
+    /// <inheritdoc />
+    protected override Task<TokenResult?> RefreshTokenAsync(IServiceProvider serviceProvider, string refreshToken) => RequestTokenAsync(serviceProvider);
 }
