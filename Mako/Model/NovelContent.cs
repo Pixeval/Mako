@@ -289,10 +289,10 @@ public partial record NovelReplaceableGlossary
 }
 
 internal class NovelIllustInfoDictionaryConverter()
-    : SpecialDictionaryConverter<NovelIllustInfo>(AppJsonSerializerContext.Default.NovelIllustInfo);
+    : SpecialDictionaryConverter<NovelIllustInfo>(MakoJsonSerializerContext.Default.NovelIllustInfo);
 
 internal class NovelImageDictionaryConverter()
-    : SpecialDictionaryConverter<NovelImage>(AppJsonSerializerContext.Default.NovelImage);
+    : SpecialDictionaryConverter<NovelImage>(MakoJsonSerializerContext.Default.NovelImage);
 
 /// <summary>
 /// 当为空对象时，表现为空数组。

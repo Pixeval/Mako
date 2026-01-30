@@ -71,14 +71,20 @@ internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetc
     {
         try
         {
-            var responseMessage = await ApiClient.GetAsync(url).ConfigureAwait(false);
+            // Authorization
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var tokenProvider = MakoClient.GetTokenProvider();
+            var tokenResult = await tokenProvider.GetTokenAsync().ConfigureAwait(false);
+            request.Headers.Authorization = new(tokenResult.Token_type ?? "Bearer", tokenResult.Access_token);
+
+            var responseMessage = await ApiClient.SendAsync(request).ConfigureAwait(false);
             if (!responseMessage.IsSuccessStatusCode)
             {
                 MakoClient.LogException(await MakoNetworkException.FromHttpResponseMessageAsync(responseMessage, MakoClient.Configuration.DomainFronting).ConfigureAwait(false));
                 return null;
             }
 
-            var json = await responseMessage.Content.ReadFromJsonAsync(typeof(TRawEntity), AppJsonSerializerContext.Default).ConfigureAwait(false);
+            var json = await responseMessage.Content.ReadFromJsonAsync(typeof(TRawEntity), MakoJsonSerializerContext.Default).ConfigureAwait(false);
 
             if (json is TRawEntity result)
                 return result;

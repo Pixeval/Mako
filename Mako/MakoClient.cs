@@ -4,7 +4,6 @@
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Mako.Engine;
 using Mako.Global.Enum;
@@ -15,10 +14,11 @@ using Mako.Net.EndPoints;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Misaki;
+using WebApiClientCore.Extensions.OAuths;
 
 namespace Mako;
 
-public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, IDownloadHttpClientService, IGetArtworkService, IPostFavoriteService
+public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpClientService, IGetArtworkService, IPostFavoriteService
 {
     /// <summary>
     /// Create a new <see cref="MakoClient" /> based on given <see cref="Configuration" />, <see cref="TokenResponse" />
@@ -29,27 +29,30 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
     {
         Logger = logger;
         Configuration = configuration;
+        Provider = BuildServiceProvider(Services);
     }
-
-    public void Build(TokenResponse tokenResponse)
-    {
-        IsBuilt = true;
-        Provider = BuildServiceProvider(Services, tokenResponse);
-    }
-
-    public void Build(string refreshToken) => Build(TokenResponse.CreateFromRefreshToken(refreshToken));
 
     /// <summary>
     /// Injects necessary dependencies
     /// </summary>
     /// <returns>The <see cref="ServiceProvider" /> contains all the required dependencies</returns>
-    private ServiceProvider BuildServiceProvider(IServiceCollection serviceCollection, TokenResponse firstTokenResponse)
+    private ServiceProvider BuildServiceProvider(IServiceCollection serviceCollection)
     {
         _ = serviceCollection
             .AddSingleton(this)
             .AddSingleton<PixivApiHttpMessageHandler>()
             .AddSingleton<PixivImageHttpMessageHandler>()
-            .AddHttpClient(nameof(MakoApiKind.ImageApi))
+            .AddSingleton<RefreshTokenOption>();
+
+        _ = serviceCollection.AddHttpApi<IAuthEndPoint>()
+            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+
+        _ = serviceCollection.AddHttpApi<IAppApiEndPoint>()
+            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+
+        _ = serviceCollection.AddTokenProvider<IAppApiEndPoint, PixivTokenProvider>();
+
+        _ = serviceCollection.AddHttpClient(nameof(MakoApiKind.ImageApi))
             .ConfigureHttpClient(client =>
             {
                 client.DefaultRequestHeaders.Referrer = new Uri("https://www.pixiv.net");
@@ -73,16 +76,9 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
             .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
 
         _ = serviceCollection
-            .AddSingleton<PixivTokenProvider>(t => new(t, firstTokenResponse))
             .AddWebApiClient()
             .UseSourceGeneratorHttpApiActivator()
-            .ConfigureHttpApi(t => t.PrependJsonSerializerContext(AppJsonSerializerContext.Default));
-
-        _ = serviceCollection.AddHttpApi<IAppApiEndPoint>()
-            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
-
-        _ = serviceCollection.AddHttpApi<IAuthEndPoint>()
-            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+            .ConfigureHttpApi(t => t.PrependJsonSerializerContext(MakoJsonSerializerContext.Default));
 
         _ = serviceCollection.AddHttpApi<IReverseSearchApiEndPoint>();
 
@@ -90,23 +86,12 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
     }
 
     /// <summary>
-    /// Cancels this <see cref="MakoClient" />, including all the running instances, the
-    /// <see cref="MakoClient" /> will unable to be used again after calling this method
+    /// Cancels all the running instances
     /// </summary>
-    public void Cancel()
+    public void CancelAll()
     {
+        EnsureBuilt();
         _runningInstances.ForEach(instance => instance.EngineHandle.Cancel());
-    }
-
-    /// <summary>
-    /// Ensures the current instances hasn't been cancelled
-    /// </summary>
-    /// <exception cref="OperationCanceledException"></exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void EnsureNotCancelled()
-    {
-        if (IsCancelled)
-                throw new InvalidOperationException($"MakoClient({Id}) has been cancelled");
     }
 
     /// <summary>
@@ -115,6 +100,7 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
     /// <param name="engineHandleSource"></param>
     private void RegisterInstance(IEngineHandleSource engineHandleSource)
     {
+        EnsureBuilt();
         _runningInstances.Add(engineHandleSource);
     }
 
@@ -124,6 +110,7 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
     /// <param name="handle"></param>
     private void CancelInstance(EngineHandle handle)
     {
+        EnsureBuilt();
         _ = _runningInstances.RemoveAll(instance => instance.EngineHandle == handle);
     }
 
@@ -135,7 +122,8 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
     /// <returns></returns>
     private void CheckPrivacyPolicy(long uid, PrivacyPolicy privacyPolicy)
     {
-        if (privacyPolicy is PrivacyPolicy.Private && Me.Id != uid)
+        EnsureBuilt();
+        if (privacyPolicy is PrivacyPolicy.Private && Me?.Id != uid)
             throw new IllegalPrivatePolicyException(uid);
     }
 
@@ -147,6 +135,7 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
     /// <returns>The <see cref="IFetchEngine{E}" /> instance</returns>
     public IFetchEngine<T>? GetByHandle<T>(EngineHandle handle)
     {
+        EnsureBuilt();
         return _runningInstances.FirstOrDefault(h => h.EngineHandle == handle) as IFetchEngine<T>;
     }
 
@@ -157,27 +146,80 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
     /// <returns>The <see cref="HttpClient" /> corresponding to <paramref name="makoApiKind" /></returns>
     public HttpClient GetMakoHttpClient(MakoApiKind makoApiKind)
     {
+        EnsureBuilt();
         var factory = Provider.GetRequiredService<IHttpClientFactory>();
         return factory.CreateClient(makoApiKind.ToString());
+    }
+
+    public HttpClient GetApiClient() => GetMakoHttpClient(MakoApiKind.AppApi);
+
+    public HttpClient GetImageDownloadClient() => GetMakoHttpClient(MakoApiKind.ImageApi);
+
+    /// <summary>
+    /// 关闭所有正在运行的实例并更换 Token（切换账号）
+    /// </summary>
+    public void SetToken(string? refreshToken)
+    {
+        ObjectDisposedException.ThrowIf(Status is ClientStatus.Disposed, this);
+        if (Status is ClientStatus.Built)
+            CancelAll();
+        var tokenOption = Provider.GetRequiredService<RefreshTokenOption>();
+        tokenOption.RefreshToken = refreshToken;
+        var tokenProvider = GetTokenProvider();
+        tokenProvider.ClearToken();
+        Me = null;
+        if (refreshToken is not null)
+            Status = ClientStatus.Built;
+    }
+
+    /// <summary>
+    /// 关闭所有正在运行的实例并删除 Token（切换账号）
+    /// </summary>
+    public void ClearToken()
+    {
+        if (Status is not ClientStatus.Created)
+            SetToken(null);
+    }
+
+    internal ITokenProvider GetTokenProvider()
+    {
+        var tokenProviderFactory = Provider.GetRequiredService<ITokenProviderFactory>();
+        var tokenProvider = tokenProviderFactory.Create(typeof(IAppApiEndPoint), TypeMatchMode.TypeOrBaseTypes);
+        return tokenProvider;
     }
 
     public async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
+        if (Status is not ClientStatus.Built)
+            return;
+        Status = ClientStatus.Disposed;
         Dispose(Services);
         await Provider.DisposeAsync();
     }
 
     public void Dispose()
     {
-        IsCancelled = true;
         GC.SuppressFinalize(this);
+        if (Status is not ClientStatus.Built)
+            return;
+        Status = ClientStatus.Disposed;
         Dispose(Services);
         Provider.Dispose();
     }
 
+    private void EnsureBuilt()
+    {
+        if (Status is ClientStatus.Built)
+            return;
+
+        ObjectDisposedException.ThrowIf(Status is ClientStatus.Disposed, this);
+        throw new InvalidOperationException($"{nameof(MakoClient)} is not built yet.");
+    }
+
     private void Dispose(ServiceCollection collection)
     {
+        CancelAll();
         foreach (var item in collection)
             if ((item.IsKeyedService
                     ? item.KeyedImplementationInstance
@@ -185,10 +227,4 @@ public partial class MakoClient : ICancellable, IDisposable, IAsyncDisposable, I
                 is IDisposable d && !Equals(d))
                 d.Dispose();
     }
-
-    public string Platform => IPlatformInfo.Pixiv;
-
-    public HttpClient GetApiClient() => GetMakoHttpClient(MakoApiKind.AppApi);
-
-    public HttpClient GetImageDownloadClient() => GetMakoHttpClient(MakoApiKind.ImageApi);
 }

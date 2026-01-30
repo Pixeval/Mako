@@ -87,9 +87,9 @@ public partial record Novel : WorkBase, IWorkEntry
     [JsonIgnore]
     public int Height => 0;
 
-    public string Serialize() => JsonSerializer.Serialize(this, AppJsonSerializerContext.Default.Novel);
+    public string Serialize() => JsonSerializer.Serialize(this, MakoJsonSerializerContext.Default.Novel);
 
-    public static ISerializable Deserialize(string data) => JsonSerializer.Deserialize(data, AppJsonSerializerContext.Default.Novel)!;
+    public static ISerializable Deserialize(string data) => JsonSerializer.Deserialize(data, MakoJsonSerializerContext.Default.Novel)!;
 
     [JsonIgnore]
     public string SerializeKey => typeof(Novel).FullName!;

@@ -14,6 +14,7 @@ namespace Mako.Net.EndPoints;
 /// 方法上 [LoggingFilter] 输出日志
 /// </summary>
 [HttpHost(MakoHttpOptions.AppApiBaseUrl)]
+[OAuthToken]
 public interface IAppApiEndPoint
 {
     [HttpPost("/v2/illust/bookmark/add")]
@@ -28,15 +29,17 @@ public interface IAppApiEndPoint
     [HttpPost("/v1/novel/bookmark/delete")]
     Task<HttpResponseMessage> RemoveNovelBookmarkAsync([FormContent] RemoveNovelBookmarkRequest request);
 
-    [Cache(60 * 1000)]
+    /// <remarks>
+    /// 由于“是否收藏”“是否关注”字段需要实时更新，故不缓存
+    /// </remarks>
     [HttpGet("/v1/illust/detail")]
     Task<PixivSingleIllustResponse> GetSingleIllustAsync([AliasAs("illust_id")] long id);
 
-    [Cache(60 * 1000)]
+    /// <inheritdoc cref="GetSingleIllustAsync" />
     [HttpGet("/v1/user/detail")]
     Task<PixivSingleUserResponse> GetSingleUserAsync([AliasAs("user_id")] long id, string filter);
 
-    [Cache(60 * 1000)]
+    /// <inheritdoc cref="GetSingleIllustAsync" />
     [HttpGet("/v2/novel/detail")]
     Task<PixivSingleNovelResponse> GetSingleNovelAsync([AliasAs("novel_id")] long id);
 

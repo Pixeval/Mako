@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using Mako.Engine;
 using Mako.Model;
-using Mako.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Misaki;
 
 namespace Mako;
 
@@ -20,9 +20,17 @@ public partial class MakoClient
     /// </summary>
     public Guid Id { get; } = Guid.NewGuid();
 
-    public TokenUser Me => Provider.GetRequiredService<PixivTokenProvider>().Me;
-
-    public TokenUser? TryGetMe() => Provider.GetService<PixivTokenProvider>()?.Me;
+    public TokenUser? Me
+    {
+        get;
+        internal set
+        {
+            if (field == value)
+                return;
+            field = value;
+            OnTokenRefreshed(value);
+        }
+    }
 
     public MakoConfiguration Configuration { get; set; }
 
@@ -33,9 +41,16 @@ public partial class MakoClient
     /// </summary>
     internal ServiceCollection Services { get; } = [];
 
-    public ServiceProvider Provider { get; private set; } = null!;
+    public ServiceProvider Provider { get; } = null!;
 
-    public bool IsBuilt { get; private set; }
+    public ClientStatus Status { get; private set; }
 
-    public bool IsCancelled { get; private set; }
+    string IPlatformInfo.Platform => IPlatformInfo.Pixiv;
+
+    public enum ClientStatus
+    {
+        Created,
+        Built,
+        Disposed
+    }
 }

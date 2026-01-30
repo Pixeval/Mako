@@ -34,7 +34,7 @@ public partial class MakoClient
     /// <exception cref="IllegalPrivatePolicyException">Requesting other user's private bookmarks will throw this exception.</exception>
     public IFetchEngine<Illustration> IllustrationBookmarks(long uid, PrivacyPolicy privacyPolicy, string? tag, TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         CheckPrivacyPolicy(uid, privacyPolicy);
 
         return new IllustrationBookmarkEngine(this, uid, tag, privacyPolicy, targetFilter, new EngineHandle(CancelInstance));
@@ -52,7 +52,7 @@ public partial class MakoClient
     /// </returns>
     public IFetchEngine<Novel> NovelBookmarks(long uid, PrivacyPolicy privacyPolicy, string? tag, TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         CheckPrivacyPolicy(uid, privacyPolicy);
 
         return new NovelBookmarkEngine(this, uid, tag, privacyPolicy, targetFilter, new EngineHandle(CancelInstance));
@@ -86,8 +86,8 @@ public partial class MakoClient
         DateTimeOffset? endDate = null,
         bool? aiType = null)
     {
-        EnsureNotCancelled();
-        if (sortOption is WorkSortOption.PopularityDescending && !Me.IsPremium)
+        EnsureBuilt();
+        if (sortOption is WorkSortOption.PopularityDescending && !(Me?.IsPremium ?? false))
             sortOption = WorkSortOption.DoNotSort;
 
         var startDateOnly = startDate?.ToJapanTime().ToDateOnly();
@@ -113,8 +113,8 @@ public partial class MakoClient
         bool includeTranslatedTagResults = true,
         bool? aiType = null)
     {
-        EnsureNotCancelled();
-        if (sortOption is WorkSortOption.PopularityDescending && !Me.IsPremium)
+        EnsureBuilt();
+        if (sortOption is WorkSortOption.PopularityDescending && !(Me?.IsPremium ?? false))
             sortOption = WorkSortOption.DoNotSort;
 
         var startDateOnly = startDate?.ToJapanTime().ToDateOnly();
@@ -140,7 +140,7 @@ public partial class MakoClient
         string keyword,
         TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new UserSearchEngine(this, targetFilter, keyword, new EngineHandle(CancelInstance));
     }
 
@@ -158,7 +158,7 @@ public partial class MakoClient
     /// </exception>
     public IFetchEngine<Illustration> IllustrationRanking(RankOption rankOption, DateTimeOffset dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         var dateOnly = dateTime.ToJapanTime().ToDateOnly();
         if (GetRankingMaxDate().ToDateOnly() < dateOnly)
             throw new DateOutOfRangeException();
@@ -169,7 +169,7 @@ public partial class MakoClient
     /// <inheritdoc cref="IllustrationRanking" />
     public IFetchEngine<Novel> NovelRanking(RankOption rankOption, DateTimeOffset dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         var dateOnly = dateTime.ToJapanTime().ToDateOnly();
         if (GetRankingMaxDate().ToDateOnly() < dateOnly)
             throw new DateOutOfRangeException();
@@ -200,14 +200,14 @@ public partial class MakoClient
         uint? maxBookmarkIdForRecommend = null,
         uint? minBookmarkIdForRecentIllustration = null)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new RecommendIllustrationEngine(this, recommendContentType, targetFilter, maxBookmarkIdForRecommend, minBookmarkIdForRecentIllustration, new EngineHandle(CancelInstance));
     }
 
     public IFetchEngine<Illustration> RecommendationMangas(
         TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new RecommendMangaEngine(this, targetFilter, new EngineHandle(CancelInstance));
     }
 
@@ -215,7 +215,7 @@ public partial class MakoClient
         TargetFilter targetFilter = TargetFilter.ForAndroid,
         uint? maxBookmarkIdForRecommend = null)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new RecommendNovelEngine(this, targetFilter, maxBookmarkIdForRecommend, new EngineHandle(CancelInstance));
     }
 
@@ -240,19 +240,19 @@ public partial class MakoClient
     /// </returns>
     public IFetchEngine<User> RecommendIllustrators(TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new RecommendIllustratorEngine(this, targetFilter, new EngineHandle(CancelInstance));
     }
 
     public IFetchEngine<Illustration> NewIllustrations(WorkType workType, TargetFilter targetFilter = TargetFilter.ForAndroid, uint? maxIllustId = null)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new IllustrationNewEngine(this, workType, targetFilter, maxIllustId, new EngineHandle(CancelInstance));
     }
 
     public IFetchEngine<Novel> NewNovels(TargetFilter targetFilter = TargetFilter.ForAndroid, uint? maxNovelId = null)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new NovelNewEngine(this, targetFilter, maxNovelId, new EngineHandle(CancelInstance));
     }
 
@@ -268,7 +268,7 @@ public partial class MakoClient
     }
     public IFetchEngine<User> MyPixivUsers(long userId)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new MyPixivUserEngine(this, userId, new EngineHandle(CancelInstance));
     }
 
@@ -280,7 +280,7 @@ public partial class MakoClient
     /// </returns>
     public IFetchEngine<Spotlight> Spotlights()
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new SpotlightEngine(this, new EngineHandle(CancelInstance));
     }
 
@@ -292,7 +292,7 @@ public partial class MakoClient
     /// </returns>
     public IFetchEngine<Feed?> Feeds()
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new FeedEngine(this, new EngineHandle(CancelInstance));
     }
 
@@ -307,7 +307,7 @@ public partial class MakoClient
     /// <exception cref="IllegalPrivatePolicyException"></exception>
     public IFetchEngine<User> Following(long uid, PrivacyPolicy privacyPolicy)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         CheckPrivacyPolicy(uid, privacyPolicy);
 
         return new FollowingEngine(this, uid, privacyPolicy, new EngineHandle(CancelInstance));
@@ -315,7 +315,7 @@ public partial class MakoClient
 
     public IFetchEngine<BookmarkTag> IllustrationBookmarkTag(long uid, PrivacyPolicy privacyPolicy)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         CheckPrivacyPolicy(uid, privacyPolicy);
 
         return new IllustrationBookmarkTagEngine(this, uid, privacyPolicy, new EngineHandle(CancelInstance));
@@ -333,7 +333,7 @@ public partial class MakoClient
 
     public IFetchEngine<BookmarkTag> NovelBookmarkTag(long uid, PrivacyPolicy privacyPolicy)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         CheckPrivacyPolicy(uid, privacyPolicy);
 
         return new NovelBookmarkTagEngine(this, uid, privacyPolicy, new EngineHandle(CancelInstance));
@@ -348,13 +348,13 @@ public partial class MakoClient
     /// </returns>
     public IFetchEngine<Illustration> RecentIllustrationPosts(PrivacyPolicy privacyPolicy)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new RecentPostedIllustrationEngine(this, privacyPolicy, new EngineHandle(CancelInstance));
     }
 
     public IFetchEngine<Novel> RecentNovelPosts(PrivacyPolicy privacyPolicy)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new RecentPostedNovelEngine(this, privacyPolicy, new EngineHandle(CancelInstance));
     }
 
@@ -371,7 +371,7 @@ public partial class MakoClient
         WorkType recommendContentType = WorkType.Illust,
         TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new PostedIllustrationEngine(this, uid, recommendContentType, targetFilter, new EngineHandle(CancelInstance));
     }
 
@@ -385,7 +385,7 @@ public partial class MakoClient
     /// </returns>
     public IFetchEngine<Novel> NovelPosts(long uid, TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new PostedNovelEngine(this, uid, targetFilter, new EngineHandle(CancelInstance));
     }
 
@@ -407,7 +407,7 @@ public partial class MakoClient
     /// </returns>
     public IFetchEngine<Comment> IllustrationComments(long illustId)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new IllustrationCommentsEngine(illustId, this, new EngineHandle(CancelInstance));
     }
 
@@ -420,7 +420,7 @@ public partial class MakoClient
     /// </returns>
     public IFetchEngine<Comment> NovelComments(long illustId)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new NovelCommentsEngine(illustId, this, new EngineHandle(CancelInstance));
     }
 
@@ -433,7 +433,7 @@ public partial class MakoClient
     /// </returns>
     public IFetchEngine<Comment> IllustrationCommentReplies(long commentId)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new IllustrationCommentRepliesEngine(commentId.ToString(), this, new EngineHandle(CancelInstance));
     }
 
@@ -446,18 +446,19 @@ public partial class MakoClient
     /// </returns>
     public IFetchEngine<Comment> NovelCommentReplies(long commentId)
     {
-        EnsureNotCancelled();
+        EnsureBuilt();
         return new NovelCommentRepliesEngine(commentId.ToString(), this, new EngineHandle(CancelInstance));
     }
 
-    public IFetchEngine<Illustration> RelatedWorks(long illustId, TargetFilter targetFilter = TargetFilter.ForAndroid)
+    public IFetchEngine<Illustration> RelatedWorks(long illustrationId, TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
-        EnsureNotCancelled();
-        return new RelatedWorksFetchEngine(illustId, this, targetFilter, new EngineHandle(CancelInstance));
+        EnsureBuilt();
+        return new RelatedWorksFetchEngine(illustrationId, this, targetFilter, new EngineHandle(CancelInstance));
     }
 
     public IFetchEngine<T> Computed<T>(IAsyncEnumerable<T> result)
     {
+        EnsureBuilt();
         return new ComputedFetchEngine<T>(result, this, new EngineHandle(CancelInstance));
     }
 }

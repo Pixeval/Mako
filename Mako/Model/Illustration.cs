@@ -222,9 +222,9 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
             })
     ];
 
-    public string Serialize() => JsonSerializer.Serialize(this, AppJsonSerializerContext.Default.Illustration);
+    public string Serialize() => JsonSerializer.Serialize(this, MakoJsonSerializerContext.Default.Illustration);
 
-    public static ISerializable Deserialize(string data) => JsonSerializer.Deserialize(data, AppJsonSerializerContext.Default.Illustration)!;
+    public static ISerializable Deserialize(string data) => JsonSerializer.Deserialize(data, MakoJsonSerializerContext.Default.Illustration)!;
 
     [JsonIgnore]
     public string SerializeKey => typeof(Illustration).FullName!;
