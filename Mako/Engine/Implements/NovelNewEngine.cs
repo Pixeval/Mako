@@ -11,8 +11,8 @@ namespace Mako.Engine.Implements;
 
 internal class NovelNewEngine(
     MakoClient makoClient,
-    TargetFilter filter,
     uint? maxNovelId,
+    TargetFilter filter,
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Novel>(makoClient, engineHandle)
 {

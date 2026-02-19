@@ -9,14 +9,12 @@ using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-internal class RecommendMangaEngine(
-    MakoClient makoClient,
-    TargetFilter filter,
+public class RelatedIllustrationsFetchEngine(long illustId, MakoClient makoClient, TargetFilter targetFilter,
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
 {
     public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
-        new RecursivePixivAsyncEnumerators.Illustration<RecommendMangaEngine>(this,
-            $"/v1/manga/recommended" +
-            $"?filter={filter.GetDescription()}");
+        new RecursivePixivAsyncEnumerators.Illustration<RelatedIllustrationsFetchEngine>(
+            this,
+            $"/v2/illust/related?filter={targetFilter.GetDescription()}&illust_id={illustId}");
 }

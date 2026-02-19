@@ -91,3 +91,13 @@ public enum RankOption
     [Description("week_ai_r18")]
     WeekAiR18
 }
+
+public static class RankOptionHelper
+{
+    extension(RankOption)
+    {
+        public static bool IsIllustrationSupport(RankOption rankOption) => rankOption is not RankOption.WeekAi and not RankOption.WeekAiR18;
+
+        public static bool IsNovelSupport(RankOption rankOption) => rankOption is not RankOption.Month and not RankOption.DayManga and not RankOption.WeekManga and not RankOption.MonthManga and not RankOption.WeekOriginal and not RankOption.DayAi and not RankOption.DayR18Ai;
+    }
+}

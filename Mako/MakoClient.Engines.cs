@@ -14,13 +14,6 @@ namespace Mako;
 
 public partial class MakoClient
 {
-    // --------------------------------------------------
-    // This part contains all APIs that depend on the
-    // IFetchEngine, however, the uniqueness of the inner
-    // elements is not guaranteed, call Distinct() if you
-    // are care about the uniqueness of the results
-    // --------------------------------------------------
-
     /// <summary>
     /// Request bookmarked illustrations for a user.
     /// </summary>
@@ -32,7 +25,11 @@ public partial class MakoClient
     /// The <see cref="IllustrationBookmarkEngine" />> iterator containing bookmarked illustrations for the user.
     /// </returns>
     /// <exception cref="IllegalPrivatePolicyException">Requesting other user's private bookmarks will throw this exception.</exception>
-    public IFetchEngine<Illustration> IllustrationBookmarks(long uid, PrivacyPolicy privacyPolicy, string? tag, TargetFilter targetFilter = TargetFilter.ForAndroid)
+    public IFetchEngine<Illustration> IllustrationBookmarks(
+        long uid,
+        PrivacyPolicy privacyPolicy,
+        string? tag,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
         CheckPrivacyPolicy(uid, privacyPolicy);
@@ -40,17 +37,12 @@ public partial class MakoClient
         return new IllustrationBookmarkEngine(this, uid, tag, privacyPolicy, targetFilter, new EngineHandle(CancelInstance));
     }
 
-    /// <summary>
-    /// Request bookmarked novels.
-    /// </summary>
-    /// <param name="uid">User id</param>
-    /// <param name="privacyPolicy">The <see cref="PrivacyPolicy" /> options targeting private or public</param>
-    /// <param name="tag"></param>
-    /// <param name="targetFilter">The <see cref="TargetFilter" /> option targeting android or ios</param>
-    /// <returns>
-    /// The <see cref="NovelBookmarkEngine" /> containing the bookmarked novels.
-    /// </returns>
-    public IFetchEngine<Novel> NovelBookmarks(long uid, PrivacyPolicy privacyPolicy, string? tag, TargetFilter targetFilter = TargetFilter.ForAndroid)
+    /// <inheritdoc cref="IllustrationBookmarks" />
+    public IFetchEngine<Novel> NovelBookmarks(
+        long uid,
+        PrivacyPolicy privacyPolicy,
+        string? tag,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
         CheckPrivacyPolicy(uid, privacyPolicy);
@@ -58,11 +50,24 @@ public partial class MakoClient
         return new NovelBookmarkEngine(this, uid, tag, privacyPolicy, targetFilter, new EngineHandle(CancelInstance));
     }
 
+    /// <inheritdoc cref="IllustrationBookmarks" />
+    public IFetchEngine<IWorkEntry> WorkBookmarks(
+        long uid,
+        SimpleWorkType type,
+        PrivacyPolicy privacyPolicy,
+        string? tag,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
+    {
+        return type is SimpleWorkType.Novel
+            ? NovelBookmarks(uid, privacyPolicy, tag, targetFilter)
+            : IllustrationBookmarks(uid, privacyPolicy, tag, targetFilter);
+    }
+
     /// <summary>
     /// Search in Pixiv.
     /// </summary>
     /// <param name="tag">Texts for searching</param>
-    /// <param name="matchOption">
+    /// <param name="illustrationMatchOption">
     /// The <see cref="SearchIllustrationTagMatchOption.TitleAndCaption" /> option for the method of search
     /// matching
     /// </param>
@@ -79,12 +84,12 @@ public partial class MakoClient
     /// </exception>
     public IFetchEngine<Illustration> SearchIllustrations(
         string tag,
-        SearchIllustrationTagMatchOption matchOption = SearchIllustrationTagMatchOption.TitleAndCaption,
+        SearchIllustrationTagMatchOption illustrationMatchOption = SearchIllustrationTagMatchOption.TitleAndCaption,
         WorkSortOption sortOption = WorkSortOption.DoNotSort,
-        TargetFilter targetFilter = TargetFilter.ForAndroid,
         DateTimeOffset? startDate = null,
         DateTimeOffset? endDate = null,
-        bool? aiType = null)
+        bool? aiType = null,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
         if (sortOption is WorkSortOption.PopularityDescending && !(Me?.IsPremium ?? false))
@@ -98,20 +103,20 @@ public partial class MakoClient
         if (startDateOnly > endDateOnly || endDateOnly > japanToday || startDateOnly > japanToday)
             throw new DateOutOfRangeException();
 
-        return new IllustrationSearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, sortOption, targetFilter, startDateOnly, endDateOnly, aiType);
+        return new IllustrationSearchEngine(this, illustrationMatchOption, tag, sortOption, startDateOnly, endDateOnly, aiType, targetFilter, new EngineHandle(CancelInstance));
     }
 
     /// <inheritdoc cref="SearchIllustrations"/>
     public IFetchEngine<Novel> SearchNovels(
         string tag,
-        SearchNovelTagMatchOption matchOption = SearchNovelTagMatchOption.Text,
+        SearchNovelTagMatchOption novelMatchOption = SearchNovelTagMatchOption.Text,
         WorkSortOption sortOption = WorkSortOption.DoNotSort,
-        TargetFilter targetFilter = TargetFilter.ForAndroid,
         DateTimeOffset? startDate = null,
         DateTimeOffset? endDate = null,
         bool mergePlainKeywordResults = true,
         bool includeTranslatedTagResults = true,
-        bool? aiType = null)
+        bool? aiType = null,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
         if (sortOption is WorkSortOption.PopularityDescending && !(Me?.IsPremium ?? false))
@@ -125,7 +130,24 @@ public partial class MakoClient
         if (startDateOnly > endDateOnly || endDateOnly > japanToday || startDateOnly > japanToday)
             throw new DateOutOfRangeException();
 
-        return new NovelSearchEngine(this, new EngineHandle(CancelInstance), matchOption, tag, sortOption, targetFilter, startDateOnly, endDateOnly, mergePlainKeywordResults, includeTranslatedTagResults, aiType);
+        return new NovelSearchEngine(this, novelMatchOption, tag, sortOption, startDateOnly, endDateOnly, mergePlainKeywordResults, includeTranslatedTagResults, aiType, targetFilter, new EngineHandle(CancelInstance));
+    }
+
+    /// <inheritdoc cref="SearchIllustrations"/>
+    public IFetchEngine<IWorkEntry> SearchWorks(
+        string tag,
+        SimpleWorkType type,
+        SearchIllustrationTagMatchOption illustrationMatchOption = SearchIllustrationTagMatchOption.TitleAndCaption,
+        SearchNovelTagMatchOption novelMatchOption = SearchNovelTagMatchOption.Text,
+        WorkSortOption sortOption = WorkSortOption.DoNotSort,
+        DateTimeOffset? startDate = null,
+        DateTimeOffset? endDate = null,
+        bool? aiType = null,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
+    {
+        return type is SimpleWorkType.Novel
+            ? SearchNovels(tag, novelMatchOption, sortOption, startDate, endDate, true, true, aiType, targetFilter)
+            : SearchIllustrations(tag, illustrationMatchOption, sortOption, startDate, endDate, aiType, targetFilter);
     }
 
     /// <summary>
@@ -156,78 +178,101 @@ public partial class MakoClient
     /// <exception cref="DateOutOfRangeException">
     /// Throw this exception if the date is not valid.
     /// </exception>
-    public IFetchEngine<Illustration> IllustrationRanking(RankOption rankOption, DateTimeOffset dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
+    public IFetchEngine<Illustration> IllustrationRanking(
+        RankOption rankOption,
+        DateTimeOffset dateTime,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
+        if (!RankOption.IsIllustrationSupport(rankOption))
+            throw new ArgumentOutOfRangeException(nameof(rankOption));
         var dateOnly = dateTime.ToJapanTime().ToDateOnly();
-        if (GetRankingMaxDate().ToDateOnly() < dateOnly)
+        if (RankingMaxDate.ToDateOnly() < dateOnly)
             throw new DateOutOfRangeException();
 
         return new IllustrationRankingEngine(this, rankOption, dateOnly, targetFilter, new EngineHandle(CancelInstance));
     }
 
     /// <inheritdoc cref="IllustrationRanking" />
-    public IFetchEngine<Novel> NovelRanking(RankOption rankOption, DateTimeOffset dateTime, TargetFilter targetFilter = TargetFilter.ForAndroid)
+    public IFetchEngine<Novel> NovelRanking(
+        RankOption rankOption,
+        DateTimeOffset dateTime,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
+        if (!RankOption.IsNovelSupport(rankOption))
+            throw new ArgumentOutOfRangeException(nameof(rankOption));
         var dateOnly = dateTime.ToJapanTime().ToDateOnly();
-        if (GetRankingMaxDate().ToDateOnly() < dateOnly)
+        if (RankingMaxDate.ToDateOnly() < dateOnly)
             throw new DateOutOfRangeException();
 
         return new NovelRankingEngine(this, rankOption, dateOnly, targetFilter, new EngineHandle(CancelInstance));
     }
 
-    public static DateTimeOffset GetRankingMaxDate()
+    /// <inheritdoc cref="IllustrationRanking" />
+    public IFetchEngine<IWorkEntry> WorkRanking(
+        SimpleWorkType type,
+        RankOption rankOption,
+        DateTimeOffset dateTime,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
+        return type is SimpleWorkType.Novel
+            ? NovelRanking(rankOption, dateTime, targetFilter)
+            : IllustrationRanking(rankOption, dateTime, targetFilter);
+    }
+
+    public static DateTimeOffset RankingMaxDate =>
         // 榜单在日本时间（东九区）每天中午12点更新昨日榜单
         // 即在西三区每天凌晨0点更新
-        return DateTimeOffset.Now.ToOffset(TimeSpan.FromHours(-3)).Date - TimeSpan.FromDays(1);
-    }
+        DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(-3)).Date - TimeSpan.FromDays(1);
 
     /// <summary>
     /// Request recommended illustrations in Pixiv.
     /// </summary>
-    /// <param name="recommendContentType">The <see cref="WorkType" />Option for illust or manga (not novel)</param>
+    /// <param name="type">The <see cref="WorkType" />Option for illustration or manga (not novel)</param>
     /// <param name="targetFilter">The <see cref="TargetFilter" /> option targeting android or ios</param>
     /// <param name="maxBookmarkIdForRecommend">Max bookmark id for recommendation</param>
-    /// <param name="minBookmarkIdForRecentIllustration">Min bookmark id for recent illust</param>
+    /// <param name="minBookmarkIdForRecentIllustration">Min bookmark id for recent illustration</param>
     /// <returns>
-    /// The <see cref="RecommendIllustrationEngine" /> containing recommended illustrations.
+    /// The <see cref="RecommendedIllustrationEngine" /> containing recommended illustrations.
     /// </returns>
-    public IFetchEngine<Illustration> RecommendationIllustrations(
-        TargetFilter targetFilter = TargetFilter.ForAndroid,
-        WorkType? recommendContentType = null,
+    public IFetchEngine<Illustration> RecommendedIllustrations(
+        WorkType? type = null,
         uint? maxBookmarkIdForRecommend = null,
-        uint? minBookmarkIdForRecentIllustration = null)
-    {
-        EnsureBuilt();
-        return new RecommendIllustrationEngine(this, recommendContentType, targetFilter, maxBookmarkIdForRecommend, minBookmarkIdForRecentIllustration, new EngineHandle(CancelInstance));
-    }
-
-    public IFetchEngine<Illustration> RecommendationMangas(
+        uint? minBookmarkIdForRecentIllustration = null,
         TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
-        return new RecommendMangaEngine(this, targetFilter, new EngineHandle(CancelInstance));
+        return new RecommendedIllustrationEngine(this, type, maxBookmarkIdForRecommend, minBookmarkIdForRecentIllustration, targetFilter, new EngineHandle(CancelInstance));
     }
 
-    public IFetchEngine<Novel> RecommendationNovels(
-        TargetFilter targetFilter = TargetFilter.ForAndroid,
-        uint? maxBookmarkIdForRecommend = null)
-    {
-        EnsureBuilt();
-        return new RecommendNovelEngine(this, targetFilter, maxBookmarkIdForRecommend, new EngineHandle(CancelInstance));
-    }
-
-    public IFetchEngine<IWorkEntry> RecommendationWorks(
-        WorkType recommendContentType,
+    /// <inheritdoc cref="RecommendedIllustrations" />
+    public IFetchEngine<Illustration> RecommendedMangas(
         TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
-        return recommendContentType switch
+        EnsureBuilt();
+        return new RecommendedMangaEngine(this, targetFilter, new EngineHandle(CancelInstance));
+    }
+
+    /// <inheritdoc cref="RecommendedIllustrations" />
+    public IFetchEngine<Novel> RecommendedNovels(
+        uint? maxBookmarkIdForRecommend = null,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
+    {
+        EnsureBuilt();
+        return new RecommendedNovelEngine(this, targetFilter, maxBookmarkIdForRecommend, new EngineHandle(CancelInstance));
+    }
+
+    /// <inheritdoc cref="RecommendedIllustrations" />
+    public IFetchEngine<IWorkEntry> RecommendedWorks(
+        WorkType type,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
+    {
+        return type switch
         {
-            WorkType.Novel => RecommendationNovels(targetFilter),
-            WorkType.Manga => RecommendationMangas(targetFilter),
-            _ => RecommendationIllustrations(targetFilter)
+            WorkType.Novel => RecommendedNovels(targetFilter: targetFilter),
+            WorkType.Manga => RecommendedMangas(targetFilter),
+            _ => RecommendedIllustrations(targetFilter: targetFilter)
         };
     }
 
@@ -236,36 +281,43 @@ public partial class MakoClient
     /// </summary>
     /// <param name="targetFilter">The <see cref="TargetFilter" /> option targeting android or ios</param>
     /// <returns>
-    /// The <see cref="RecommendIllustratorEngine" /> containing recommended illustrators.
+    /// The <see cref="RecommendedUserEngine" /> containing recommended illustrators.
     /// </returns>
-    public IFetchEngine<User> RecommendIllustrators(TargetFilter targetFilter = TargetFilter.ForAndroid)
+    public IFetchEngine<User> RecommendedIllustrators(TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
-        return new RecommendIllustratorEngine(this, targetFilter, new EngineHandle(CancelInstance));
+        return new RecommendedUserEngine(this, targetFilter, new EngineHandle(CancelInstance));
     }
 
-    public IFetchEngine<Illustration> NewIllustrations(WorkType workType, TargetFilter targetFilter = TargetFilter.ForAndroid, uint? maxIllustId = null)
+    public IFetchEngine<Illustration> NewIllustrations(
+        WorkType workType,
+        uint? maxWorkId = null,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
-        return new IllustrationNewEngine(this, workType, targetFilter, maxIllustId, new EngineHandle(CancelInstance));
+        return new IllustrationNewEngine(this, workType, maxWorkId, targetFilter, new EngineHandle(CancelInstance));
     }
 
-    public IFetchEngine<Novel> NewNovels(TargetFilter targetFilter = TargetFilter.ForAndroid, uint? maxNovelId = null)
+    /// <inheritdoc cref="NewIllustrations" />
+    public IFetchEngine<Novel> NewNovels(
+        uint? maxWorkId = null,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
-        return new NovelNewEngine(this, targetFilter, maxNovelId, new EngineHandle(CancelInstance));
+        return new NovelNewEngine(this, maxWorkId, targetFilter, new EngineHandle(CancelInstance));
     }
 
-    public IFetchEngine<IWorkEntry> NewWorks(WorkType type,
+    /// <inheritdoc cref="NewIllustrations" />
+    public IFetchEngine<IWorkEntry> NewWorks(
+        WorkType type,
         TargetFilter targetFilter = TargetFilter.ForAndroid,
-        uint? maxId = null)
+        uint? maxWorkId = null)
     {
-        return type switch
-        {
-            WorkType.Novel => NewNovels(targetFilter, maxId),
-            _ => NewIllustrations(type, targetFilter, maxId)
-        };
+        return type is WorkType.Novel
+            ? NewNovels(maxWorkId, targetFilter)
+            : NewIllustrations(type, maxWorkId, targetFilter);
     }
+
     public IFetchEngine<User> MyPixivUsers(long userId)
     {
         EnsureBuilt();
@@ -305,7 +357,9 @@ public partial class MakoClient
     /// The <see cref="FollowingEngine" /> containing following users.
     /// </returns>
     /// <exception cref="IllegalPrivatePolicyException"></exception>
-    public IFetchEngine<User> Following(long uid, PrivacyPolicy privacyPolicy)
+    public IFetchEngine<User> Following(
+        long uid,
+        PrivacyPolicy privacyPolicy)
     {
         EnsureBuilt();
         CheckPrivacyPolicy(uid, privacyPolicy);
@@ -313,7 +367,9 @@ public partial class MakoClient
         return new FollowingEngine(this, uid, privacyPolicy, new EngineHandle(CancelInstance));
     }
 
-    public IFetchEngine<BookmarkTag> IllustrationBookmarkTag(long uid, PrivacyPolicy privacyPolicy)
+    public IFetchEngine<BookmarkTag> IllustrationBookmarkTag(
+        long uid,
+        PrivacyPolicy privacyPolicy)
     {
         EnsureBuilt();
         CheckPrivacyPolicy(uid, privacyPolicy);
@@ -321,22 +377,26 @@ public partial class MakoClient
         return new IllustrationBookmarkTagEngine(this, uid, privacyPolicy, new EngineHandle(CancelInstance));
     }
 
-    public IFetchEngine<BookmarkTag> GetBookmarkTag(long uid, SimpleWorkType type, PrivacyPolicy policy) =>
-        (policy, type) switch
-        {
-            (PrivacyPolicy.Private, SimpleWorkType.IllustAndManga) => IllustrationBookmarkTag(uid, policy),
-            (PrivacyPolicy.Public, SimpleWorkType.IllustAndManga) => IllustrationBookmarkTag(uid, policy),
-            (PrivacyPolicy.Private, SimpleWorkType.Novel) => NovelBookmarkTag(uid, policy),
-            (PrivacyPolicy.Public, SimpleWorkType.Novel) => NovelBookmarkTag(uid, policy),
-            _ => throw new ArgumentOutOfRangeException(null, (policy, type), null)
-        };
-
-    public IFetchEngine<BookmarkTag> NovelBookmarkTag(long uid, PrivacyPolicy privacyPolicy)
+    /// <inheritdoc cref="IllustrationBookmarkTag" />
+    public IFetchEngine<BookmarkTag> NovelBookmarkTag(
+        long uid,
+        PrivacyPolicy privacyPolicy)
     {
         EnsureBuilt();
         CheckPrivacyPolicy(uid, privacyPolicy);
 
         return new NovelBookmarkTagEngine(this, uid, privacyPolicy, new EngineHandle(CancelInstance));
+    }
+
+    /// <inheritdoc cref="IllustrationBookmarkTag" />
+    public IFetchEngine<BookmarkTag> WorkBookmarkTag(
+        long uid,
+        SimpleWorkType type,
+        PrivacyPolicy policy)
+    {
+        return type is SimpleWorkType.Novel
+            ? NovelBookmarkTag(uid, policy)
+            : IllustrationBookmarkTag(uid, policy);
     }
 
     /// <summary>
@@ -352,76 +412,94 @@ public partial class MakoClient
         return new RecentPostedIllustrationEngine(this, privacyPolicy, new EngineHandle(CancelInstance));
     }
 
+    /// <inheritdoc cref="RecentIllustrationPosts" />
     public IFetchEngine<Novel> RecentNovelPosts(PrivacyPolicy privacyPolicy)
     {
         EnsureBuilt();
         return new RecentPostedNovelEngine(this, privacyPolicy, new EngineHandle(CancelInstance));
     }
 
+    /// <inheritdoc cref="RecentIllustrationPosts" />
+    public IFetchEngine<IWorkEntry> RecentWorkPosts(
+        SimpleWorkType type,
+        PrivacyPolicy privacyPolicy)
+    {
+        return type is SimpleWorkType.Novel
+            ? RecentNovelPosts(privacyPolicy)
+            : RecentIllustrationPosts(privacyPolicy);
+    }
+
     /// <summary>
     /// Request posts of a user.
     /// </summary>
     /// <param name="uid">User id.</param>
-    /// <param name="recommendContentType">The <see cref="WorkType" /> option for illust or manga (not novel)</param>
+    /// <param name="type">The <see cref="WorkType" /> option for illustration or manga (not novel)</param>
     /// <param name="targetFilter">The <see cref="TargetFilter" /> option targeting android or ios</param>
     /// <returns>
     /// The <see cref="PostedIllustrationEngine" /> containing posts of that user.
     /// </returns>
-    public IFetchEngine<Illustration> IllustrationPosts(long uid,
-        WorkType recommendContentType = WorkType.Illust,
+    public IFetchEngine<Illustration> IllustrationPosts(
+        long uid,
+        WorkType type = WorkType.Illustration,
         TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
-        return new PostedIllustrationEngine(this, uid, recommendContentType, targetFilter, new EngineHandle(CancelInstance));
+        return new PostedIllustrationEngine(this, uid, type, targetFilter, new EngineHandle(CancelInstance));
     }
 
-    /// <summary>
-    /// Request novel posts of that user.
-    /// </summary>
-    /// <param name="uid">User id</param>
-    /// <param name="targetFilter">The <see cref="TargetFilter" /> option targeting android or ios</param>
-    /// <returns>
-    /// The <see cref="PostedNovelEngine" /> containing the novel posts of that user.
-    /// </returns>
-    public IFetchEngine<Novel> NovelPosts(long uid, TargetFilter targetFilter = TargetFilter.ForAndroid)
+    /// <inheritdoc cref="IllustrationPosts" />
+    public IFetchEngine<Novel> NovelPosts(
+        long uid,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
         return new PostedNovelEngine(this, uid, targetFilter, new EngineHandle(CancelInstance));
     }
 
+    /// <inheritdoc cref="IllustrationPosts" />
     public IFetchEngine<IWorkEntry> WorkPosts(long uid,
-        WorkType recommendContentType = WorkType.Illust,
+        WorkType type,
         TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
-        return recommendContentType is WorkType.Novel
+        return type is WorkType.Novel
             ? NovelPosts(uid, targetFilter)
-            : IllustrationPosts(uid, recommendContentType, targetFilter);
+            : IllustrationPosts(uid, type, targetFilter);
+    }
+
+    public IFetchEngine<Illustration> RelatedIllustrations(
+        long illustrationId,
+        TargetFilter targetFilter = TargetFilter.ForAndroid)
+    {
+        EnsureBuilt();
+        return new RelatedIllustrationsFetchEngine(illustrationId, this, targetFilter, new EngineHandle(CancelInstance));
     }
 
     /// <summary>
     /// Request comments of an illustration.
     /// </summary>
-    /// <param name="illustId">Illustration id</param>
+    /// <param name="workId">Illustration id</param>
     /// <returns>
     /// The <see cref="IllustrationCommentsEngine" /> containing comments of the illustration.
     /// </returns>
-    public IFetchEngine<Comment> IllustrationComments(long illustId)
+    public IFetchEngine<Comment> IllustrationComments(long workId)
     {
         EnsureBuilt();
-        return new IllustrationCommentsEngine(illustId, this, new EngineHandle(CancelInstance));
+        return new IllustrationCommentsEngine(workId, this, new EngineHandle(CancelInstance));
     }
 
-    /// <summary>
-    /// Request comments of an illustration.
-    /// </summary>
-    /// <param name="illustId">Illustration id</param>
-    /// <returns>
-    /// The <see cref="IllustrationCommentsEngine" /> containing comments of the illustration.
-    /// </returns>
-    public IFetchEngine<Comment> NovelComments(long illustId)
+    /// <inheritdoc cref="IllustrationComments" />
+    public IFetchEngine<Comment> NovelComments(long workId)
     {
         EnsureBuilt();
-        return new NovelCommentsEngine(illustId, this, new EngineHandle(CancelInstance));
+        return new NovelCommentsEngine(workId, this, new EngineHandle(CancelInstance));
+    }
+
+    /// <inheritdoc cref="IllustrationComments" />
+    public IFetchEngine<Comment> WorkComments(SimpleWorkType type, long workId)
+    {
+        return type is SimpleWorkType.Novel
+            ? NovelComments(workId)
+            : IllustrationComments(workId);
     }
 
     /// <summary>
@@ -437,23 +515,19 @@ public partial class MakoClient
         return new IllustrationCommentRepliesEngine(commentId.ToString(), this, new EngineHandle(CancelInstance));
     }
 
-    /// <summary>
-    /// Request replies of a comment.
-    /// </summary>
-    /// <param name="commentId">Comment id</param>
-    /// <returns>
-    /// The <see cref="IllustrationCommentRepliesEngine" /> containing replies of the comment.
-    /// </returns>
+    /// <inheritdoc cref="IllustrationCommentReplies" />
     public IFetchEngine<Comment> NovelCommentReplies(long commentId)
     {
         EnsureBuilt();
         return new NovelCommentRepliesEngine(commentId.ToString(), this, new EngineHandle(CancelInstance));
     }
 
-    public IFetchEngine<Illustration> RelatedWorks(long illustrationId, TargetFilter targetFilter = TargetFilter.ForAndroid)
+    /// <inheritdoc cref="IllustrationCommentReplies" />
+    public IFetchEngine<Comment> WorkCommentReplies(SimpleWorkType type, long commentId)
     {
-        EnsureBuilt();
-        return new RelatedWorksFetchEngine(illustrationId, this, targetFilter, new EngineHandle(CancelInstance));
+        return type is SimpleWorkType.Novel
+            ? NovelCommentReplies(commentId)
+            : IllustrationCommentReplies(commentId);
     }
 
     public IFetchEngine<T> Computed<T>(IAsyncEnumerable<T> result)

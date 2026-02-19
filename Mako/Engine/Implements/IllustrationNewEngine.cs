@@ -12,8 +12,8 @@ namespace Mako.Engine.Implements;
 internal class IllustrationNewEngine(
     MakoClient makoClient,
     WorkType contentType,
+    uint? maxIllustrationId,
     TargetFilter filter,
-    uint? maxIllustId,
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
 {
@@ -22,5 +22,5 @@ internal class IllustrationNewEngine(
             "/v1/illust/new"
             + $"?content_type={contentType.GetDescription()}"
             + $"&filter={filter.GetDescription()}"
-            + maxIllustId?.Let(static s => $"&max_illust_id={s}"));
+            + maxIllustrationId?.Let(static s => $"&max_illust_id={s}"));
 }

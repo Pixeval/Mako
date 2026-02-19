@@ -9,7 +9,7 @@ using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-internal class RecommendNovelEngine(
+internal class RecommendedNovelEngine(
     MakoClient makoClient,
     TargetFilter filter,
     uint? maxBookmarkIdForRecommend,
@@ -17,7 +17,7 @@ internal class RecommendNovelEngine(
     : AbstractPixivFetchEngine<Novel>(makoClient, engineHandle)
 {
     public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
-        new RecursivePixivAsyncEnumerators.Novel<RecommendNovelEngine>(this,
+        new RecursivePixivAsyncEnumerators.Novel<RecommendedNovelEngine>(this,
             "/v1/novel/recommended"
             + $"?filter={filter.GetDescription()}"
             + maxBookmarkIdForRecommend?.Let(static s => $"&max_bookmark_id_for_recommend={s}"));

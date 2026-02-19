@@ -8,7 +8,7 @@ namespace Mako.Global.Enum;
 public enum WorkType
 {
     [Description("illust")]
-    Illust,
+    Illustration,
 
     [Description("manga")]
     Manga,
@@ -19,7 +19,7 @@ public enum WorkType
 
 public enum SimpleWorkType
 {
-    IllustAndManga,
+    IllustrationAndManga,
 
     Novel
 }

@@ -24,14 +24,14 @@ namespace Mako.Engine.Implements;
 /// <param name="aiType">false：过滤AI</param>
 internal class IllustrationSearchEngine(
     MakoClient makoClient,
-    EngineHandle? engineHandle,
     SearchIllustrationTagMatchOption matchOption,
     string tag,
     WorkSortOption sortOption,
-    TargetFilter targetFilter,
     DateOnly? startDate,
     DateOnly? endDate,
-    bool? aiType)
+    bool? aiType,
+    TargetFilter targetFilter,
+    EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Illustration>(makoClient, engineHandle)
 {
     public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
