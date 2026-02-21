@@ -23,7 +23,7 @@ public interface IWorkEntry : IArtworkInfo, IIdEntry, ISerializable
 
     new IReadOnlyList<Tag> Tags { get; }
 
-    UserEntity User { get; }
+    UserInfo User { get; }
 
     ImageUrls ThumbnailUrls { get; }
 

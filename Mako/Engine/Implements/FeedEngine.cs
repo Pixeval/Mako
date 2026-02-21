@@ -125,7 +125,7 @@ internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHan
         private static IEnumerable<Task<Feed?>> ParseFeedJson(JsonElement stacc)
         {
             var users = stacc.GetPropertyOrNull("user").EnumerateObjectOrEmpty();
-            var illusts = stacc.GetPropertyOrNull("illust").EnumerateObjectOrEmpty();
+            var illustrations = stacc.GetPropertyOrNull("illust").EnumerateObjectOrEmpty();
             var novels = stacc.GetPropertyOrNull("novel").EnumerateObjectOrEmpty();
             var statuses = stacc.GetPropertyOrNull("status").EnumerateObjectOrEmpty();
             var timelines = stacc.GetPropertyOrNull("timeline").EnumerateObjectOrEmpty();
@@ -144,7 +144,7 @@ internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHan
                 FeedType? feedType = status.Value.GetPropertyString("type") switch
                 {
                     "add_bookmark" => FeedType.AddBookmark,
-                    "add_illust" => FeedType.PostIllust,
+                    "add_illust" => FeedType.PostIllustration,
                     "add_novel_bookmark" => FeedType.AddNovelBookmark,
                     "add_favorite" => FeedType.AddFavorite,
                     _ => null
@@ -152,7 +152,7 @@ internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHan
 
                 var feedTargetId = feedType switch
                 {
-                    FeedType.AddBookmark or FeedType.PostIllust => status.Value.GetProperty("ref_illust").GetPropertyString("id"),
+                    FeedType.AddBookmark or FeedType.PostIllustration => status.Value.GetProperty("ref_illust").GetPropertyString("id"),
                     FeedType.AddFavorite => status.Value.GetProperty("ref_user").GetPropertyLong("id").ToString(), // long & string in two objects with almost the same properties? fuck pixiv
                     FeedType.AddNovelBookmark => status.Value.GetProperty("ref_novel").GetPropertyString("id"),
                     _ => null
@@ -165,7 +165,7 @@ internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHan
 
                 var feedTargetThumbnail = feedType switch
                 {
-                    FeedType.AddBookmark or FeedType.PostIllust => illusts.FirstOrNull(i => i.Name == feedTargetId)
+                    FeedType.AddBookmark or FeedType.PostIllustration => illustrations.FirstOrNull(i => i.Name == feedTargetId)
                         ?.GetPropertyOrNull("url")
                         ?.GetPropertyOrNull("m")
                         ?.GetString(),
@@ -219,9 +219,9 @@ internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHan
 
                 switch (feedType)
                 {
-                    case FeedType.AddBookmark or FeedType.PostIllust:
+                    case FeedType.AddBookmark or FeedType.PostIllustration:
                     {
-                        var illustration = illusts.FirstOrNull(i => i.Name == feedTargetId);
+                        var illustration = illustrations.FirstOrNull(i => i.Name == feedTargetId);
                         feedObject.ArtistName = users.FirstOrNull(u => u.Name == (illustration?.GetPropertyOrNull("post_user")?.GetPropertyOrNull("id")?.GetString() ?? string.Empty))?.GetPropertyOrNull("name")?.GetString();
                         feedObject.FeedName = illustration?.GetPropertyOrNull("title")?.GetString();
                         break;

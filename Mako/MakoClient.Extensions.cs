@@ -21,14 +21,14 @@ namespace Mako;
 public partial class MakoClient
 {
     /// <summary>
-    /// Gets the detail of an illustration from the illust id
+    /// Gets the detail of an illustration from the illustration id
     /// </summary>
-    /// <param name="id">The illust id</param>
+    /// <param name="id">The illustration id</param>
     /// <returns></returns>
     public Task<Illustration> GetIllustrationFromIdAsync(long id)
         => RunWithLoggerAsync(async t => (await t
-            .GetSingleIllustAsync(id)
-            .ConfigureAwait(false)).Illust);
+            .GetSingleIllustrationAsync(id)
+            .ConfigureAwait(false)).Illustration);
 
     async Task<IArtworkInfo> IGetArtworkService.GetArtworkAsync(string id) => await GetIllustrationFromIdAsync(long.Parse(id));
 
@@ -99,7 +99,7 @@ public partial class MakoClient
         {
             var urlTags = tags is null ? null : string.Join(' ', tags);
             return await t
-                .AddIllustBookmarkAsync(new AddIllustBookmarkRequest(privacyPolicy, id, urlTags))
+                .AddIllustrationBookmarkAsync(new AddIllustrationBookmarkRequest(privacyPolicy, id, urlTags))
                 .ConfigureAwait(false);
         });
 
@@ -128,7 +128,7 @@ public partial class MakoClient
     /// <returns>A <see cref="Task" /> represents the operation</returns>
     public Task<HttpResponseMessage> RemoveIllustrationBookmarkAsync(long id)
         => RunWithLoggerAsync(async t => await t
-            .RemoveIllustBookmarkAsync(new RemoveIllustBookmarkRequest(id))
+            .RemoveIllustrationBookmarkAsync(new RemoveIllustrationBookmarkRequest(id))
             .ConfigureAwait(false));
 
     public Task<HttpResponseMessage> PostNovelBookmarkAsync(long id, PrivacyPolicy privacyPolicy, IEnumerable<string>? tags = null) =>
@@ -178,29 +178,29 @@ public partial class MakoClient
             .GetUgoiraMetadataAsync(id)
             .ConfigureAwait(false)).UgoiraMetadataInfo);
 
-    public Task<HttpResponseMessage> DeleteIllustCommentAsync(long commentId)
+    public Task<HttpResponseMessage> DeleteIllustrationCommentAsync(long commentId)
         => RunWithLoggerAsync(async t => await t
-            .DeleteIllustCommentAsync(new DeleteCommentRequest(commentId)));
+            .DeleteIllustrationCommentAsync(new DeleteCommentRequest(commentId)));
 
     public Task<HttpResponseMessage> DeleteNovelCommentAsync(long commentId)
         => RunWithLoggerAsync(async t => await t
             .DeleteNovelCommentAsync(new DeleteCommentRequest(commentId)));
 
-    public Task<Comment> AddIllustCommentAsync(long illustId, string content)
+    public Task<Comment> AddIllustrationCommentAsync(long illustrationId, string content)
         => RunWithLoggerAsync(async t => (await t
-            .AddIllustCommentAsync(new AddNormalIllustCommentRequest(illustId, null, content))).Comment);
+            .AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(illustrationId, null, content))).Comment);
 
-    public Task<Comment> AddIllustCommentAsync(long illustId, int stampId)
+    public Task<Comment> AddIllustrationCommentAsync(long illustrationId, int stampId)
         => RunWithLoggerAsync(async t => (await t
-            .AddIllustCommentAsync(new AddStampIllustCommentRequest(illustId, null, stampId))).Comment);
+            .AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(illustrationId, null, stampId))).Comment);
 
-    public Task<Comment> AddIllustCommentAsync(long illustId, long parentCommentId, string content)
+    public Task<Comment> AddIllustrationCommentAsync(long illustrationId, long parentCommentId, string content)
         => RunWithLoggerAsync(async t => (await t
-            .AddIllustCommentAsync(new AddNormalIllustCommentRequest(illustId, parentCommentId, content))).Comment);
+            .AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(illustrationId, parentCommentId, content))).Comment);
 
-    public Task<Comment> AddIllustCommentAsync(long illustId, long parentCommentId, int stampId)
+    public Task<Comment> AddIllustrationCommentAsync(long illustrationId, long parentCommentId, int stampId)
         => RunWithLoggerAsync(async t => (await t
-            .AddIllustCommentAsync(new AddStampIllustCommentRequest(illustId, parentCommentId, stampId))).Comment);
+            .AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(illustrationId, parentCommentId, stampId))).Comment);
 
     public Task<Comment> AddNovelCommentAsync(long novelId, string content)
         => RunWithLoggerAsync(async t => (await t

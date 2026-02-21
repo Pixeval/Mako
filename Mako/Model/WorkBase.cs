@@ -32,7 +32,7 @@ public abstract record WorkBase
     public required IReadOnlyList<Tag> Tags { get; set; } = [];
 
     [JsonPropertyName("user")]
-    public required UserEntity User { get; set; }
+    public required UserInfo User { get; set; }
 
     [JsonPropertyName("create_date")]
     public required DateTimeOffset CreateDate { get; set; }

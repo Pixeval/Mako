@@ -59,8 +59,8 @@ public partial record NovelContent
     /// 可以在主站找到原图的插图
     /// </summary>
     [JsonPropertyName("illusts")]
-    [JsonConverter(typeof(NovelIllustInfoDictionaryConverter))]
-    public required IReadOnlyList<NovelIllustInfo> Illusts { get; set; } = [];
+    [JsonConverter(typeof(NovelIllustrationInfoDictionaryConverter))]
+    public required IReadOnlyList<NovelIllustration> Illustrations { get; set; } = [];
 
     /// <summary>
     /// 临时上传的，没有ID的小说插图
@@ -179,7 +179,7 @@ public partial record NovelImageUrls
 }
 
 [Factory]
-public partial record NovelIllustInfo : IIdEntry
+public partial record NovelIllustration : IIdEntry
 {
     [JsonPropertyName("visible")]
     public required bool Visible { get; set; }
@@ -188,7 +188,7 @@ public partial record NovelIllustInfo : IIdEntry
     public required string? AvailableMessage { get; set; }
 
     [JsonPropertyName("illust")]
-    public required NovelIllust Illust { get; set; }
+    public required NovelIllustrationInfo Illustration { get; set; }
 
     [JsonPropertyName("user")]
     public required NovelUser User { get; set; }
@@ -206,11 +206,11 @@ public partial record NovelIllustInfo : IIdEntry
     [JsonPropertyName("page")]
     public required int Page { get; set; } = 1;
 
-    public string ThumbnailUrl => Illust.Images.Medium;
+    public string ThumbnailUrl => Illustration.Images.Medium;
 }
 
 [Factory]
-public partial record NovelIllust
+public partial record NovelIllustrationInfo
 {
     [JsonPropertyName("title")]
     public required string Title { get; set; } = "";
@@ -231,7 +231,7 @@ public partial record NovelIllust
     public required IReadOnlyList<NovelTag> Tags { get; set; } = [];
 
     [JsonPropertyName("images")]
-    public required NovelIllustUrls Images { get; set; }
+    public required NovelIllustrationUrls Images { get; set; }
 }
 
 [Factory]
@@ -245,7 +245,7 @@ public partial record NovelTag
 }
 
 [Factory]
-public partial record NovelIllustUrls
+public partial record NovelIllustrationUrls
 {
     [JsonPropertyName("small")]
     public required string? Small { get; set; }
@@ -288,8 +288,8 @@ public partial record NovelReplaceableGlossary
     public required string Cover { get; set; } = DefaultImageUrls.ImageNotAvailable;
 }
 
-internal class NovelIllustInfoDictionaryConverter()
-    : SpecialDictionaryConverter<NovelIllustInfo>(MakoJsonSerializerContext.Default.NovelIllustInfo);
+internal class NovelIllustrationInfoDictionaryConverter()
+    : SpecialDictionaryConverter<NovelIllustration>(MakoJsonSerializerContext.Default.NovelIllustration);
 
 internal class NovelImageDictionaryConverter()
     : SpecialDictionaryConverter<NovelImage>(MakoJsonSerializerContext.Default.NovelImage);

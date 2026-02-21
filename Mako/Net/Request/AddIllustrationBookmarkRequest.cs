@@ -6,7 +6,7 @@ using Mako.Global.Enum;
 
 namespace Mako.Net.Request;
 
-public record AddIllustBookmarkRequest(
+public record AddIllustrationBookmarkRequest(
     [property: JsonPropertyName("restrict")] PrivacyPolicy Restrict,
     [property: JsonPropertyName("illust_id")] long Id,
     [property: JsonPropertyName("tags[]"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Tags);

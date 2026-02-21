@@ -277,13 +277,13 @@ public partial class MakoClient
     }
 
     /// <summary>
-    /// Request recommended illustrators.
+    /// Request recommended users.
     /// </summary>
     /// <param name="targetFilter">The <see cref="TargetFilter" /> option targeting android or ios</param>
     /// <returns>
-    /// The <see cref="RecommendedUserEngine" /> containing recommended illustrators.
+    /// The <see cref="RecommendedUserEngine" /> containing recommended users.
     /// </returns>
-    public IFetchEngine<User> RecommendedIllustrators(TargetFilter targetFilter = TargetFilter.ForAndroid)
+    public IFetchEngine<User> RecommendedUsers(TargetFilter targetFilter = TargetFilter.ForAndroid)
     {
         EnsureBuilt();
         return new RecommendedUserEngine(this, targetFilter, new EngineHandle(CancelInstance));

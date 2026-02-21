@@ -5,4 +5,4 @@ using System.Text.Json.Serialization;
 
 namespace Mako.Net.Request;
 
-public record RemoveIllustBookmarkRequest([property: JsonPropertyName("illust_id")] long IllustId);
+public record RemoveIllustrationBookmarkRequest([property: JsonPropertyName("illust_id")] long IllustrationId);

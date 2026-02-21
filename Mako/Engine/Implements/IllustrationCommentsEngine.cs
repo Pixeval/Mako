@@ -7,12 +7,12 @@ using Mako.Model;
 
 namespace Mako.Engine.Implements;
 
-public class IllustrationCommentsEngine(long illustId, MakoClient makoClient, EngineHandle? engineHandle)
+public class IllustrationCommentsEngine(long illustrationId, MakoClient makoClient, EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Comment>(makoClient, engineHandle)
 {
     public override IAsyncEnumerator<Comment> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Comment<IllustrationCommentsEngine>(
             this,
             $"/v3/illust/comments" +
-            $"?illust_id={illustId}");
+            $"?illust_id={illustrationId}");
 }

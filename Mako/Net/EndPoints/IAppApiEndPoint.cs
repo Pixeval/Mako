@@ -18,10 +18,10 @@ namespace Mako.Net.EndPoints;
 public interface IAppApiEndPoint
 {
     [HttpPost("/v2/illust/bookmark/add")]
-    Task<HttpResponseMessage> AddIllustBookmarkAsync([FormContent] AddIllustBookmarkRequest request);
+    Task<HttpResponseMessage> AddIllustrationBookmarkAsync([FormContent] AddIllustrationBookmarkRequest request);
 
     [HttpPost("/v1/illust/bookmark/delete")]
-    Task<HttpResponseMessage> RemoveIllustBookmarkAsync([FormContent] RemoveIllustBookmarkRequest request);
+    Task<HttpResponseMessage> RemoveIllustrationBookmarkAsync([FormContent] RemoveIllustrationBookmarkRequest request);
 
     [HttpPost("/v2/novel/bookmark/add")]
     Task<HttpResponseMessage> AddNovelBookmarkAsync([FormContent] AddNovelBookmarkRequest request);
@@ -33,13 +33,13 @@ public interface IAppApiEndPoint
     /// 由于“是否收藏”“是否关注”字段需要实时更新，故不缓存
     /// </remarks>
     [HttpGet("/v1/illust/detail")]
-    Task<PixivSingleIllustResponse> GetSingleIllustAsync([AliasAs("illust_id")] long id);
+    Task<PixivSingleIllustrationResponse> GetSingleIllustrationAsync([AliasAs("illust_id")] long id);
 
-    /// <inheritdoc cref="GetSingleIllustAsync" />
+    /// <inheritdoc cref="GetSingleIllustrationAsync" />
     [HttpGet("/v1/user/detail")]
     Task<PixivSingleUserResponse> GetSingleUserAsync([AliasAs("user_id")] long id, string filter);
 
-    /// <inheritdoc cref="GetSingleIllustAsync" />
+    /// <inheritdoc cref="GetSingleIllustrationAsync" />
     [HttpGet("/v2/novel/detail")]
     Task<PixivSingleNovelResponse> GetSingleNovelAsync([AliasAs("novel_id")] long id);
 
@@ -82,13 +82,13 @@ public interface IAppApiEndPoint
     Task<AutoCompletionResponse> GetAutoCompletionAsync(string word, [AliasAs("merge_plain_keyword_results")] bool mergePlainKeywordResult = true);
 
     [HttpPost("/v1/illust/comment/add")]
-    Task<PostCommentResponse> AddIllustCommentAsync([FormContent] AddNormalIllustCommentRequest request);
+    Task<PostCommentResponse> AddIllustrationCommentAsync([FormContent] AddNormalIllustrationCommentRequest request);
 
     [HttpPost("/v1/illust/comment/add")]
-    Task<PostCommentResponse> AddIllustCommentAsync([FormContent] AddStampIllustCommentRequest request);
+    Task<PostCommentResponse> AddIllustrationCommentAsync([FormContent] AddStampIllustrationCommentRequest request);
 
     [HttpPost("/v1/illust/comment/delete")]
-    Task<HttpResponseMessage> DeleteIllustCommentAsync([FormContent] DeleteCommentRequest request);
+    Task<HttpResponseMessage> DeleteIllustrationCommentAsync([FormContent] DeleteCommentRequest request);
 
     [HttpPost("/v1/novel/comment/add")]
     Task<PostCommentResponse> AddNovelCommentAsync([FormContent] AddNormalNovelCommentRequest request);

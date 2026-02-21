@@ -5,6 +5,7 @@ namespace Mako.Model;
 
 public enum IllustrationType
 {
+    // ReSharper disable once IdentifierTypo
     Illust,
     Manga,
     Ugoira

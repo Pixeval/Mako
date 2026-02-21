@@ -63,7 +63,7 @@ public partial record SpotlightBody
     public required string Footer { get; set; } = "";
 
     [JsonPropertyName("illusts")]
-    public required IReadOnlyList<Illust> Illusts { get; set; } = [];
+    public required IReadOnlyList<PixivisionIllustration> Illustrations { get; set; } = [];
 
     [JsonPropertyName("relatedArticles")]
     public required IReadOnlyList<RelatedArticle> RelatedArticles { get; set; } = [];
@@ -174,13 +174,13 @@ public partial record PixivisionTag
 }
 
 [Factory]
-public partial record Illust
+public partial record PixivisionIllustration
 {
     [JsonPropertyName("spotlight_article_id")]
     public required long SpotlightArticleId { get; set; }
 
     [JsonPropertyName("illust_id")]
-    public required long IllustId { get; set; }
+    public required long Id { get; set; }
 
     [JsonPropertyName("description")]
     public required string Description { get; set; } = "";
@@ -189,52 +189,52 @@ public partial record Illust
     public required string Language { get; set; } = "";
 
     [JsonPropertyName("illust_user_id")]
-    public required string IllustUserId { get; set; } = "";
+    public required string UserId { get; set; } = "";
 
     [JsonPropertyName("illust_title")]
-    public required string IllustTitle { get; set; } = "";
+    public required string Title { get; set; } = "";
 
     [JsonPropertyName("illust_ext")]
-    public required string IllustExt { get; set; } = "";
+    public required string Ext { get; set; } = "";
 
     [JsonPropertyName("illust_width")]
-    public required string IllustWidth { get; set; } = "";
+    public required string Width { get; set; } = "";
 
     [JsonPropertyName("illust_height")]
-    public required string IllustHeight { get; set; } = "";
+    public required string Height { get; set; } = "";
 
     [JsonPropertyName("illust_restrict")]
-    public required string IllustRestrict { get; set; } = "";
+    public required string Restrict { get; set; } = "";
 
     [JsonPropertyName("illust_x_restrict")]
-    public required string IllustXRestrict { get; set; } = "";
+    public required string XRestrict { get; set; } = "";
 
     [JsonPropertyName("illust_create_date")]
-    public required string IllustCreateDate { get; set; } = "";
+    public required string CreateDate { get; set; } = "";
 
     [JsonPropertyName("illust_upload_date")]
-    public required string IllustUploadDate { get; set; } = "";
+    public required string UploadDate { get; set; } = "";
 
     [JsonPropertyName("illust_server_id")]
-    public required string IllustServerId { get; set; } = "";
+    public required string ServerId { get; set; } = "";
 
     [JsonPropertyName("illust_type")]
-    public required string IllustType { get; set; } = "";
+    public required string Type { get; set; } = "";
 
     [JsonPropertyName("illust_sanity_level")]
-    public required long IllustSanityLevel { get; set; }
+    public required long SanityLevel { get; set; }
 
     [JsonPropertyName("illust_book_style")]
-    public required string IllustBookStyle { get; set; } = "";
+    public required string BookStyle { get; set; } = "";
 
     [JsonPropertyName("illust_page_count")]
-    public required string IllustPageCount { get; set; } = "";
+    public required string PageCount { get; set; } = "";
 
     [JsonPropertyName("illust_custom_thumbnail_upload_datetime")]
-    public required string IllustCustomThumbnailUploadDatetime { get; set; } = "";
+    public required string CustomThumbnailUploadDatetime { get; set; } = "";
 
     [JsonPropertyName("illust_comment")]
-    public required string IllustComment { get; set; } = "";
+    public required string Comment { get; set; } = "";
 
     [JsonPropertyName("user_account")]
     public required string UserAccount { get; set; } = "";
@@ -290,7 +290,7 @@ public partial record RelatedArticle
     public required string Thumbnail { get; set; } = "";
 
     [JsonPropertyName("thumbnail_illust_id")]
-    public required string ThumbnailIllustId { get; set; } = "";
+    public required string ThumbnailIllustrationId { get; set; } = "";
 
     [JsonPropertyName("has_body")]
     public required string HasBody { get; set; } = "";

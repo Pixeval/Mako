@@ -1,7 +1,6 @@
 // Copyright (c) Mako.
 // Licensed under the MIT License.
 
-using System;
 using System.Text.Json.Serialization;
 using Mako.Utilities;
 using Misaki;
@@ -9,7 +8,7 @@ using Misaki;
 namespace Mako.Model;
 
 [Factory]
-public partial record BookmarkTag : ITag, IEquatable<string>
+public partial class BookmarkTag : ITag
 {
     ITagCategory ITag.Category => ITagCategory.Empty;
 
@@ -30,13 +29,6 @@ public partial record BookmarkTag : ITag, IEquatable<string>
         return other is not null && (ReferenceEquals(this, other) || Name == other.Name);
     }
 
-    public virtual bool Equals(string? other)
-    {
-        return other is not null && Name == other;
-    }
-
-    /// <summary>
-    /// ReSharper disable once NonReadonlyMemberInGetHashCode
-    /// </summary>
+    // ReSharper disable once NonReadonlyMemberInGetHashCode
     public override int GetHashCode() => Name.GetHashCode();
 }

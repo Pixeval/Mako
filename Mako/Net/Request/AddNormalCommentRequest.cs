@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Mako.Net.Request;
 
-public record AddNormalIllustCommentRequest(
+public record AddNormalIllustrationCommentRequest(
     [property: JsonPropertyName("illust_id")] long Id,
     [property: JsonPropertyName("parent_comment_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] long? ParentCommentId,
     [property: JsonPropertyName("comment")] string Content

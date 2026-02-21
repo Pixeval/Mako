@@ -14,7 +14,7 @@ public record Feed : IIdEntry
 
     /// <summary>
     /// The name of the target of this feed if it has one
-    /// e.g. illust title or the username
+    /// e.g. illustration title or the username
     /// </summary>
     public string? FeedName { get; set; }
 
@@ -58,9 +58,9 @@ public enum FeedType
     AddBookmark,
 
     /// <summary>
-    /// User posted a new illust
+    /// User posted a new illustration
     /// </summary>
-    PostIllust,
+    PostIllustration,
 
     /// <summary>
     /// User followed an artist

@@ -13,10 +13,10 @@ namespace Mako.Net.Response;
 public partial record PixivSingleUserResponse
 {
     /// <summary>
-    /// 此处<see cref="Model.UserEntity"/>一定有<see cref="Model.UserEntity.Description"/>
+    /// 此处<see cref="UserInfo"/>一定有<see cref="UserInfo.Description"/>
     /// </summary>
     [JsonPropertyName("user")]
-    public required UserEntity UserEntity { get; set; }
+    public required UserInfo UserEntity { get; set; }
 
     [JsonPropertyName("profile")]
     public required Profile UserProfile { get; set; }
@@ -71,7 +71,7 @@ public partial record Profile
     public required int TotalMyPixivUsers { get; set; }
 
     [JsonPropertyName("total_illusts")]
-    public required int TotalIllusts { get; set; }
+    public required int TotalIllustrations { get; set; }
 
     [JsonPropertyName("total_manga")]
     public required int TotalManga { get; set; }
@@ -80,10 +80,10 @@ public partial record Profile
     public required int TotalNovels { get; set; }
 
     [JsonPropertyName("total_illust_bookmarks_public")]
-    public required int TotalIllustBookmarksPublic { get; set; }
+    public required int TotalIllustrationBookmarksPublic { get; set; }
 
     [JsonPropertyName("total_illust_series")]
-    public required int TotalIllustSeries { get; set; }
+    public required int TotalIllustrationSeries { get; set; }
 
     [JsonPropertyName("total_novel_series")]
     public required int TotalNovelSeries { get; set; }

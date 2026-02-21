@@ -49,7 +49,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     public required AiType AiType { get; set; }
 
     [JsonPropertyName("illust_book_style")]
-    public required int IllustBookStyle { get; set; }
+    public required int IllustrationBookStyle { get; set; }
 
     /// <remarks>
     /// ["restricted_mode"]

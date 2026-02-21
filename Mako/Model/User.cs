@@ -18,7 +18,7 @@ public partial record User : IIdEntry
     public long Id => UserInfo.Id;
 
     [JsonPropertyName("user")]
-    public required UserEntity UserInfo { get; set; }
+    public required UserInfo UserInfo { get; set; }
 
     [JsonPropertyName("illusts")]
     public required IReadOnlyList<Illustration> Illustrations { get; set; } = [];
@@ -32,7 +32,7 @@ public partial record User : IIdEntry
 
 [DebuggerDisplay("{Id}: {Name}")]
 [Factory]
-public partial record UserEntity : IUser, IIdEntry
+public partial record UserInfo : IUser, IIdEntry
 {
     [JsonPropertyName("id")]
     public required long Id { get; set; }
