@@ -5,7 +5,7 @@ using System;
 
 namespace Mako.Utilities;
 
-public static class DateTimeHelper
+internal static class DateTimeHelper
 {
     extension(DateTimeOffset dateTimeOffset)
     {

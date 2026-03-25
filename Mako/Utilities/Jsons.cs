@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace Mako.Utilities;
 
-public static class Jsons
+internal static class Jsons
 {
     extension(JsonElement? jsonElement)
     {

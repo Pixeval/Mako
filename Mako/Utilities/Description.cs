@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Mako.Utilities;
 
-public static class DescriptionHelper
+internal static class DescriptionHelper
 {
     public static string GetDescription<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] TEnum>(this TEnum @enum) where TEnum : Enum
     {

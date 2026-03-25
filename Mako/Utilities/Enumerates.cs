@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace Mako.Utilities;
 
-public static class Enumerates
+internal static class Enumerates
 {
     extension<T>(IEnumerable<T?> enumerable)
     {
