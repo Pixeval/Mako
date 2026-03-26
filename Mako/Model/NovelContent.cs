@@ -53,7 +53,7 @@ public partial record NovelContent
     public required string Text { get; set; } = "";
 
     [JsonPropertyName("marker")]
-    public string? Marker { get; set; }
+    public required NovelMarker? Marker { get; set; }
 
     /// <summary>
     /// 可以在主站找到原图的插图
@@ -286,6 +286,13 @@ public partial record NovelReplaceableGlossary
 
     [JsonPropertyName("coverImage")]
     public required string Cover { get; set; } = DefaultImageUrls.ImageNotAvailable;
+}
+
+[Factory]
+public partial record NovelMarker
+{
+    [JsonPropertyName("page")]
+    public int Page { get; set; }
 }
 
 internal class NovelIllustrationInfoDictionaryConverter()

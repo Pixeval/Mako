@@ -37,10 +37,18 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
     /// <returns>The <see cref="ServiceProvider" /> contains all the required dependencies</returns>
     private ServiceProvider BuildServiceProvider(IServiceCollection serviceCollection)
     {
+#if false
+        _ = serviceCollection.AddLogging(logging =>
+            logging.AddDebug()
+                .SetMinimumLevel(LogLevel.Debug)
+                .AddFilter("System.Net.Http.HttpClient", LogLevel.Debug));
+#endif
+
         _ = serviceCollection
             .AddSingleton(this)
-            .AddSingleton<PixivApiHttpMessageHandler>()
-            .AddSingleton<PixivImageHttpMessageHandler>()
+            .AddSingleton<PixivApiRequestThrottleState>()
+            .AddTransient<PixivApiHttpMessageHandler>()
+            .AddTransient<PixivImageHttpMessageHandler>()
             .AddSingleton<RefreshTokenOption>();
 
         _ = serviceCollection.AddHttpApi<IAuthEndPoint>()
@@ -90,7 +98,7 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
     public void CancelAll()
     {
         EnsureBuilt();
-        _runningInstances.ForEach(instance => instance.EngineHandle.Cancel());
+        CancelAllInternal();
     }
 
     /// <summary>
@@ -160,7 +168,7 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
         if (Status is not ClientStatus.Built)
             return;
         Status = ClientStatus.Disposed;
-        Dispose(Services);
+        DisposeInternal();
         await Provider.DisposeAsync();
     }
 
@@ -170,7 +178,7 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
         if (Status is not ClientStatus.Built)
             return;
         Status = ClientStatus.Disposed;
-        Dispose(Services);
+        DisposeInternal();
         Provider.Dispose();
     }
 
@@ -179,10 +187,16 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
         ObjectDisposedException.ThrowIf(Status is ClientStatus.Disposed, this);
     }
 
-    private void Dispose(ServiceCollection collection)
+    private void CancelAllInternal()
     {
-        CancelAll();
-        foreach (var item in collection)
+        _runningInstances.ForEach(instance => instance.EngineHandle.Cancel());
+        _runningInstances.Clear();
+    }
+
+    private void DisposeInternal()
+    {
+        CancelAllInternal();
+        foreach (var item in Services)
             if ((item.IsKeyedService
                     ? item.KeyedImplementationInstance
                     : item.ImplementationInstance)

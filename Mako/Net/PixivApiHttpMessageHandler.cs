@@ -13,26 +13,20 @@ namespace Mako.Net;
 
 internal class PixivApiHttpMessageHandler : MakoClientSupportedHttpMessageHandler
 {
-    public PixivApiHttpMessageHandler(MakoClient makoClient) : base(makoClient)
+    public PixivApiHttpMessageHandler(MakoClient makoClient, PixivApiRequestThrottleState throttleState) : base(makoClient)
     {
-        // PixivApiHttpMessageHandler should be singleton
-        Debug.Assert(!_SingletonFlag);
-        _SingletonFlag = true;
+        _throttleState = throttleState;
     }
 
-    private static bool _SingletonFlag;
-
-    private DateTime Cooldown { get; set; }
-    
-    private readonly SemaphoreSlim _cooldownLock = new(1, 1);
+    private readonly PixivApiRequestThrottleState _throttleState;
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        await _cooldownLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        await _throttleState.CooldownLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             // 检查冷却时间并等待
-            var delay = Cooldown - DateTime.UtcNow;
+            var delay = _throttleState.Cooldown - DateTime.UtcNow;
             if (delay > TimeSpan.Zero)
                 await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
 
@@ -62,7 +56,7 @@ internal class PixivApiHttpMessageHandler : MakoClientSupportedHttpMessageHandle
                 .ConfigureAwait(false);
 
             // 更新冷却时间
-            Cooldown = DateTime.UtcNow.AddMilliseconds(MakoClient.Configuration.ApiRequestCooldown);
+            _throttleState.Cooldown = DateTime.UtcNow.AddMilliseconds(MakoClient.Configuration.ApiRequestCooldown);
 
             if (result.StatusCode is HttpStatusCode.TooManyRequests)
                 MakoClient.OnRateLimitEncountered();
@@ -71,7 +65,7 @@ internal class PixivApiHttpMessageHandler : MakoClientSupportedHttpMessageHandle
         }
         finally
         {
-            _cooldownLock.Release();
+            _throttleState.CooldownLock.Release();
         }
     }
 }
