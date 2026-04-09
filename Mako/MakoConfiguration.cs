@@ -10,8 +10,14 @@ using Mako.Net;
 namespace Mako;
 
 /// <summary>
-/// Contains all the user-configurable keys
+/// 
 /// </summary>
+/// <param name="DomainFronting"></param>
+/// <param name="Proxy"><see langword="null"/> to disable proxy, <see cref="string.Empty"/> to use system proxy, otherwise use the specified proxy</param>
+/// <param name="Cookie"></param>
+/// <param name="MirrorHost"></param>
+/// <param name="ApiRequestCooldown"></param>
+/// <param name="CultureInfo"></param>
 public record MakoConfiguration(
     bool DomainFronting,
     string? Proxy,
@@ -37,6 +43,9 @@ public record MakoConfiguration(
 
     public bool DomainFronting { get; set; } = DomainFronting;
 
+    /// <summary>
+    /// <see langword="null"/> to disable proxy, <see cref="string.Empty"/> to use system proxy, otherwise use the specified proxy
+    /// </summary>
     public string? Proxy { get; set; } = Proxy;
 
     public string? Cookie { get; set; } = Cookie;

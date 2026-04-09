@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Mako.Net.EndPoints;
 using Mako.Utilities;
@@ -101,22 +101,13 @@ public partial class MakoClient
 
     internal void LogException(Exception e) => Logger.LogError(e, "MakoClient Exception");
 
-    [DynamicDependency("ConstructSystemProxy", "SystemProxyInfo", "System.Net.Http")]
-    [UnconditionalSuppressMessage("Trimming", "IL2026",
-        Justification = $"System.Net.Http.SystemProxyInfo have been preserved by {nameof(DynamicDependencyAttribute)}")]
-    [UnconditionalSuppressMessage("Trimming", "IL2075",
-        Justification = $"System.Net.Http.SystemProxyInfo.ConstructSystemProxy have been preserved by {nameof(DynamicDependencyAttribute)}")]
     static MakoClient()
     {
-        var type = typeof(HttpClient).Assembly.GetType("System.Net.Http.SystemProxyInfo");
-        var method = type?.GetMethod("ConstructSystemProxy");
-        var @delegate = method?.CreateDelegate<Func<IWebProxy>>();
-
-        _GetCurrentSystemProxy = @delegate ?? throw new MissingMethodException("Unable to find proxy functions");
-        HttpClient.DefaultProxy = _GetCurrentSystemProxy();
+        HttpClient.DefaultProxy = GetSystemProxy();
     }
 
-    private static readonly Func<IWebProxy> _GetCurrentSystemProxy;
+    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "ConstructSystemProxy")]
+    private static extern IWebProxy GetSystemProxy([UnsafeAccessorType("System.Net.Http.SystemProxyInfo, System.Net.Http")] object? _ = null);
 
     public IWebProxy? CurrentSystemProxy
     {
@@ -132,7 +123,7 @@ public partial class MakoClient
                     if (now < Cooldown)
                         return HttpClient.DefaultProxy;
                     Cooldown = now.AddSeconds(2);
-                    return HttpClient.DefaultProxy = _GetCurrentSystemProxy();
+                    return HttpClient.DefaultProxy = GetSystemProxy();
                 }
                 default:
                     return new WebProxy(Configuration.Proxy);
