@@ -129,6 +129,7 @@ namespace Mako;
 [JsonSerializable(typeof(IReadOnlyList<Work>))]
 
 [JsonSerializable(typeof(RefreshSessionRequest))]
+[JsonSerializable(typeof(RequestSessionRequest))]
 [JsonSerializable(typeof(TokenResponse))]
 [JsonSerializable(typeof(TokenUser))]
 public partial class MakoJsonSerializerContext : JsonSerializerContext;

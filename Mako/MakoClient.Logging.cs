@@ -99,7 +99,7 @@ public partial class MakoClient
         }
     }
 
-    internal void LogException(Exception e) => Logger.LogError(e, "MakoClient Exception");
+    internal void LogException(Exception e) => Logger.LogError(e, $"{nameof(MakoClient)} Exception");
 
     static MakoClient()
     {

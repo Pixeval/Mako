@@ -9,11 +9,14 @@ using WebApiClientCore.Attributes;
 
 namespace Mako.Net.EndPoints;
 
-[Header(HttpRequestHeader.UserAgent, "PixivAndroidApp/5.0.64 (Android 6.0)")]
+[Header(HttpRequestHeader.UserAgent, "PixivAndroidApp/6.140.2 (Android 15.0)")]
 [Header(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded")]
 [HttpHost(MakoHttpOptions.OAuthBaseUrl)]
 public interface IAuthEndPoint
 {
     [HttpPost("/auth/token")]
     Task<TokenResponse> RefreshAsync([FormContent] RefreshSessionRequest request);
+
+    [HttpPost("/auth/token")]
+    Task<TokenResponse> RequestAsync([FormContent] RequestSessionRequest request);
 }
