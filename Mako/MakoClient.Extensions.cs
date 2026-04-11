@@ -21,21 +21,6 @@ namespace Mako;
 public partial class MakoClient
 {
     /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="code"></param>
-    /// <param name="codeVerifier"></param>
-    /// <returns>RefreshToken</returns>
-    public Task<string?> RequestSessionAsync(string code, string codeVerifier)
-        => RunWithLoggerAsync(async () =>
-        {
-            var token = await Provider.GetRequiredService<IAuthEndPoint>()
-                .RequestAsync(new(code, codeVerifier));
-            SetTokenInternal(token);
-            return token.RefreshToken;
-        }, null as string);
-
-    /// <summary>
     /// Gets the detail of an illustration from the illustration id
     /// </summary>
     /// <param name="id">The illustration id</param>

@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Mako.Model;
 using Mako.Net.EndPoints;
 using Mako.Net.Request;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,10 @@ namespace Mako.Net;
 
 internal class RefreshTokenOption
 {
+    public string? Code { get; set; }
+
+    public string? CodeVerifier { get; set; }
+
     public string? RefreshToken { get; set; }
 }
 
@@ -23,12 +28,26 @@ internal class PixivTokenProvider(IServiceProvider serviceProvider) : TokenProvi
     /// <inheritdoc />
     protected override async Task<TokenResult?> RequestTokenAsync(IServiceProvider serviceProvider)
     {
-        var refreshToken = serviceProvider.GetRequiredService<RefreshTokenOption>().RefreshToken;
+        var option = serviceProvider.GetRequiredService<RefreshTokenOption>();
 
-        if (string.IsNullOrWhiteSpace(refreshToken))
-            return null;
+        TokenResponse tokenResponse;
+        if (string.IsNullOrWhiteSpace(option.Code) || string.IsNullOrWhiteSpace(option.CodeVerifier))
+        {
+            if (string.IsNullOrWhiteSpace(option.RefreshToken))
+                return null;
 
-        var tokenResponse = await serviceProvider.GetRequiredService<IAuthEndPoint>().RefreshAsync(new RefreshSessionRequest(refreshToken)).ConfigureAwait(false);
+            tokenResponse = await serviceProvider.GetRequiredService<IAuthEndPoint>()
+                .RefreshAsync(new(option.RefreshToken)).ConfigureAwait(false);
+        }
+        else
+        {
+            tokenResponse = await serviceProvider.GetRequiredService<IAuthEndPoint>()
+                .RequestAsync(new(option.Code, option.CodeVerifier)).ConfigureAwait(false);
+
+            option.Code = null;
+            option.CodeVerifier = null;
+            option.RefreshToken = tokenResponse.RefreshToken;
+        }
 
         MakoClient.SetTokenInternal(tokenResponse);
 

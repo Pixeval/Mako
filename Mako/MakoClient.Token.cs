@@ -23,11 +23,28 @@ public partial class MakoClient
             CancelAll();
         var tokenOption = Provider.GetRequiredService<RefreshTokenOption>();
         tokenOption.RefreshToken = refreshToken;
-        var tokenProvider = GetTokenProvider();
-        tokenProvider.ClearToken();
-        SetTokenInternal(null);
+        ClearTokenInternal();
         if (refreshToken is not null)
             Status = ClientStatus.Built;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="code"></param>
+    /// <param name="codeVerifier"></param>
+    /// <returns>RefreshToken</returns>
+    public void SetCode(string code, string codeVerifier)
+    {
+        ObjectDisposedException.ThrowIf(Status is ClientStatus.Disposed, this);
+        if (Status is ClientStatus.Built)
+            CancelAll();
+        var tokenOption = Provider.GetRequiredService<RefreshTokenOption>();
+        tokenOption.RefreshToken = null;
+        tokenOption.Code = code;
+        tokenOption.CodeVerifier = codeVerifier;
+        ClearTokenInternal();
+        Status = ClientStatus.Built;
     }
 
     /// <summary>
@@ -58,6 +75,13 @@ public partial class MakoClient
             LogException(e);
             return false;
         }
+    }
+
+    private void ClearTokenInternal()
+    {
+        var tokenProvider = GetTokenProvider();
+        tokenProvider.ClearToken();
+        SetTokenInternal(null);
     }
 
     internal void SetTokenInternal(TokenResponse? response)
