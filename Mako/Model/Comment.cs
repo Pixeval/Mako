@@ -14,19 +14,19 @@ public partial record Comment : IIdEntry
     public required long Id { get; set; }
 
     [JsonPropertyName("comment")]
-    public required string CommentContent { get; set; } = "";
+    public required string Content { get; set; } = "";
 
     [JsonPropertyName("date")]
     public required DateTimeOffset Date { get; set; }
 
     [JsonPropertyName("user")]
-    public required CommentUser CommentPoster { get; set; }
+    public required CommentUser User { get; set; }
 
     [JsonPropertyName("has_replies")]
     public required bool HasReplies { get; set; }
 
     [JsonPropertyName("stamp")]
-    public required Stamp? CommentStamp { get; set; }
+    public required Stamp? Stamp { get; set; }
 }
 
 [Factory]

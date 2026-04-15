@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Mako.Global.Enum;
@@ -93,8 +92,7 @@ public partial class MakoClient
     /// <param name="id">The ID of the illustration which needs to be bookmarked</param>
     /// <param name="privacyPolicy">Indicates the privacy of the illustration in the bookmark</param>
     /// <param name="tags"></param>
-    /// <returns>A <see cref="Task" /> represents the operation</returns>
-    public Task<HttpResponseMessage> PostIllustrationBookmarkAsync(long id, PrivacyPolicy privacyPolicy, IEnumerable<string>? tags = null) =>
+    public Task<bool> PostIllustrationBookmarkAsync(long id, PrivacyPolicy privacyPolicy, IEnumerable<string>? tags = null) =>
         RunWithLoggerAsync(async t =>
         {
             var urlTags = tags is null ? null : string.Join(' ', tags);
@@ -109,11 +107,9 @@ public partial class MakoClient
         try
         {
             if (favorite)
-                await PostIllustrationBookmarkAsync(l, PrivacyPolicy.Public);
-            else
-                await RemoveIllustrationBookmarkAsync(l);
+                return await PostIllustrationBookmarkAsync(l, PrivacyPolicy.Public);
 
-            return favorite;
+            return !await RemoveIllustrationBookmarkAsync(l);
         }
         catch
         {
@@ -126,12 +122,12 @@ public partial class MakoClient
     /// </summary>
     /// <param name="id">The ID of the illustration which needs to be removed from the bookmark</param>
     /// <returns>A <see cref="Task" /> represents the operation</returns>
-    public Task<HttpResponseMessage> RemoveIllustrationBookmarkAsync(long id)
+    public Task<bool> RemoveIllustrationBookmarkAsync(long id)
         => RunWithLoggerAsync(async t => await t
             .RemoveIllustrationBookmarkAsync(new RemoveIllustrationBookmarkRequest(id))
             .ConfigureAwait(false));
 
-    public Task<HttpResponseMessage> PostNovelBookmarkAsync(long id, PrivacyPolicy privacyPolicy, IEnumerable<string>? tags = null) =>
+    public Task<bool> PostNovelBookmarkAsync(long id, PrivacyPolicy privacyPolicy, IEnumerable<string>? tags = null) =>
         RunWithLoggerAsync(async t =>
         {
             var urlTags = tags is null ? null : string.Join(' ', tags);
@@ -140,7 +136,7 @@ public partial class MakoClient
                 .ConfigureAwait(false);
         });
 
-    public Task<HttpResponseMessage> RemoveNovelBookmarkAsync(long id)
+    public Task<bool> RemoveNovelBookmarkAsync(long id)
         => RunWithLoggerAsync(async t => await t
             .RemoveNovelBookmarkAsync(new RemoveNovelBookmarkRequest(id))
             .ConfigureAwait(false));
@@ -151,12 +147,12 @@ public partial class MakoClient
                 .ConfigureAwait(false))
             .Users);
 
-    public Task<HttpResponseMessage> PostFollowUserAsync(long id, PrivacyPolicy privacyPolicy)
+    public Task<bool> PostFollowUserAsync(long id, PrivacyPolicy privacyPolicy)
         => RunWithLoggerAsync(async t => await t
             .FollowUserAsync(new FollowUserRequest(id, privacyPolicy))
             .ConfigureAwait(false));
 
-    public Task<HttpResponseMessage> RemoveFollowUserAsync(long id)
+    public Task<bool> RemoveFollowUserAsync(long id)
         => RunWithLoggerAsync(async t => await t
             .RemoveFollowUserAsync(new RemoveFollowUserRequest(id))
             .ConfigureAwait(false));
@@ -178,11 +174,11 @@ public partial class MakoClient
             .GetUgoiraMetadataAsync(id)
             .ConfigureAwait(false)).UgoiraMetadataInfo);
 
-    public Task<HttpResponseMessage> DeleteIllustrationCommentAsync(long commentId)
+    public Task<bool> DeleteIllustrationCommentAsync(long commentId)
         => RunWithLoggerAsync(async t => await t
             .DeleteIllustrationCommentAsync(new DeleteCommentRequest(commentId)));
 
-    public Task<HttpResponseMessage> DeleteNovelCommentAsync(long commentId)
+    public Task<bool> DeleteNovelCommentAsync(long commentId)
         => RunWithLoggerAsync(async t => await t
             .DeleteNovelCommentAsync(new DeleteCommentRequest(commentId)));
 
@@ -221,13 +217,13 @@ public partial class MakoClient
     public Task<bool> GetAiShowSettingsAsync()
         => RunWithLoggerAsync(async t => (await t.GetAiShowSettingsAsync()).ShowAi);
 
-    public Task<HttpResponseMessage> PostAiShowSettingsAsync(bool showAi)
+    public Task<bool> PostAiShowSettingsAsync(bool showAi)
         => RunWithLoggerAsync(async t => await t.PostAiShowSettingsAsync(new ShowAiSettingsRequest(showAi)));
 
     public Task<bool> GetRestrictedModeSettingsAsync()
         => RunWithLoggerAsync(async t => (await t.GetRestrictedModeSettingsAsync()).IsRestrictedModeEnabled);
 
-    public Task<HttpResponseMessage> PostRestrictedModeSettingsAsync(bool isRestrictedModeEnabled)
+    public Task<bool> PostRestrictedModeSettingsAsync(bool isRestrictedModeEnabled)
         => RunWithLoggerAsync(async t => await t.PostRestrictedModeSettingsAsync(new RestrictedModeSettingsRequest(isRestrictedModeEnabled)));
 
     public Task<IReadOnlyList<Result>> ReverseSearchAsync(Stream imgStream, string apiKey)

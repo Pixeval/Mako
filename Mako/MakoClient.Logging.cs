@@ -31,9 +31,14 @@ public partial class MakoClient
         return RunWithLoggerAsync(() => task(Provider.GetRequiredService<IAppApiEndPoint>()), []);
     }
 
-    private Task<HttpResponseMessage> RunWithLoggerAsync(Func<IAppApiEndPoint, Task<HttpResponseMessage>> task)
+    private Task<bool> RunWithLoggerAsync(Func<IAppApiEndPoint, Task<HttpResponseMessage>> task)
     {
-        return RunWithLoggerAsync(() => task(Provider.GetRequiredService<IAppApiEndPoint>()), new HttpResponseMessage(HttpStatusCode.RequestTimeout));
+        return RunWithLoggerAsync(async () =>
+        {
+            using var response = await task(Provider.GetRequiredService<IAppApiEndPoint>());
+            response.EnsureSuccessStatusCode();
+            return true;
+        }, false);
     }
 
     private async Task RunWithLoggerAsync(Func<IAppApiEndPoint, Task> task)
