@@ -1,0 +1,3 @@
+[submodule "Pixeval.Network.Maho"]
+	path = Pixeval.Network.Maho
+	url = https://github.com/Pixeval/Pixeval.Network.Maho.git

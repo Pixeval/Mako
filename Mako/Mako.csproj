@@ -31,6 +31,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Mako.SourceGen\Mako.SourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="False" />
+        <ProjectReference Include="..\Pixeval.Network.Maho\Pixeval.Network.Maho\Pixeval.Network.Maho.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -2,4 +2,5 @@
   <Project Path="Mako.SourceGen/Mako.SourceGen.csproj" />
   <Project Path="Mako.Test/Mako.Test.csproj" Id="40b5d1db-5ac0-40b1-90c7-bd005f167381" />
   <Project Path="Mako/Mako.csproj" />
+  <Project Path="Pixeval.Network.Maho/Pixeval.Network.Maho/Pixeval.Network.Maho.csproj" />
 </Solution>
