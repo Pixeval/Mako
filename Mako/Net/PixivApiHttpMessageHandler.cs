@@ -11,35 +11,35 @@ using Mako.Utilities;
 
 namespace Mako.Net;
 
-internal class PixivApiHttpMessageHandler : MakoClientSupportedHttpMessageHandler
+internal class PixivApiHttpMessageHandler(
+    MakoClient makoClient,
+    PixivApiRequestThrottleState throttleState,
+    MakoHttpMessageInvokerProvider invokerProvider)
+    : MakoClientSupportedHttpMessageHandler(makoClient, invokerProvider)
 {
-    public PixivApiHttpMessageHandler(MakoClient makoClient, PixivApiRequestThrottleState throttleState) : base(makoClient)
-    {
-        _throttleState = throttleState;
-    }
-
-    private readonly PixivApiRequestThrottleState _throttleState;
-
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        await _throttleState.CooldownLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        await throttleState.CooldownLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             // 检查冷却时间并等待
-            var delay = _throttleState.Cooldown - DateTime.UtcNow;
+            var delay = throttleState.Cooldown - DateTime.UtcNow;
             if (delay > TimeSpan.Zero)
                 await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
 
             var headers = request.Headers;
             var host = request.RequestUri!.Host; // the 'RequestUri' is guaranteed to be notnull here, because the 'HttpClient' will set it to 'BaseAddress' if it's null
 
-            var domainFronting = (MakoHttpOptions.DomainFrontingRequiredHost.IsMatch(host) || host is MakoHttpOptions.OAuthHost) && MakoClient.Configuration.DomainFronting;
+            var configuration = MakoClient.Configuration;
+            var domainFronting = (MakoHttpOptions.DomainFrontingRequiredHost.IsMatch(host) || host is MakoHttpOptions.OAuthHost) && configuration.DomainFronting;
+            var domainFrontingType = configuration.DomainFrontingType;
+            var userAgent = configuration.UserAgent;
+            var cultureName = configuration.CultureInfo.Name;
+            var cookie = configuration.Cookie;
+            var cooldown = configuration.ApiRequestCooldown;
 
-            if (domainFronting)
-                MakoHttpOptions.UseHttpScheme(request);
-
-            headers.UserAgent.AddRange(MakoClient.Configuration.UserAgent);
-            headers.AcceptLanguage.Add(new(MakoClient.Configuration.CultureInfo.Name));
+            headers.UserAgent.AddRange(userAgent);
+            headers.AcceptLanguage.Add(new(cultureName));
 
             switch (host)
             {
@@ -47,16 +47,20 @@ internal class PixivApiHttpMessageHandler : MakoClientSupportedHttpMessageHandle
                     Debug.Assert(headers.Authorization is not null);
                     break;
                 case MakoHttpOptions.WebApiHost:
-                    _ = headers.TryAddWithoutValidation("Cookie", MakoClient.Configuration.Cookie);
+                    _ = headers.TryAddWithoutValidation("Cookie", cookie);
                     break;
             }
 
-            var result = await GetHttpMessageInvoker(domainFronting)
+            var invoker = domainFronting
+                ? InvokerProvider.GetApiDomainFrontingInvoker(domainFrontingType)
+                : InvokerProvider.GetDirectInvoker();
+
+            var result = await invoker
                 .SendAsync(request, cancellationToken)
                 .ConfigureAwait(false);
 
             // 更新冷却时间
-            _throttleState.Cooldown = DateTime.UtcNow.AddMilliseconds(MakoClient.Configuration.ApiRequestCooldown);
+            throttleState.Cooldown = DateTime.UtcNow.AddMilliseconds(cooldown);
 
             if (result.StatusCode is HttpStatusCode.TooManyRequests)
                 MakoClient.OnRateLimitEncountered();
@@ -65,7 +69,7 @@ internal class PixivApiHttpMessageHandler : MakoClientSupportedHttpMessageHandle
         }
         finally
         {
-            _throttleState.CooldownLock.Release();
+            throttleState.CooldownLock.Release();
         }
     }
 }

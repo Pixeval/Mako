@@ -15,10 +15,8 @@ public static class TestSettings
 {
     public static IReadOnlyList<string> PixivAppApiNameResolver { get; } =
     [
-        "210.140.139.155",
-        "210.140.139.156",
-        "210.140.139.157",
-        "210.140.139.158"
+        "104.18.42.239",
+        "172.64.145.17"
     ];
 
     public static IReadOnlyList<string> PixivWebApiNameResolver { get; } =
@@ -37,9 +35,8 @@ public static class TestSettings
 
     public static IReadOnlyList<string> PixivOAuthNameResolver { get; } =
     [
-        "210.140.139.155",
-        "210.140.139.156",
-        "210.140.139.157"
+        "104.18.42.239",
+        "172.64.145.17"
     ];
 
     public static IReadOnlyList<string> PixivImageNameResolver { get; } =
@@ -64,6 +61,7 @@ public static class TestSettings
     {
         var conf = new MakoConfiguration(
             DomainFronting: false,
+            DomainFrontingType: DomainFrontingType.Fragmentation,
             Proxy: "" /*UseSystemProxy*/,
             Cookie: null,
             MirrorHost: null,

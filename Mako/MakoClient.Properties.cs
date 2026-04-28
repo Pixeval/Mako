@@ -16,7 +16,7 @@ public partial class MakoClient
 
     public TokenUser? Me { get; private set; }
 
-    public MakoConfiguration Configuration { get; set; }
+    public MakoConfiguration Configuration { get; }
 
     public ILogger Logger { get; }
 

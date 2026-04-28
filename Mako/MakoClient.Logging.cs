@@ -114,25 +114,24 @@ public partial class MakoClient
     [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "ConstructSystemProxy")]
     private static extern IWebProxy GetSystemProxy([UnsafeAccessorType("System.Net.Http.SystemProxyInfo, System.Net.Http")] object? _ = null);
 
-    public IWebProxy? CurrentSystemProxy
+    public IWebProxy? CurrentSystemProxy => GetConfiguredProxy(Configuration.Proxy);
+
+    internal IWebProxy? GetConfiguredProxy(string? proxy)
     {
-        get
+        switch (proxy)
         {
-            switch (Configuration.Proxy)
+            case null:
+                return null;
+            case "":
             {
-                case null:
-                    return null;
-                case "":
-                {
-                    var now = DateTime.UtcNow;
-                    if (now < Cooldown)
-                        return HttpClient.DefaultProxy;
-                    Cooldown = now.AddSeconds(2);
-                    return HttpClient.DefaultProxy = GetSystemProxy();
-                }
-                default:
-                    return new WebProxy(Configuration.Proxy);
+                var now = DateTime.UtcNow;
+                if (now < Cooldown)
+                    return HttpClient.DefaultProxy;
+                Cooldown = now.AddSeconds(2);
+                return HttpClient.DefaultProxy = GetSystemProxy();
             }
+            default:
+                return new WebProxy(proxy);
         }
     }
 

@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using Mako.Net;
+using Pixeval.Network.Maho.Ech;
 
 namespace Mako;
 
@@ -13,6 +15,7 @@ namespace Mako;
 /// 
 /// </summary>
 /// <param name="DomainFronting"></param>
+/// <param name="DomainFrontingType"></param>
 /// <param name="Proxy"><see langword="null"/> to disable proxy, <see cref="string.Empty"/> to use system proxy, otherwise use the specified proxy</param>
 /// <param name="Cookie"></param>
 /// <param name="MirrorHost"></param>
@@ -20,13 +23,23 @@ namespace Mako;
 /// <param name="CultureInfo"></param>
 public record MakoConfiguration(
     bool DomainFronting,
+    DomainFrontingType DomainFrontingType,
     string? Proxy,
     string? Cookie,
     string? MirrorHost,
     int ApiRequestCooldown,
-    CultureInfo CultureInfo)
+    CultureInfo CultureInfo) : INativeInteropDnsResolver
 {
-    public MakoConfiguration() : this(false, "", "", "", 800, CultureInfo.CurrentCulture) { }
+    public MakoConfiguration() : this(false, DomainFrontingType.Fragmentation, "", "", "", 800, CultureInfo.CurrentCulture) { }
+
+    public MakoConfiguration(
+        bool DomainFronting,
+        string? Proxy,
+        string? Cookie,
+        string? MirrorHost,
+        int ApiRequestCooldown,
+        CultureInfo CultureInfo)
+        : this(DomainFronting, DomainFrontingType.Fragmentation, Proxy, Cookie, MirrorHost, ApiRequestCooldown, CultureInfo) { }
 
     public CultureInfo CultureInfo { get; set; } = CultureInfo;
 
@@ -42,6 +55,8 @@ public record MakoConfiguration(
     ];
 
     public bool DomainFronting { get; set; } = DomainFronting;
+
+    public DomainFrontingType DomainFrontingType { get; set; } = DomainFrontingType;
 
     /// <summary>
     /// <see langword="null"/> to disable proxy, <see cref="string.Empty"/> to use system proxy, otherwise use the specified proxy
@@ -66,4 +81,13 @@ public record MakoConfiguration(
         [MakoHttpOptions.ImageHost2] = [],
         [MakoHttpOptions.OAuthHost] = []
     };
+
+    /// <inheritdoc />
+    public string BaseResolutionUrl => "https://dns.alidns.com/resolve?name=cloudflare-ech.com&type=HTTPS";
+
+    /// <inheritdoc />
+    public Task<IPAddress[]> LookupAsync(string hostname) =>
+        NameResolvers.TryGetValue(hostname, out var ips)
+            ? Task.FromResult(ips)
+            : Dns.GetHostAddressesAsync(hostname);
 }

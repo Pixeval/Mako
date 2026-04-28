@@ -14,6 +14,9 @@ using Mako.Net.EndPoints;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Misaki;
+using Pixeval.Network.Maho.Desync;
+using Pixeval.Network.Maho.Ech;
+using Pixeval.Network.Maho.Fragmentation;
 
 namespace Mako;
 
@@ -47,6 +50,32 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
         _ = serviceCollection
             .AddSingleton(this)
             .AddSingleton<PixivApiRequestThrottleState>()
+            .AddSingleton<MakoHttpMessageInvokerProvider>()
+            .AddKeyedSingleton<HttpMessageHandler>(
+                DomainFrontingType.Fragmentation,
+                static (serviceProvider, key) => TlsRecordFragmentationSocketsHttpHandlerFactory.GetTlsFragmentedHandler(serviceProvider.GetRequiredService<MakoClient>().Configuration))
+            .AddKeyedSingleton<HttpMessageHandler>(
+                DomainFrontingType.Ech,
+                static (serviceProvider, key) =>
+                {
+                    var makoClient = serviceProvider.GetRequiredService<MakoClient>();
+                    return NativeInteropEchEnabledHttpMessageHandlerFactory.GetNativeInteropEchEnabledHandler(
+                        makoClient.Configuration, new LoggerShim(makoClient.Logger));
+                })
+            .AddKeyedSingleton<HttpMessageHandler>(
+                DomainFrontingType.Desync,
+                static (serviceProvider, key) =>
+                {
+                    var makoClient = serviceProvider.GetRequiredService<MakoClient>();
+                    return DesynchronizationSocketsHttpHandlerFactory.GetDesynchronizationHandler(
+                        2000,
+                        5000,
+                        "GET / HTTP/1.1\r\nHost: www.baidu.com\r\n\r\n",
+                        new DefaultTtlSniffer(),
+                        1000,
+                        EmpiricalTtlSpoofer.Shared,
+                        makoClient.Configuration);
+                })
             .AddTransient<PixivApiHttpMessageHandler>()
             .AddTransient<PixivImageHttpMessageHandler>()
             .AddSingleton<RefreshTokenOption>();
@@ -202,5 +231,17 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
                     : item.ImplementationInstance)
                 is IDisposable d && !Equals(d))
                 d.Dispose();
+    }
+}
+
+file class LoggerShim(ILogger logger) : INativeInteropLogger
+{
+    /// <inheritdoc />
+    public void Log(LogLevel level, string message)
+    {
+        if (logger.IsEnabled(level))
+        {
+            logger.Log(level, "{message}", message);
+        }
     }
 }

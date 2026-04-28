@@ -9,19 +9,23 @@ using Mako.Utilities;
 
 namespace Mako.Net;
 
-internal class PixivImageHttpMessageHandler(MakoClient makoClient) : MakoClientSupportedHttpMessageHandler(makoClient)
+internal class PixivImageHttpMessageHandler(
+    MakoClient makoClient,
+    MakoHttpMessageInvokerProvider invokerProvider)
+    : MakoClientSupportedHttpMessageHandler(makoClient, invokerProvider)
 {
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        if (MakoClient.Configuration.DomainFronting)
-        {
-            MakoHttpOptions.UseHttpScheme(request);
-        }
 
-        request.Headers.UserAgent.AddRange(MakoClient.Configuration.UserAgent);
+        var configuration = MakoClient.Configuration;
+        var domainFronting = configuration.DomainFronting;
+        var userAgent = configuration.UserAgent;
+        var mirrorHost = configuration.MirrorHost;
+
+        request.Headers.UserAgent.AddRange(userAgent);
 
         if (request.RequestUri is { Host: MakoHttpOptions.ImageHost } requestUri
-            && MakoClient.Configuration.MirrorHost is { } mirror
+            && mirrorHost is { } mirror
             && !string.IsNullOrWhiteSpace(mirror))
         {
             request.RequestUri = mirror switch
@@ -32,7 +36,13 @@ internal class PixivImageHttpMessageHandler(MakoClient makoClient) : MakoClientS
             };
         }
 
-        return GetHttpMessageInvoker(MakoClient.Configuration.DomainFronting)
-            .SendAsync(request, cancellationToken);
+        var invoker = domainFronting
+            ? InvokerProvider.GetImageDomainFrontingInvoker()
+            : InvokerProvider.GetDirectInvoker();
+
+        if (domainFronting && request.RequestUri is not null)
+            request.RequestUri = new UriBuilder(request.RequestUri) { Scheme = "http" }.Uri;
+
+        return invoker.SendAsync(request, cancellationToken);
     }
 }

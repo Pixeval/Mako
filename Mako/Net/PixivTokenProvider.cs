@@ -5,7 +5,6 @@ using System;
 using System.Threading.Tasks;
 using Mako.Model;
 using Mako.Net.EndPoints;
-using Mako.Net.Request;
 using Microsoft.Extensions.DependencyInjection;
 using WebApiClientCore.Extensions.OAuths;
 using WebApiClientCore.Extensions.OAuths.TokenProviders;

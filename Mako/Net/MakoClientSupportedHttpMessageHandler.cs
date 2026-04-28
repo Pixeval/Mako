@@ -1,48 +1,22 @@
 // Copyright (c) Mako.
 // Licensed under the MIT License.
 
-using System.Net;
 using System.Net.Http;
 using Mako.Global;
 
 namespace Mako.Net;
 
-public abstract class MakoClientSupportedHttpMessageHandler(MakoClient makoClient) : HttpMessageHandler, IMakoClientSupport
+public abstract class MakoClientSupportedHttpMessageHandler : HttpMessageHandler, IMakoClientSupport
 {
-    public MakoClient MakoClient { get; } = makoClient;
-
-    private HttpMessageInvoker? _domainFrontingInvoker;
-    private HttpMessageInvoker? _directInvoker;
-    private IWebProxy? _lastCachedProxy;
-
-    public HttpMessageInvoker GetHttpMessageInvoker(bool domainFronting)
+    internal MakoClientSupportedHttpMessageHandler(
+        MakoClient makoClient,
+        MakoHttpMessageInvokerProvider invokerProvider)
     {
-        if (domainFronting)
-        {
-            _domainFrontingInvoker ??= MakoClient.CreateHttpMessageInvoker();
-            return _domainFrontingInvoker;
-        }
-
-        var currentProxy = MakoClient.CurrentSystemProxy;
-        // Create on first call or recreate if proxy has changed
-        if (_directInvoker is null || _lastCachedProxy != currentProxy)
-        {
-            _directInvoker?.Dispose();
-            _directInvoker = MakoClient.CreateDirectHttpMessageInvoker();
-            _lastCachedProxy = currentProxy;
-        }
-
-        return _directInvoker;
+        MakoClient = makoClient;
+        InvokerProvider = invokerProvider;
     }
 
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _domainFrontingInvoker?.Dispose();
-            _directInvoker?.Dispose();
-        }
+    public MakoClient MakoClient { get; }
 
-        base.Dispose(disposing);
-    }
+    private protected MakoHttpMessageInvokerProvider InvokerProvider { get; }
 }
