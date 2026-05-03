@@ -24,27 +24,22 @@ public partial class MakoClient
     /// <param name="id">The illustration id</param>
     /// <returns></returns>
     public Task<Illustration> GetIllustrationFromIdAsync(long id)
-        => RunWithLoggerAsync(async t => (await t
-            .GetSingleIllustrationAsync(id, Configuration.TargetFilter)
-            .ConfigureAwait(false)).Illustration);
+        => RunWithLoggerAsync<Illustration, SingleIllustrationResponse>(t => t
+            .GetSingleIllustrationAsync(id, Configuration.TargetFilter));
 
     async Task<IArtworkInfo> IGetArtworkService.GetArtworkAsync(string id) => await GetIllustrationFromIdAsync(long.Parse(id));
 
     public Task<IReadOnlyList<Tag>> GetAutoCompletionForKeyword(string word)
-        => RunWithLoggerAsync(async t => (await t
-            .GetAutoCompletionAsync(word)
-            .ConfigureAwait(false))
-            .Tags);
+        => RunWithLoggerAsync<IReadOnlyList<Tag>, AutoCompletionResponse>(t => t
+            .GetAutoCompletionAsync(word));
 
-    public Task<PixivSingleUserResponse> GetUserFromIdAsync(long id)
-        => RunWithLoggerAsync<PixivSingleUserResponse>(async t => await t
-            .GetSingleUserAsync(id, Configuration.TargetFilter)
-            .ConfigureAwait(false));
+    public Task<SingleUserResponse> GetUserFromIdAsync(long id)
+        => RunWithLoggerAsync<SingleUserResponse>(t => t
+            .GetSingleUserAsync(id, Configuration.TargetFilter));
 
     public Task<Novel> GetNovelFromIdAsync(long id)
-        => RunWithLoggerAsync(async t => (await t
-            .GetSingleNovelAsync(id, Configuration.TargetFilter)
-            .ConfigureAwait(false)).Novel);
+        => RunWithLoggerAsync<Novel, SingleNovelResponse>(async t => await t
+            .GetSingleNovelAsync(id, Configuration.TargetFilter));
 
     public Task<NovelContent> GetNovelContentAsync(long id)
         => RunWithLoggerAsync(async t =>
@@ -141,37 +136,28 @@ public partial class MakoClient
             .ConfigureAwait(false));
 
     public Task<IReadOnlyList<User>> RelatedUserAsync(long id)
-        => RunWithLoggerAsync(async t => (await t
-                .RelatedUserAsync(id, Configuration.TargetFilter)
-                .ConfigureAwait(false))
-            .Users);
+        => RunWithLoggerAsync<IReadOnlyList<User>, RelatedUsersResponse>(async t => await t
+            .RelatedUserAsync(id, Configuration.TargetFilter));
 
     public Task<bool> PostFollowUserAsync(long id, PrivacyPolicy privacyPolicy)
         => RunWithLoggerAsync(async t => await t
-            .FollowUserAsync(new FollowUserRequest(id, privacyPolicy))
-            .ConfigureAwait(false));
+            .FollowUserAsync(new FollowUserRequest(id, privacyPolicy)));
 
     public Task<bool> RemoveFollowUserAsync(long id)
         => RunWithLoggerAsync(async t => await t
-            .RemoveFollowUserAsync(new RemoveFollowUserRequest(id))
-            .ConfigureAwait(false));
+            .RemoveFollowUserAsync(new RemoveFollowUserRequest(id)));
 
     public Task<IReadOnlyList<TrendingTag>> GetTrendingTagsAsync()
-        => RunWithLoggerAsync(async t => (await t
-                .GetIllustrationTrendingTagsAsync(Configuration.TargetFilter)
-                .ConfigureAwait(false))
-            .TrendTags);
+        => RunWithLoggerAsync<IReadOnlyList<TrendingTag>, TrendingTagResponse>(t => t
+            .GetIllustrationTrendingTagsAsync(Configuration.TargetFilter));
 
     public Task<IReadOnlyList<TrendingTag>> GetTrendingTagsForNovelAsync()
-        => RunWithLoggerAsync(async t => (await t
-            .GetNovelTrendingTagsAsync(Configuration.TargetFilter)
-            .ConfigureAwait(false))
-            .TrendTags);
+        => RunWithLoggerAsync<IReadOnlyList<TrendingTag>, TrendingTagResponse>(t => t
+            .GetNovelTrendingTagsAsync(Configuration.TargetFilter));
 
     public Task<UgoiraMetadata> GetUgoiraMetadataAsync(long id)
-        => RunWithLoggerAsync(async t => (await t
-            .GetUgoiraMetadataAsync(id)
-            .ConfigureAwait(false)).UgoiraMetadataInfo);
+        => RunWithLoggerAsync<UgoiraMetadata, UgoiraMetadataResponse>(t => t
+            .GetUgoiraMetadataAsync(id));
 
     public Task<bool> DeleteIllustrationCommentAsync(long commentId)
         => RunWithLoggerAsync(async t => await t
@@ -182,48 +168,51 @@ public partial class MakoClient
             .DeleteNovelCommentAsync(new DeleteCommentRequest(commentId)));
 
     public Task<Comment> AddIllustrationCommentAsync(long illustrationId, string content)
-        => RunWithLoggerAsync(async t => (await t
-            .AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(illustrationId, null, content))).Comment);
+        => RunWithLoggerAsync<Comment, PostCommentResponse>(async t => await t
+            .AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(illustrationId, null, content)));
 
     public Task<Comment> AddIllustrationCommentAsync(long illustrationId, int stampId)
-        => RunWithLoggerAsync(async t => (await t
-            .AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(illustrationId, null, stampId))).Comment);
+        => RunWithLoggerAsync<Comment, PostCommentResponse>(async t => await t
+            .AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(illustrationId, null, stampId)));
 
     public Task<Comment> AddIllustrationCommentAsync(long illustrationId, long parentCommentId, string content)
-        => RunWithLoggerAsync(async t => (await t
-            .AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(illustrationId, parentCommentId, content))).Comment);
+        => RunWithLoggerAsync<Comment, PostCommentResponse>(async t => await t
+            .AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(illustrationId, parentCommentId, content)));
 
     public Task<Comment> AddIllustrationCommentAsync(long illustrationId, long parentCommentId, int stampId)
-        => RunWithLoggerAsync(async t => (await t
-            .AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(illustrationId, parentCommentId, stampId))).Comment);
+        => RunWithLoggerAsync<Comment, PostCommentResponse>(async t => await t
+            .AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(illustrationId, parentCommentId, stampId)));
 
     public Task<Comment> AddNovelCommentAsync(long novelId, string content)
-        => RunWithLoggerAsync(async t => (await t
-            .AddNovelCommentAsync(new AddNormalNovelCommentRequest(novelId, null, content))).Comment);
+        => RunWithLoggerAsync<Comment, PostCommentResponse>(async t => await t
+            .AddNovelCommentAsync(new AddNormalNovelCommentRequest(novelId, null, content)));
 
     public Task<Comment> AddNovelCommentAsync(long novelId, int stampId)
-        => RunWithLoggerAsync(async t => (await t
-            .AddNovelCommentAsync(new AddStampNovelCommentRequest(novelId, null, stampId))).Comment);
+        => RunWithLoggerAsync<Comment, PostCommentResponse>(async t => await t
+            .AddNovelCommentAsync(new AddStampNovelCommentRequest(novelId, null, stampId)));
 
     public Task<Comment> AddNovelCommentAsync(long novelId, long parentCommentId, string content)
-        => RunWithLoggerAsync(async t => (await t
-            .AddNovelCommentAsync(new AddNormalNovelCommentRequest(novelId, parentCommentId, content))).Comment);
+        => RunWithLoggerAsync<Comment, PostCommentResponse>(async t => await t
+            .AddNovelCommentAsync(new AddNormalNovelCommentRequest(novelId, parentCommentId, content)));
 
     public Task<Comment> AddNovelCommentAsync(long novelId, long parentCommentId, int stampId)
-        => RunWithLoggerAsync(async t => (await t
-            .AddNovelCommentAsync(new AddStampNovelCommentRequest(novelId, parentCommentId, stampId))).Comment);
+        => RunWithLoggerAsync<Comment, PostCommentResponse>(async t => await t
+            .AddNovelCommentAsync(new AddStampNovelCommentRequest(novelId, parentCommentId, stampId)));
 
     public Task<bool> GetAiShowSettingsAsync()
-        => RunWithLoggerAsync(async t => (await t.GetAiShowSettingsAsync()).ShowAi);
+        => RunWithLoggerAsync<bool, ShowAiSettingsResponse>(t => t.GetAiShowSettingsAsync());
 
     public Task<bool> PostAiShowSettingsAsync(bool showAi)
         => RunWithLoggerAsync(async t => await t.PostAiShowSettingsAsync(new ShowAiSettingsRequest(showAi)));
 
     public Task<bool> GetRestrictedModeSettingsAsync()
-        => RunWithLoggerAsync(async t => (await t.GetRestrictedModeSettingsAsync()).IsRestrictedModeEnabled);
+        => RunWithLoggerAsync<bool, RestrictedModeSettingsResponse>(t => t.GetRestrictedModeSettingsAsync());
 
     public Task<bool> PostRestrictedModeSettingsAsync(bool isRestrictedModeEnabled)
-        => RunWithLoggerAsync(async t => await t.PostRestrictedModeSettingsAsync(new RestrictedModeSettingsRequest(isRestrictedModeEnabled)));
+        => RunWithLoggerAsync(t => t.PostRestrictedModeSettingsAsync(new RestrictedModeSettingsRequest(isRestrictedModeEnabled)));
+
+    public Task<SearchOptions> GetSearchOptionsAsync()
+        => RunWithLoggerAsync(t => t.GetSearchOptionsAsync());
 
     public Task<IReadOnlyList<Result>> ReverseSearchAsync(Stream imgStream, string apiKey)
         => RunWithLoggerAsync(async () =>

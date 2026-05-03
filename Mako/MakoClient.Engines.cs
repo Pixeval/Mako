@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Mako.Engine;
 using Mako.Engine.Implements;
 using Mako.Global.Enum;
@@ -62,34 +63,32 @@ public partial class MakoClient
     /// <summary>
     /// Search in Pixiv.
     /// </summary>
-    /// <param name="tag">Texts for searching</param>
-    /// <param name="illustrationMatchOption">
-    ///     The <see cref="SearchIllustrationTagMatchOption.TitleAndCaption" /> option for the method of search
-    ///     matching
-    /// </param>
-    /// <param name="sortOption">The <see cref="WorkSortOption" /> option for sorting method</param>
-    /// <param name="startDate">The starting date filtering the search results</param>
-    /// <param name="endDate">The ending date filtering the searching results</param>
-    /// <param name="mergePlainKeywordResults"></param>
-    /// <param name="aiType"></param>
-    /// <returns>
-    /// The <see cref="IFetchEngine{T}" /> iterator containing the searching results.
-    /// </returns>
     /// <exception cref="DateOutOfRangeException">
-    /// Throw this exception if the date is not valid.
     /// </exception>
     public IFetchEngine<Illustration> SearchIllustrations(
         string tag,
-        SearchIllustrationTagMatchOption illustrationMatchOption = SearchIllustrationTagMatchOption.TitleAndCaption,
-        WorkSortOption sortOption = WorkSortOption.DoNotSort,
+        SearchIllustrationTagMatchOption illustrationMatchOption = SearchIllustrationTagMatchOption.PartialMatchForTags,
+        WorkSortOption sortOption = WorkSortOption.PublishDateDescending,
         DateTimeOffset? startDate = null,
         DateTimeOffset? endDate = null,
+        bool aiType = true,
+        SearchIllustrationContentType contentType = SearchIllustrationContentType.IllustrationAndMangaAndUgoira,
+        SearchIllustrationRatioPattern ratioPattern = SearchIllustrationRatioPattern.All,
+        int? widthMin = null,
+        int? widthMax = null,
+        int? heightMin = null,
+        int? heightMax = null,
         bool mergePlainKeywordResults = true,
-        bool? aiType = null)
+        bool includeTranslatedTagResults = true,
+        bool includePotentialViolationWorks = false)
     {
         EnsureBuilt();
-        if (sortOption is WorkSortOption.PopularityDescending && !(Me?.IsPremium ?? false))
-            sortOption = WorkSortOption.DoNotSort;
+
+        if (!(Me?.IsPremium ?? false) && sortOption is WorkSortOption.PopularityDescending)
+        {
+            Debug.Assert(false);
+            sortOption = WorkSortOption.PublishDateDescending;
+        }
 
         var startDateOnly = startDate?.ToJapanTime().ToDateOnly();
         var endDateOnly = endDate?.ToJapanTime().ToDateOnly();
@@ -99,23 +98,80 @@ public partial class MakoClient
         if (startDateOnly > endDateOnly || endDateOnly > japanToday || startDateOnly > japanToday)
             throw new DateOutOfRangeException();
 
-        return new IllustrationSearchEngine(this, illustrationMatchOption, tag, sortOption, startDateOnly, endDateOnly, mergePlainKeywordResults, aiType, Configuration.TargetFilter, new EngineHandle(CancelInstance));
+        return new IllustrationSearchEngine(
+            this,
+            illustrationMatchOption,
+            tag,
+            sortOption,
+            startDateOnly,
+            endDateOnly,
+            aiType,
+            contentType,
+            ratioPattern,
+            widthMin,
+            widthMax,
+            heightMin,
+            heightMax,
+            mergePlainKeywordResults,
+            includeTranslatedTagResults,
+            includePotentialViolationWorks,
+            Configuration.TargetFilter,
+            new EngineHandle(CancelInstance));
     }
 
     /// <inheritdoc cref="SearchIllustrations"/>
     public IFetchEngine<Novel> SearchNovels(
         string tag,
         SearchNovelTagMatchOption novelMatchOption = SearchNovelTagMatchOption.Text,
-        WorkSortOption sortOption = WorkSortOption.DoNotSort,
+        WorkSortOption sortOption = WorkSortOption.PublishDateDescending,
         DateTimeOffset? startDate = null,
         DateTimeOffset? endDate = null,
+        bool aiType = true,
+        SearchOptionsLanguage? language = null,
+        SearchNovelContentLengthOption option = SearchNovelContentLengthOption.None,
+        int? contentLengthMin = null,
+        int? contentLengthMax = null,
+        bool isOriginalOnly = false,
+        SearchOptionsGenre? genre = null,
+        bool isReplaceableOnly = false,
         bool mergePlainKeywordResults = true,
         bool includeTranslatedTagResults = true,
-        bool? aiType = null)
+        bool includePotentialViolationWorks = false)
     {
         EnsureBuilt();
-        if (sortOption is WorkSortOption.PopularityDescending && !(Me?.IsPremium ?? false))
-            sortOption = WorkSortOption.DoNotSort;
+
+        if (!(Me?.IsPremium ?? false))
+        {
+            if (sortOption is WorkSortOption.PopularityDescending)
+            {
+                Debug.Assert(false);
+                sortOption = WorkSortOption.PublishDateDescending;
+            }
+
+            if (option is SearchNovelContentLengthOption.TextLength or SearchNovelContentLengthOption.WordCount)
+                if ((contentLengthMin, contentLengthMax) is not
+                    ((null, null)
+                    or (null, 4999)
+                    or (5000, 19999)
+                    or (20000, 79999)
+                    or (80000, null)))
+                {
+                    Debug.Assert(false);
+                    contentLengthMin = contentLengthMax = null;
+                }
+
+            if (option is SearchNovelContentLengthOption.ReadingTime)
+                if ((contentLengthMin, contentLengthMax) is not
+                    ((null, null)
+                    or (null, 9)
+                    or (10, 59)
+                    or (60, 179)
+                    or (180, null)))
+                {
+                    Debug.Assert(false);
+                    contentLengthMin = contentLengthMax = null;
+                }
+        }
 
         var startDateOnly = startDate?.ToJapanTime().ToDateOnly();
         var endDateOnly = endDate?.ToJapanTime().ToDateOnly();
@@ -125,24 +181,26 @@ public partial class MakoClient
         if (startDateOnly > endDateOnly || endDateOnly > japanToday || startDateOnly > japanToday)
             throw new DateOutOfRangeException();
 
-        return new NovelSearchEngine(this, novelMatchOption, tag, sortOption, startDateOnly, endDateOnly, mergePlainKeywordResults, includeTranslatedTagResults, aiType, Configuration.TargetFilter, new EngineHandle(CancelInstance));
-    }
-
-    /// <inheritdoc cref="SearchIllustrations"/>
-    public IFetchEngine<IWorkEntry> SearchWorks(
-        string tag,
-        SimpleWorkType type,
-        SearchIllustrationTagMatchOption illustrationMatchOption = SearchIllustrationTagMatchOption.TitleAndCaption,
-        SearchNovelTagMatchOption novelMatchOption = SearchNovelTagMatchOption.Text,
-        WorkSortOption sortOption = WorkSortOption.DoNotSort,
-        DateTimeOffset? startDate = null,
-        DateTimeOffset? endDate = null,
-        bool mergePlainKeywordResults = true,
-        bool? aiType = null)
-    {
-        return type is SimpleWorkType.Novel
-            ? SearchNovels(tag, novelMatchOption, sortOption, startDate, endDate, mergePlainKeywordResults, true, aiType)
-            : SearchIllustrations(tag, illustrationMatchOption, sortOption, startDate, endDate, mergePlainKeywordResults, aiType);
+        return new NovelSearchEngine(
+            this,
+            novelMatchOption,
+            tag,
+            sortOption,
+            startDateOnly,
+            endDateOnly,
+            aiType,
+            language?.Code,
+            option,
+            contentLengthMin,
+            contentLengthMax,
+            isOriginalOnly,
+            genre?.Id,
+            isReplaceableOnly,
+            mergePlainKeywordResults,
+            includeTranslatedTagResults,
+            includePotentialViolationWorks,
+            Configuration.TargetFilter,
+            new EngineHandle(CancelInstance));
     }
 
     /// <summary>
@@ -152,8 +210,7 @@ public partial class MakoClient
     /// <returns>
     /// The <see cref="IFetchEngine{T}" /> containing the search results for users.
     /// </returns>
-    public IFetchEngine<User> SearchUser(
-        string keyword)
+    public IFetchEngine<User> SearchUser(string keyword)
     {
         EnsureBuilt();
         return new UserSearchEngine(this, Configuration.TargetFilter, keyword, new EngineHandle(CancelInstance));
@@ -272,11 +329,11 @@ public partial class MakoClient
     }
 
     public IFetchEngine<Illustration> NewIllustrations(
-        WorkType workType,
+        bool contentTypeIsManga,
         uint? maxWorkId = null)
     {
         EnsureBuilt();
-        return new IllustrationNewEngine(this, workType, maxWorkId, Configuration.TargetFilter, new EngineHandle(CancelInstance));
+        return new IllustrationNewEngine(this, contentTypeIsManga, maxWorkId, Configuration.TargetFilter, new EngineHandle(CancelInstance));
     }
 
     /// <inheritdoc cref="NewIllustrations" />
@@ -294,7 +351,7 @@ public partial class MakoClient
     {
         return type is WorkType.Novel
             ? NewNovels(maxWorkId)
-            : NewIllustrations(type, maxWorkId);
+            : NewIllustrations(type is WorkType.Manga, maxWorkId);
     }
 
     public IFetchEngine<User> MyPixivUsers(long userId)

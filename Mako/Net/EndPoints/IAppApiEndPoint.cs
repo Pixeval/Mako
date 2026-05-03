@@ -4,6 +4,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Mako.Global.Enum;
+using Mako.Model;
 using Mako.Net.Request;
 using Mako.Net.Response;
 using WebApiClientCore;
@@ -34,15 +35,15 @@ public interface IAppApiEndPoint
     /// 由于“是否收藏”“是否关注”字段需要实时更新，故不缓存
     /// </remarks>
     [HttpGet("/v1/illust/detail")]
-    Task<PixivSingleIllustrationResponse> GetSingleIllustrationAsync([AliasAs("illust_id")] long id, TargetFilter filter);
+    Task<SingleIllustrationResponse> GetSingleIllustrationAsync([AliasAs("illust_id")] long id, TargetFilter filter);
 
     /// <inheritdoc cref="GetSingleIllustrationAsync" />
     [HttpGet("/v1/user/detail")]
-    Task<PixivSingleUserResponse> GetSingleUserAsync([AliasAs("user_id")] long id, TargetFilter filter);
+    Task<SingleUserResponse> GetSingleUserAsync([AliasAs("user_id")] long id, TargetFilter filter);
 
     /// <inheritdoc cref="GetSingleIllustrationAsync" />
     [HttpGet("/v2/novel/detail")]
-    Task<PixivSingleNovelResponse> GetSingleNovelAsync([AliasAs("novel_id")] long id, TargetFilter filter);
+    Task<SingleNovelResponse> GetSingleNovelAsync([AliasAs("novel_id")] long id, TargetFilter filter);
 
     [Cache(60 * 1000)]
     [HttpGet("/webview/v2/novel")]
@@ -61,7 +62,7 @@ public interface IAppApiEndPoint
     */
 
     [HttpGet("/v1/user/related")]
-    Task<PixivRelatedUsersResponse> RelatedUserAsync([AliasAs("seed_user_id")] long userId, TargetFilter filter);
+    Task<RelatedUsersResponse> RelatedUserAsync([AliasAs("seed_user_id")] long userId, TargetFilter filter);
 
     [HttpPost("/v1/user/follow/add")]
     Task<HttpResponseMessage> FollowUserAsync([FormContent] FollowUserRequest request);
@@ -111,4 +112,7 @@ public interface IAppApiEndPoint
 
     [HttpPost("/v1/user/restricted-mode-settings")]
     Task<HttpResponseMessage> PostRestrictedModeSettingsAsync([FormContent] RestrictedModeSettingsRequest request);
+
+    [HttpGet("/v1/search/options")]
+    Task<SearchOptions> GetSearchOptionsAsync(/*和搜索参数一样，但参数没意义*/);
 }

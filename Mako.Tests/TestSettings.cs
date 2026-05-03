@@ -2,17 +2,20 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using Mako.Global.Enum;
 using Mako.Net;
 using Microsoft.Extensions.Logging.Debug;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-[assembly: Parallelize(Scope = ExecutionScope.MethodLevel)]
+[assembly: DoNotParallelize]
 
-namespace Mako.Test;
+namespace Mako.Tests;
 
 [TestClass]
 public static class TestSettings
 {
+    public static string RefreshToken => throw new NotImplementedException();
+
     public static IReadOnlyList<string> PixivAppApiNameResolver { get; } =
     [
         "104.18.42.239",
@@ -65,6 +68,7 @@ public static class TestSettings
             Proxy: "" /*UseSystemProxy*/,
             Cookie: null,
             MirrorHost: null,
+            TargetFilter: TargetFilter.ForAndroid,
             ApiRequestCooldown: 800,
             CultureInfo: CultureInfo.CurrentUICulture)
         {
@@ -82,6 +86,7 @@ public static class TestSettings
         using var loggerProvider = new DebugLoggerProvider();
         var logger = loggerProvider.CreateLogger(nameof(MakoClient));
         Client = new(conf, logger);
+        Client.SetToken(RefreshToken);
     }
 }
 

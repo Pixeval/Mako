@@ -10,7 +10,7 @@ namespace Mako.Net.Response;
 
 [DebuggerDisplay("{UserEntity}")]
 [Factory]
-public partial record PixivSingleUserResponse
+public partial record SingleUserResponse
 {
     /// <summary>
     /// 此处<see cref="UserInfo"/>一定有<see cref="UserInfo.Description"/>

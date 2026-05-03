@@ -10,8 +10,16 @@ namespace Mako.Utilities;
 
 internal static class DescriptionHelper
 {
-    public static string GetDescription<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] TEnum>(this TEnum @enum) where TEnum : Enum
+    extension<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] TEnum>(TEnum @enum) where TEnum : Enum
     {
-        return (typeof(TEnum).GetField(@enum.ToString())?.GetCustomAttribute(typeof(DescriptionAttribute)) as DescriptionAttribute)?.Description ?? throw new InvalidOperationException("Attribute not found");
+        public string GetDescription()
+        {
+            return @enum.TryGetDescription() ?? throw new InvalidOperationException("Attribute not found");
+        }
+
+        public string? TryGetDescription()
+        {
+            return (typeof(TEnum).GetField(@enum.ToString())?.GetCustomAttribute(typeof(DescriptionAttribute)) as DescriptionAttribute)?.Description;
+        }
     }
 }

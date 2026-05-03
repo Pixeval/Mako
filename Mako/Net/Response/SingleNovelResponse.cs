@@ -8,10 +8,10 @@ using Mako.Utilities;
 
 namespace Mako.Net.Response;
 
-[DebuggerDisplay("{Novel}")]
+[DebuggerDisplay("{Content}")]
 [Factory]
-public partial record PixivSingleNovelResponse
+public partial record SingleNovelResponse : ISingleResultResponse<Novel>
 {
     [JsonPropertyName("novel")]
-    public required Novel Novel { get; set; }
+    public required Novel Content { get; set; }
 }

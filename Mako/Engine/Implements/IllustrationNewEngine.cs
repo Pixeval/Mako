@@ -11,7 +11,7 @@ namespace Mako.Engine.Implements;
 
 internal class IllustrationNewEngine(
     MakoClient makoClient,
-    WorkType contentType,
+    bool contentTypeIsManga,
     uint? maxIllustrationId,
     TargetFilter filter,
     EngineHandle? engineHandle)
@@ -20,7 +20,7 @@ internal class IllustrationNewEngine(
     public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Illustration<IllustrationNewEngine>(this,
             "/v1/illust/new"
-            + $"?content_type={contentType.GetDescription()}"
+            + $"?content_type={(contentTypeIsManga ? "manga" : "illust")}"
             + $"&filter={filter.GetDescription()}"
             + maxIllustrationId?.Let(static s => $"&max_illust_id={s}"));
 }

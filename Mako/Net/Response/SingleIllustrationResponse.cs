@@ -8,8 +8,8 @@ using Mako.Utilities;
 namespace Mako.Net.Response;
 
 [Factory]
-public partial record PixivSingleIllustrationResponse
+public partial record SingleIllustrationResponse : ISingleResultResponse<Illustration>
 {
     [JsonPropertyName("illust")]
-    public required Illustration Illustration { get; set; }
+    public required Illustration Content { get; set; }
 }

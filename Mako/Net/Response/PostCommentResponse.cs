@@ -6,8 +6,8 @@ using Mako.Model;
 
 namespace Mako.Net.Response;
 
-public class PostCommentResponse
+public class PostCommentResponse : ISingleResultResponse<Comment>
 {
     [JsonPropertyName("comment")]
-    public required Comment Comment { get; set; }
+    public required Comment Content { get; set; }
 }

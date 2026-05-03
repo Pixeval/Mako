@@ -7,8 +7,8 @@ using Mako.Utilities;
 namespace Mako.Net.Response;
 
 [Factory]
-public partial record RestrictedModeSettingsResponse
+public partial record RestrictedModeSettingsResponse : ISingleResultResponse<bool>
 {
     [JsonPropertyName("is_restricted_mode_enabled")]
-    public required bool IsRestrictedModeEnabled { get; set; }
+    public required bool Content { get; set; }
 }

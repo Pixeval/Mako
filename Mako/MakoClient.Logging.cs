@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Mako.Net.EndPoints;
+using Mako.Net.Response;
 using Mako.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,11 @@ public partial class MakoClient
     private Task<IReadOnlyList<T>> RunWithLoggerAsync<T>(Func<IAppApiEndPoint, Task<IReadOnlyList<T>>> task)
     {
         return RunWithLoggerAsync(() => task(Provider.GetRequiredService<IAppApiEndPoint>()), []);
+    }
+
+    private Task<T> RunWithLoggerAsync<T, TResponse>(Func<IAppApiEndPoint, Task<TResponse>> task) where TResponse : ISingleResultResponse<T>
+    {
+        return RunWithLoggerAsync(async () => (await task(Provider.GetRequiredService<IAppApiEndPoint>()).ConfigureAwait(false)).Content, default(T)!);
     }
 
     private Task<bool> RunWithLoggerAsync(Func<IAppApiEndPoint, Task<bool>> task)

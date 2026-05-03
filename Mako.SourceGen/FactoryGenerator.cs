@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -89,7 +90,7 @@ public class FactoryGenerator : IIncrementalGenerator
             if (TypeWithAttribute(symbol, ga.Attributes) is { } source)
                 spc.AddSource(
                     // 不能重名
-                    $"{symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.Omitted))}_{AttributeFullName}.g.cs",
+                    $"{symbol.MetadataName}_{AttributeFullName}.g.cs",
                     source);
         });
     }

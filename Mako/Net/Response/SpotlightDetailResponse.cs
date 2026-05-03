@@ -8,7 +8,7 @@ using Mako.Utilities;
 namespace Mako.Net.Response;
 
 [Factory]
-public partial record PixivSpotlightDetailResponse
+public partial record SpotlightDetailResponse
 {
     [JsonPropertyName("error")]
     public required bool Error { get; set; }

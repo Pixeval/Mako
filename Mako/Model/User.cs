@@ -41,7 +41,7 @@ public partial record UserInfo : IUser, IIdEntry
     public required string Name { get; set; } = "";
 
     /// <summary>
-    /// 只在<see cref="PixivSingleUserResponse"/>中才会有此项
+    /// 只在<see cref="SingleUserResponse"/>中才会有此项
     /// </summary>
     [JsonPropertyName("comment")]
     public string Description { get; set; } = "";

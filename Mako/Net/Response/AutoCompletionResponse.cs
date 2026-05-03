@@ -9,8 +9,8 @@ using Mako.Utilities;
 namespace Mako.Net.Response;
 
 [Factory]
-public partial record AutoCompletionResponse
+public partial record AutoCompletionResponse : ISingleResultResponse<IReadOnlyList<Tag>>
 {
     [JsonPropertyName("tags")]
-    public required IReadOnlyList<Tag> Tags { get; set; } = [];
+    public required IReadOnlyList<Tag> Content { get; set; } = [];
 }

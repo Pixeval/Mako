@@ -9,11 +9,11 @@ using Mako.Utilities;
 namespace Mako.Net.Response;
 
 [Factory]
-public partial record PixivUserResponse : IPixivNextUrlResponse<User>
+public partial record NovelResponse : IPixivNextUrlResponse<Novel>
 {
     [JsonPropertyName("next_url")]
     public required string? NextUrl { get; set; }
 
-    [JsonPropertyName("user_previews")]
-    public /*override*/ required IReadOnlyList<User> Entities { get; set; } = [];
+    [JsonPropertyName("novels")]
+    public /*override*/ required IReadOnlyList<Novel> Entities { get; set; } = [];
 }

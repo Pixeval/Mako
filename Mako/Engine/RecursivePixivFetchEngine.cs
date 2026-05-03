@@ -103,26 +103,26 @@ internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetc
 internal static class RecursivePixivAsyncEnumerators
 {
     public class User<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : RecursivePixivAsyncEnumerator<User, PixivUserResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
+        : RecursivePixivAsyncEnumerator<User, UserResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
         where TFetchEngine : class, IFetchEngine<User>;
 
     public class Illustration<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : RecursivePixivAsyncEnumerator<Illustration, PixivIllustrationResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
+        : RecursivePixivAsyncEnumerator<Illustration, IllustrationResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
         where TFetchEngine : class, IFetchEngine<Illustration>;
 
     public class Novel<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : RecursivePixivAsyncEnumerator<Novel, PixivNovelResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
+        : RecursivePixivAsyncEnumerator<Novel, NovelResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
         where TFetchEngine : class, IFetchEngine<Novel>;
 
     public class Comment<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : RecursivePixivAsyncEnumerator<Comment, PixivCommentResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
+        : RecursivePixivAsyncEnumerator<Comment, CommentResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
         where TFetchEngine : class, IFetchEngine<Comment>;
 
     public class BookmarkTag<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : RecursivePixivAsyncEnumerator<BookmarkTag, PixivBookmarkTagResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
+        : RecursivePixivAsyncEnumerator<BookmarkTag, BookmarkTagResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
         where TFetchEngine : class, IFetchEngine<BookmarkTag>;
 
     public class Spotlight<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : RecursivePixivAsyncEnumerator<Spotlight, PixivSpotlightResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
+        : RecursivePixivAsyncEnumerator<Spotlight, SpotlightResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
         where TFetchEngine : class, IFetchEngine<Spotlight>;
 }

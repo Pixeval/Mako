@@ -1,47 +1,28 @@
 using System.Threading.Tasks;
-using Mako.Global.Enum;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Mako.Test;
+namespace Mako.Tests;
 
 [TestClass]
-public sealed class MainTest
+public sealed class DomainFrontingTest
 {
-    private const string RefreshToken = "<REFRESH_TOKEN>";
-
     [TestMethod]
-    [DoNotParallelize]
-    [DataRow(RefreshToken)]
-    public async Task TestRefreshToken(string refreshToken)
-    {
-        TestSettings.Client.SetToken(refreshToken);
-
-        var tags = await TestSettings.Client.GetTrendingTagsAsync(TargetFilter.ForIos);
-        
-        Assert.IsGreaterThan(0, tags.Count);
-    }
-
-    [TestMethod]
-    [DoNotParallelize]
     [DataRow(DomainFrontingType.Fragmentation)]
     [DataRow(DomainFrontingType.Ech)]
     [DataRow(DomainFrontingType.Desync)]
     public async Task TestDomainFronting(DomainFrontingType domainFrontingType)
     {
-        TestSettings.Client.SetToken(RefreshToken);
         TestSettings.Client.Configuration.DomainFronting = true;
         TestSettings.Client.Configuration.DomainFrontingType = domainFrontingType;
 
-        var tags = await TestSettings.Client.GetTrendingTagsAsync(TargetFilter.ForIos);
+        var tags = await TestSettings.Client.GetTrendingTagsAsync();
 
-        Assert.IsGreaterThan(0, tags.Count);
+        Assert.IsNotEmpty(tags);
     }
 
     [TestMethod]
-    [DoNotParallelize]
     public async Task TestDomainFrontingDownloadImage()
     {
-        TestSettings.Client.SetToken(RefreshToken);
         TestSettings.Client.Configuration.DomainFronting = true;
 
         var imageClient = TestSettings.Client.GetImageDownloadClient();

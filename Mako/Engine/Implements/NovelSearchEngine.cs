@@ -10,20 +10,6 @@ using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-/// <summary>
-/// 
-/// </summary>
-/// <param name="makoClient"></param>
-/// <param name="engineHandle"></param>
-/// <param name="matchOption"></param>
-/// <param name="tag"></param>
-/// <param name="sortOption"></param>
-/// <param name="targetFilter"></param>
-/// <param name="startDate"></param>
-/// <param name="endDate"></param>
-/// <param name="mergePlainKeywordResults"></param>
-/// <param name="includeTranslatedTagResults"></param>
-/// <param name="aiType">false：过滤AI</param>
 internal class NovelSearchEngine(
     MakoClient makoClient,
     SearchNovelTagMatchOption matchOption,
@@ -31,9 +17,17 @@ internal class NovelSearchEngine(
     WorkSortOption sortOption,
     DateOnly? startDate,
     DateOnly? endDate,
-    bool mergePlainKeywordResults,
-    bool includeTranslatedTagResults,
-    bool? aiType,
+    bool aiType /*= true*/,
+    string? langCode,
+    SearchNovelContentLengthOption option,
+    int? contentLengthMin,
+    int? contentLengthMax,
+    bool isOriginalOnly /*= false*/,
+    int? genreId,
+    bool isReplaceableOnly /*= false*/,
+    bool mergePlainKeywordResults /*= true*/,
+    bool includeTranslatedTagResults /*= true*/,
+    bool includePotentialViolationWorks /*= false*/,
     TargetFilter targetFilter,
     EngineHandle? engineHandle)
     : AbstractPixivFetchEngine<Novel>(makoClient, engineHandle)
@@ -46,13 +40,19 @@ internal class NovelSearchEngine(
             + $"?search_target={matchOption.GetDescription()}"
             + $"&word={tag}"
             + $"&filter={targetFilter.GetDescription()}"
+            + $"&sort={sortOption.GetDescription()}"
+            + $"&search_ai_type={(aiType ? 1 : 0)}"
+            + langCode?.Let(t => $"&lang={t}")
+            + option.TryGetDescription()?.Let(o =>
+                contentLengthMin?.Let(t => $"&{o}_min={t}")
+                + contentLengthMax?.Let(t => $"&{o}_max={t}"))
+            + $"&is_original_only={isOriginalOnly.ToString().ToLower()}"
+            + genreId?.Let(t => $"&genre={t}")
+            + $"&is_replaceable_only={isReplaceableOnly.ToString().ToLower()}"
             + $"&merge_plain_keyword_results={mergePlainKeywordResults.ToString().ToLower()}"
             + $"&include_translated_tag_results={includeTranslatedTagResults.ToString().ToLower()}"
-            + (sortOption is WorkSortOption.DoNotSort
-                ? null
-                : $"&sort={sortOption.GetDescription()}")
+            + $"&include_potential_violation_works={includePotentialViolationWorks.ToString().ToLower()}"
             + startDate?.Let(dn => $"&start_date={dn:yyyy-MM-dd}")
-            + endDate?.Let(dn => $"&end_date={dn:yyyy-MM-dd}")
-            + aiType?.Let(t => $"&search_ai_type={(t ? 1 : 0)}"));
+            + endDate?.Let(dn => $"&end_date={dn:yyyy-MM-dd}"));
     }
 }
