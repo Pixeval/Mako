@@ -10,7 +10,6 @@ using Mako.Model;
 using Mako.Net.EndPoints;
 using Mako.Net.Request;
 using Mako.Net.Response;
-using Mako.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Misaki;
 using WebApiClientCore.Parameters;
@@ -26,7 +25,7 @@ public partial class MakoClient
     /// <returns></returns>
     public Task<Illustration> GetIllustrationFromIdAsync(long id)
         => RunWithLoggerAsync(async t => (await t
-            .GetSingleIllustrationAsync(id)
+            .GetSingleIllustrationAsync(id, Configuration.TargetFilter)
             .ConfigureAwait(false)).Illustration);
 
     async Task<IArtworkInfo> IGetArtworkService.GetArtworkAsync(string id) => await GetIllustrationFromIdAsync(long.Parse(id));
@@ -37,14 +36,14 @@ public partial class MakoClient
             .ConfigureAwait(false))
             .Tags);
 
-    public Task<PixivSingleUserResponse> GetUserFromIdAsync(long id, TargetFilter targetFilter)
+    public Task<PixivSingleUserResponse> GetUserFromIdAsync(long id)
         => RunWithLoggerAsync<PixivSingleUserResponse>(async t => await t
-            .GetSingleUserAsync(id, targetFilter.GetDescription())
+            .GetSingleUserAsync(id, Configuration.TargetFilter)
             .ConfigureAwait(false));
 
     public Task<Novel> GetNovelFromIdAsync(long id)
         => RunWithLoggerAsync(async t => (await t
-            .GetSingleNovelAsync(id)
+            .GetSingleNovelAsync(id, Configuration.TargetFilter)
             .ConfigureAwait(false)).Novel);
 
     public Task<NovelContent> GetNovelContentAsync(long id)
@@ -141,9 +140,9 @@ public partial class MakoClient
             .RemoveNovelBookmarkAsync(new RemoveNovelBookmarkRequest(id))
             .ConfigureAwait(false));
 
-    public Task<IReadOnlyList<User>> RelatedUserAsync(long id, TargetFilter filter)
+    public Task<IReadOnlyList<User>> RelatedUserAsync(long id)
         => RunWithLoggerAsync(async t => (await t
-                .RelatedUserAsync(id, filter.GetDescription())
+                .RelatedUserAsync(id, Configuration.TargetFilter)
                 .ConfigureAwait(false))
             .Users);
 
@@ -157,15 +156,15 @@ public partial class MakoClient
             .RemoveFollowUserAsync(new RemoveFollowUserRequest(id))
             .ConfigureAwait(false));
 
-    public Task<IReadOnlyList<TrendingTag>> GetTrendingTagsAsync(TargetFilter targetFilter)
+    public Task<IReadOnlyList<TrendingTag>> GetTrendingTagsAsync()
         => RunWithLoggerAsync(async t => (await t
-                .GetTrendingTagsAsync(targetFilter.GetDescription())
+                .GetIllustrationTrendingTagsAsync(Configuration.TargetFilter)
                 .ConfigureAwait(false))
             .TrendTags);
 
-    public Task<IReadOnlyList<TrendingTag>> GetTrendingTagsForNovelAsync(TargetFilter targetFilter)
+    public Task<IReadOnlyList<TrendingTag>> GetTrendingTagsForNovelAsync()
         => RunWithLoggerAsync(async t => (await t
-            .GetTrendingTagsForNovelAsync(targetFilter.GetDescription())
+            .GetNovelTrendingTagsAsync(Configuration.TargetFilter)
             .ConfigureAwait(false))
             .TrendTags);
 

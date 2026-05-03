@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Mako.Global.Enum;
 using Mako.Net;
 using Pixeval.Network.Maho.Ech;
 
@@ -27,19 +28,11 @@ public record MakoConfiguration(
     string? Proxy,
     string? Cookie,
     string? MirrorHost,
+    TargetFilter TargetFilter,
     int ApiRequestCooldown,
     CultureInfo CultureInfo) : INativeInteropDnsResolver
 {
-    public MakoConfiguration() : this(false, DomainFrontingType.Fragmentation, "", "", "", 800, CultureInfo.CurrentCulture) { }
-
-    public MakoConfiguration(
-        bool DomainFronting,
-        string? Proxy,
-        string? Cookie,
-        string? MirrorHost,
-        int ApiRequestCooldown,
-        CultureInfo CultureInfo)
-        : this(DomainFronting, DomainFrontingType.Fragmentation, Proxy, Cookie, MirrorHost, ApiRequestCooldown, CultureInfo) { }
+    public MakoConfiguration() : this(false, DomainFrontingType.Fragmentation, "", "", "", TargetFilter.ForAndroid, 800, CultureInfo.CurrentCulture) { }
 
     public CultureInfo CultureInfo { get; set; } = CultureInfo;
 
@@ -71,6 +64,8 @@ public record MakoConfiguration(
     /// Mirror server's host of image downloading
     /// </summary>
     public string? MirrorHost { get; set; } = MirrorHost;
+
+    public TargetFilter TargetFilter { get; set; } = TargetFilter;
 
     public Dictionary<string, IPAddress[]> NameResolvers { get; } = new()
     {

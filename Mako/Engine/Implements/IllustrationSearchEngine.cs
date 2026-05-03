@@ -29,6 +29,7 @@ internal class IllustrationSearchEngine(
     WorkSortOption sortOption,
     DateOnly? startDate,
     DateOnly? endDate,
+    bool mergePlainKeywordResults,
     bool? aiType,
     TargetFilter targetFilter,
     EngineHandle? engineHandle)
@@ -42,6 +43,7 @@ internal class IllustrationSearchEngine(
             + $"?search_target={matchOption.GetDescription()}"
             + $"&word={tag}"
             + $"&filter={targetFilter.GetDescription()}"
+            + $"&merge_plain_keyword_results={mergePlainKeywordResults.ToString().ToLower()}"
             + (sortOption is WorkSortOption.DoNotSort
                 ? null
                 : $"&sort={sortOption.GetDescription()}")

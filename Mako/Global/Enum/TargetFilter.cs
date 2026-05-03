@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.ComponentModel;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Mako.Global.Enum;
@@ -14,6 +13,5 @@ public enum TargetFilter
     ForAndroid,
 
     [Description("for_ios")]
-    [EnumMember(Value = "for_ios")]
     ForIos
 }
