@@ -90,6 +90,16 @@ public partial class MakoClient
             : IllustrationPosted(uid, type);
     }
 
+    /// <inheritdoc cref="IllustrationPosted" />
+    public IFetchEngine<Series> WorkSeriesWatchlist(WorkType type)
+    {
+        if (type is WorkType.Illustration)
+            throw new ArgumentOutOfRangeException(nameof(type));
+        return type is WorkType.Novel
+            ? NovelSeriesWatchlist()
+            : MangaSeriesWatchlist();
+    }
+
     /// <inheritdoc cref="IllustrationComments" />
     public IFetchEngine<Comment> WorkComments(SimpleWorkType type, long workId)
     {
@@ -106,6 +116,8 @@ public partial class MakoClient
             : IllustrationCommentReplies(commentId);
     }
 
+    #region Helpers
+
     public static DateTimeOffset RankingMaxDateTime =>
         // 榜单在日本时间（东九区）每天中午12点更新昨日榜单
         // 即在西三区每天凌晨0点更新
@@ -114,23 +126,25 @@ public partial class MakoClient
     public static DateOnly RankingMaxDate => RankingMaxDateTime.ToDateOnly();
 
     /// <exception cref="ArgumentException"></exception>
-    public static void CheckRankingMaxDate(DateOnly dateOnly, [CallerArgumentExpression(nameof(dateOnly))] string memberName = "")
+    internal static void CheckRankingMaxDate(DateOnly dateOnly, [CallerArgumentExpression(nameof(dateOnly))] string memberName = "")
     {
         if (dateOnly > RankingMaxDate)
             throw new ArgumentException("The specified date is out of range.", memberName);
     }
 
     /// <exception cref="ArgumentException"></exception>
-    public void CheckPrivacyPolicy(PrivacyPolicy privacyPolicy, long uid, [CallerArgumentExpression(nameof(privacyPolicy))] string memberName = "")
+    internal void CheckPrivacyPolicy(PrivacyPolicy privacyPolicy, long uid, [CallerArgumentExpression(nameof(privacyPolicy))] string memberName = "")
     {
         if (privacyPolicy is PrivacyPolicy.Private && Me?.Id != uid)
             throw new ArgumentException("Cannot request other user's private data.", memberName);
     }
 
     /// <exception cref="ArgumentException"></exception>
-    public void CheckWorkSortOption(WorkSortOption workSortOption, [CallerArgumentExpression(nameof(workSortOption))] string memberName = "")
+    internal void CheckWorkSortOption(WorkSortOption workSortOption, [CallerArgumentExpression(nameof(workSortOption))] string memberName = "")
     {
         if (!(Me?.IsPremium ?? false) && workSortOption is WorkSortOption.PopularityDescending)
             throw new ArgumentException("Cannot request premium sort option.", memberName);
     }
+
+    #endregion
 }

@@ -63,10 +63,13 @@ public partial record UserInfo : IUser, IIdEntry
     public required string Account { get; set; } = "";
 
     [JsonPropertyName("profile_image_urls")]
-    public required ProfileImageUrls ProfileImageUrls { get; set; }
+    public required MediumOnlyImageUrl ProfileImageUrls { get; set; }
 
+    /// <remarks>
+    /// <see cref="SingleUserResponse"/> 等结构里可能没有此项
+    /// </remarks>
     [JsonPropertyName("is_accept_request")]
-    public required bool IsAcceptRequest { get; set; }
+    public bool IsAcceptRequest { get; set; }
 
     [JsonPropertyName("is_followed")]
     public bool IsFollowed { get; set; }

@@ -3,6 +3,7 @@
 
 using System.Net.Http;
 using System.Threading.Tasks;
+using Mako.Engine.Implements;
 using Mako.Global.Enum;
 using Mako.Model;
 using Mako.Net.Request;
@@ -17,19 +18,31 @@ namespace Mako.Net.EndPoints;
 /// </summary>
 [HttpHost(MakoHttpOptions.AppApiBaseUrl)]
 [OAuthToken]
-public interface IAppApiEndPoint
+internal interface IAppApiEndPoint
 {
     [HttpPost("/v2/illust/bookmark/add")]
     Task<HttpResponseMessage> AddIllustrationBookmarkAsync([FormContent] AddIllustrationBookmarkRequest request);
 
     [HttpPost("/v1/illust/bookmark/delete")]
-    Task<HttpResponseMessage> RemoveIllustrationBookmarkAsync([FormContent] RemoveIllustrationBookmarkRequest request);
+    Task<HttpResponseMessage> RemoveIllustrationBookmarkAsync([FormField] [AliasAs("illust_id")] long id);
 
     [HttpPost("/v2/novel/bookmark/add")]
     Task<HttpResponseMessage> AddNovelBookmarkAsync([FormContent] AddNovelBookmarkRequest request);
 
     [HttpPost("/v1/novel/bookmark/delete")]
-    Task<HttpResponseMessage> RemoveNovelBookmarkAsync([FormContent] RemoveNovelBookmarkRequest request);
+    Task<HttpResponseMessage> RemoveNovelBookmarkAsync([FormField][AliasAs("novel_id")] long id);
+
+    [HttpPost("/v1/watchlist/manga/add")]
+    Task<HttpResponseMessage> AddMangaSeriesWatchlistAsync([FormField][AliasAs("series_id")] long id);
+
+    [HttpPost("/v1/watchlist/manga/delete")]
+    Task<HttpResponseMessage> RemoveMangaSeriesWatchlistAsync([FormField][AliasAs("series_id")] long id);
+
+    [HttpPost("/v1/watchlist/novel/add")]
+    Task<HttpResponseMessage> AddNovelSeriesWatchlistAsync([FormField][AliasAs("series_id")] long id);
+
+    [HttpPost("/v1/watchlist/novel/delete")]
+    Task<HttpResponseMessage> RemoveNovelSeriesWatchlistAsync([FormField][AliasAs("series_id")] long id);
 
     /// <remarks>
     /// 由于“是否收藏”“是否关注”字段需要实时更新，故不缓存
@@ -44,6 +57,15 @@ public interface IAppApiEndPoint
     /// <inheritdoc cref="GetSingleIllustrationAsync" />
     [HttpGet("/v2/novel/detail")]
     Task<SingleNovelResponse> GetSingleNovelAsync([AliasAs("novel_id")] long id, TargetFilter filter);
+
+    [HttpGet("/v1/illust-series/illust")]
+    Task<MangaSeriesContext> GetMangaSeriesContextAsync([AliasAs("illust_id")] long id, TargetFilter filter);
+
+    [HttpGet(MangaSeriesDetailEngine.UrlSegment)]
+    Task<MangaSeriesDetailResponse> GetMangaSeriesDetailAsync([AliasAs("illust_series_id")] long id, TargetFilter filter);
+
+    [HttpGet(NovelSeriesDetailEngine.UrlSegment)]
+    Task<NovelSeriesDetailResponse> GetNovelSeriesDetailAsync([AliasAs("series_id")] long id);
 
     [Cache(60 * 1000)]
     [HttpGet("/webview/v2/novel")]
@@ -68,7 +90,7 @@ public interface IAppApiEndPoint
     Task<HttpResponseMessage> FollowUserAsync([FormContent] FollowUserRequest request);
 
     [HttpPost("/v1/user/follow/delete")]
-    Task<HttpResponseMessage> RemoveFollowUserAsync([FormContent] RemoveFollowUserRequest request);
+    Task<HttpResponseMessage> RemoveFollowUserAsync([FormField][AliasAs("user_id")] long userId);
 
     [HttpGet("/v1/trending-tags/illust")]
     Task<TrendingTagResponse> GetIllustrationTrendingTagsAsync(TargetFilter filter);
@@ -90,7 +112,7 @@ public interface IAppApiEndPoint
     Task<PostCommentResponse> AddIllustrationCommentAsync([FormContent] AddStampIllustrationCommentRequest request);
 
     [HttpPost("/v1/illust/comment/delete")]
-    Task<HttpResponseMessage> DeleteIllustrationCommentAsync([FormContent] DeleteCommentRequest request);
+    Task<HttpResponseMessage> DeleteIllustrationCommentAsync([FormField][AliasAs("comment_id")] long commentId);
 
     [HttpPost("/v1/novel/comment/add")]
     Task<PostCommentResponse> AddNovelCommentAsync([FormContent] AddNormalNovelCommentRequest request);
@@ -99,19 +121,19 @@ public interface IAppApiEndPoint
     Task<PostCommentResponse> AddNovelCommentAsync([FormContent] AddStampNovelCommentRequest request);
 
     [HttpPost("/v1/novel/comment/delete")]
-    Task<HttpResponseMessage> DeleteNovelCommentAsync([FormContent] DeleteCommentRequest request);
+    Task<HttpResponseMessage> DeleteNovelCommentAsync([FormField][AliasAs("comment_id")] long commentId);
 
     [HttpGet("/v1/user/ai-show-settings")]
     Task<ShowAiSettingsResponse> GetAiShowSettingsAsync();
 
     [HttpPost("/v1/user/ai-show-settings/edit")]
-    Task<HttpResponseMessage> PostAiShowSettingsAsync([FormContent] ShowAiSettingsRequest request);
+    Task<HttpResponseMessage> PostAiShowSettingsAsync([FormField][AliasAs("show_ai")] bool showAi);
 
     [HttpGet("/v1/user/restricted-mode-settings")]
     Task<RestrictedModeSettingsResponse> GetRestrictedModeSettingsAsync();
 
     [HttpPost("/v1/user/restricted-mode-settings")]
-    Task<HttpResponseMessage> PostRestrictedModeSettingsAsync([FormContent] RestrictedModeSettingsRequest request);
+    Task<HttpResponseMessage> PostRestrictedModeSettingsAsync([FormField][AliasAs("is_restricted_mode_enabled")] bool isRestrictedModeEnabled);
 
     [HttpGet("/v1/search/options")]
     Task<SearchOptions> GetSearchOptionsAsync(/*和搜索参数一样，但参数没意义*/);

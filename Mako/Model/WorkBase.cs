@@ -72,6 +72,7 @@ public abstract record WorkBase
 
 public record SimpleSeries : IIdEntry
 {
+    // 虽然这两个字段不是required，但除了WorkBase其他情况都会有这两个字段
     [JsonPropertyName("id")]
     public long Id { get; set; }
 

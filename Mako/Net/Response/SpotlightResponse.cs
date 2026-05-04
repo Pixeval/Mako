@@ -9,7 +9,7 @@ using Mako.Utilities;
 namespace Mako.Net.Response;
 
 [Factory]
-public partial record SpotlightResponse : IPixivNextUrlResponse<Spotlight>
+internal partial record SpotlightResponse : IPixivNextUrlResponse<Spotlight>
 {
     [JsonPropertyName("next_url")]
     public required string? NextUrl { get; set; }

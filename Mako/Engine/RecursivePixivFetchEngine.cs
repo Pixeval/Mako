@@ -64,7 +64,7 @@ internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetc
     }
 
     [MemberNotNull(nameof(CurrentEntity))]
-    private void Update(IPixivNextUrlResponse<TEntity> rawEntity)
+    protected internal void Update(IPixivNextUrlResponse<TEntity> rawEntity)
     {
         CurrentEntity = rawEntity;
         CurrentEntityEnumerator = rawEntity.Entities.GetEnumerator();

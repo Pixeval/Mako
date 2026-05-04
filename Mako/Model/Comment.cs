@@ -52,5 +52,5 @@ public partial record CommentUser
     public required string Account { get; set; } = "";
 
     [JsonPropertyName("profile_image_urls")]
-    public required ProfileImageUrls ProfileImageUrls { get; set; }
+    public required MediumOnlyImageUrl ProfileImageUrls { get; set; }
 }

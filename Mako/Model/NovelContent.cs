@@ -83,10 +83,19 @@ public partial record NovelContent
     public required IReadOnlyList<long> ReplaceableItemIds { get; set; } = [];
 
     [JsonPropertyName("aiType")]
-    public required int AiType { get; set; }
+    public required AiType AiType { get; set; }
 
     [JsonPropertyName("isOriginal")]
     public required bool IsOriginal { get; set; }
+
+    [JsonPropertyName("seasonalEffectTagData")]
+    public required string SeasonalEffectTagData { get; set; } = "";
+
+    [JsonPropertyName("eventBanners")]
+    public required string EventBanners { get; set; } = "";
+
+    [JsonPropertyName("language")]
+    public required string Language { get; set; } = "";
 }
 
 [Factory]

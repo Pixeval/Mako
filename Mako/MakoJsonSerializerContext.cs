@@ -19,7 +19,7 @@ namespace Mako;
 [JsonSerializable(typeof(SingleIllustrationResponse))]
 [JsonSerializable(typeof(SingleNovelResponse))]
 [JsonSerializable(typeof(SingleUserResponse))]
-[JsonSerializable(typeof(SpotlightDetailResponse))]
+[JsonSerializable(typeof(PixivisionDetailResponse))]
 [JsonSerializable(typeof(SpotlightResponse))]
 [JsonSerializable(typeof(UserResponse))]
 [JsonSerializable(typeof(PostCommentResponse))]
@@ -31,6 +31,8 @@ namespace Mako;
 [JsonSerializable(typeof(ShowAiSettingsResponse))]
 [JsonSerializable(typeof(RestrictedModeSettingsResponse))]
 [JsonSerializable(typeof(SeriesResponse))]
+[JsonSerializable(typeof(MangaSeriesDetailResponse))]
+[JsonSerializable(typeof(NovelSeriesDetailResponse))]
 
 [JsonSerializable(typeof(Feed))]
 [JsonSerializable(typeof(NovelContent))]
@@ -42,18 +44,12 @@ namespace Mako;
 [JsonSerializable(typeof(AddNovelBookmarkRequest))]
 [JsonSerializable(typeof(AddStampIllustrationCommentRequest))]
 [JsonSerializable(typeof(AddStampNovelCommentRequest))]
-[JsonSerializable(typeof(DeleteCommentRequest))]
 [JsonSerializable(typeof(FollowUserRequest))]
-[JsonSerializable(typeof(RemoveIllustrationBookmarkRequest))]
-[JsonSerializable(typeof(RemoveFollowUserRequest))]
-[JsonSerializable(typeof(RemoveNovelBookmarkRequest))]
-[JsonSerializable(typeof(ShowAiSettingsRequest))]
-[JsonSerializable(typeof(RestrictedModeSettingsRequest))]
 [JsonSerializable(typeof(ReverseSearchRequest))]
 
 [JsonSerializable(typeof(RefreshSessionRequest))]
 [JsonSerializable(typeof(RequestSessionRequest))]
 [JsonSerializable(typeof(TokenResponse))]
-public partial class MakoJsonSerializerContext : JsonSerializerContext;
+internal partial class MakoJsonSerializerContext : JsonSerializerContext;
 
 public class SnakeCaseLowerEnumConverter<T>() : JsonStringEnumConverter<T>(JsonNamingPolicy.SnakeCaseLower) where T : struct, Enum;

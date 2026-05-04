@@ -42,8 +42,7 @@ public sealed class AppEndPointTest
     }
 
     [TestMethod]
-    [DataRow(142475530)]
-    public async Task TestGetSearchOptionsAsync(long id)
+    public async Task TestGetSearchOptionsAsync()
     {
         var result = await TestSettings.Client.GetSearchOptionsAsync();
         Assert.IsNotEmpty(result.IllustrationOptions.BookmarkRanges);

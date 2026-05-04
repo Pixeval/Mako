@@ -3,7 +3,7 @@
 
 namespace Mako.Net.Response;
 
-public interface ISingleResultResponse<out T>
+internal interface ISingleResultResponse<out T>
 {
     T Content { get; }
 }

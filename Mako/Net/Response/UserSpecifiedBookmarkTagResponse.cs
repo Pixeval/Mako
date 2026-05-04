@@ -8,7 +8,7 @@ using Mako.Utilities;
 namespace Mako.Net.Response;
 
 [Factory]
-public partial record UserSpecifiedBookmarkTagResponse
+internal partial record UserSpecifiedBookmarkTagResponse
 {
     [JsonPropertyName("error")]
     public required bool Error { get; set; }
@@ -21,7 +21,7 @@ public partial record UserSpecifiedBookmarkTagResponse
 }
 
 [Factory]
-public partial record UserSpecifiedBookmarkTagBody
+internal partial record UserSpecifiedBookmarkTagBody
 {
     [JsonPropertyName("public")]
     public required IReadOnlyList<UserSpecifiedBookmarkTag> Public { get; set; } = [];
@@ -37,7 +37,7 @@ public partial record UserSpecifiedBookmarkTagBody
 }
 
 [Factory]
-public partial record UserSpecifiedBookmarkTag
+internal partial record UserSpecifiedBookmarkTag
 {
     [JsonPropertyName("tag")]
     public required string Name { get; set; } = "";

@@ -10,7 +10,7 @@ using WebApiClientCore.Parameters;
 namespace Mako.Net.EndPoints;
 
 [HttpHost("https://saucenao.com/")]
-public interface IReverseSearchApiEndPoint
+internal interface IReverseSearchApiEndPoint
 {
     [HttpPost("/search.php")]
     Task<ReverseSearchResponse> GetSauceAsync([FormDataContent] FormDataFile file, [PathQuery] ReverseSearchRequest request);

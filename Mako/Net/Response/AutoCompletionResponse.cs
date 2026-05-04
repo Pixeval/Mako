@@ -9,7 +9,7 @@ using Mako.Utilities;
 namespace Mako.Net.Response;
 
 [Factory]
-public partial record AutoCompletionResponse : ISingleResultResponse<IReadOnlyList<Tag>>
+internal partial record AutoCompletionResponse : ISingleResultResponse<IReadOnlyList<Tag>>
 {
     [JsonPropertyName("tags")]
     public required IReadOnlyList<Tag> Content { get; set; } = [];

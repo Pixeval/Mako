@@ -8,14 +8,8 @@ using Mako.Utilities;
 namespace Mako.Model;
 
 [Factory]
-public partial record Series : IIdEntry
+public partial record Series : SimpleSeries
 {
-    [JsonPropertyName("id")]
-    public required long Id { get; set; }
-
-    [JsonPropertyName("title")]
-    public required string Title { get; set; } = "";
-
     [JsonPropertyName("user")]
     public required UserInfo User { get; set; }
 

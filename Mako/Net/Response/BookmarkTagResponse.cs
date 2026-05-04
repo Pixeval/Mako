@@ -9,7 +9,7 @@ using Mako.Utilities;
 namespace Mako.Net.Response;
 
 [Factory]
-public partial record BookmarkTagResponse : IPixivNextUrlResponse<BookmarkTag>
+internal partial record BookmarkTagResponse : IPixivNextUrlResponse<BookmarkTag>
 {
     [JsonPropertyName("next_url")]
     public required string? NextUrl { get; set; }

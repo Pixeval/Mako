@@ -7,7 +7,7 @@ using Mako.Utilities;
 namespace Mako.Net.Response;
 
 [Factory]
-public partial record ShowAiSettingsResponse : ISingleResultResponse<bool>
+internal partial record ShowAiSettingsResponse : ISingleResultResponse<bool>
 {
     [JsonPropertyName("show_ai")]
     public required bool Content { get; set; }

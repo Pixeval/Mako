@@ -20,7 +20,7 @@ public partial record SearchOptions
 public abstract record WorkSearchOptions
 {
     [JsonPropertyName("bookmark_ranges")]
-    public required IReadOnlyList<BookmarkRanges> BookmarkRanges { get; set; }
+    public required IReadOnlyList<BookmarkRanges> BookmarkRanges { get; set; } = [];
 
     [JsonPropertyName("show_ai_condition")]
     public required bool ShowAiCondition { get; set; }
@@ -43,7 +43,7 @@ public partial record NovelSearchOptions : WorkSearchOptions
     public required SearchOptionsStructure<SearchOptionsGenre> Genres { get; set; }
 
     [JsonPropertyName("word_count_supported_languages")]
-    public required string WordCountSupportedLanguages { get; set; }
+    public required string WordCountSupportedLanguages { get; set; } = "";
 }
 
 [Factory]
@@ -60,17 +60,17 @@ public partial record BookmarkRanges
 public partial record SearchOptionsStructure<T>
 {
     [JsonPropertyName("options")]
-    public required IReadOnlyList<T> Options { get; set; }
+    public required IReadOnlyList<T> Options { get; set; } = [];
 }
 
 [Factory]
 public partial record SearchOptionsLanguage
 {
     [JsonPropertyName("code")]
-    public required string Code { get; set; }
+    public required string Code { get; set; } = "";
 
     [JsonPropertyName("name")]
-    public required string Name { get; set; }
+    public required string Name { get; set; } = "";
 }
 
 [Factory]
@@ -80,5 +80,5 @@ public partial record SearchOptionsGenre
     public required int Id { get; set; }
 
     [JsonPropertyName("label")]
-    public required string Label { get; set; }
+    public required string Label { get; set; } = "";
 }

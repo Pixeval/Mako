@@ -10,7 +10,7 @@ namespace Mako.Net.Response;
 
 [DebuggerDisplay("{Content}")]
 [Factory]
-public partial record SingleNovelResponse : ISingleResultResponse<Novel>
+internal partial record SingleNovelResponse : ISingleResultResponse<Novel>
 {
     [JsonPropertyName("novel")]
     public required Novel Content { get; set; }

@@ -8,7 +8,7 @@ using Mako.Utilities;
 namespace Mako.Net.Response;
 
 [Factory]
-public partial record ReverseSearchResponse
+internal partial record ReverseSearchResponse
 {
     [JsonPropertyName("header")]
     public required ReverseSearchResponseHeader Header { get; set; }
@@ -18,7 +18,7 @@ public partial record ReverseSearchResponse
 }
 
 [Factory]
-public partial record ReverseSearchResponseHeader
+internal partial record ReverseSearchResponseHeader
 {
     [JsonPropertyName("status")]
     public required long Status { get; set; }

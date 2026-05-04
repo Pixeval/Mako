@@ -14,7 +14,7 @@ namespace Mako.Model;
 public partial record UgoiraMetadata
 {
     [JsonPropertyName("zip_urls")]
-    public required ZipUrls ZipUrls { get; set; }
+    public required MediumOnlyImageUrl ZipUrls { get; set; }
 
     [JsonPropertyName("frames")]
     public required IReadOnlyList<Frame> Frames { get; set; } = [];
@@ -22,11 +22,15 @@ public partial record UgoiraMetadata
     [field: AllowNull, MaybeNull]
     public IReadOnlyList<int> Delays => field ??= [..Frames.Select(t => t.Delay)];
 
-    /// <inheritdoc cref="ZipUrls.Medium"/>
+    /// <summary>
+    /// 600x600 width prior
+    /// </summary>
     public string MediumUrl => ZipUrls.Medium;
 
-    /// <inheritdoc cref="ZipUrls.Large"/>
-    public string LargeUrl => ZipUrls.Large;
+    /// <summary>
+    /// 1920x1080 height prior
+    /// </summary>
+    public string LargeUrl => ZipUrls.Medium.Replace("600x600", "1920x1080");
 
     public string[] GetUgoiraOriginalUrls(string originalSingleUrl)
     {

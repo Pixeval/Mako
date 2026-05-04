@@ -2,6 +2,7 @@
 // Licensed under the GPL-3.0 License.
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Mako.Global.Enum;
 using Mako.Model;
@@ -16,7 +17,7 @@ public sealed class EnginesTest
     [DataRow(WorkType.Illustration)]
     [DataRow(WorkType.Manga)]
     [DataRow(WorkType.Novel)]
-    public async Task TestRecommendedWorksEngineAsync(WorkType type)
+    public async Task TestWorkRecommendedEngineAsync(WorkType type)
     {
         var engines = TestSettings.Client.WorkRecommended(
             type,
@@ -38,7 +39,7 @@ public sealed class EnginesTest
     }
 
     [TestMethod]
-    public async Task TestSearchIllustrationsEngineAsync()
+    public async Task TestIllustrationSearchEngineAsync()
     {
         var engines = TestSettings.Client.IllustrationSearch(
             "女",
@@ -65,11 +66,12 @@ public sealed class EnginesTest
             if (count is 20)
                 return;
         }
-        Assert.Fail("No works found.");
+        if (count is 0)
+            Assert.Fail("No works found.");
     }
 
     [TestMethod]
-    public async Task TestSearchNovelsEngineAsync()
+    public async Task TestNovelSearchEngineAsync()
     {
         var engines = TestSettings.Client.NovelSearch(
             "女",
@@ -96,11 +98,13 @@ public sealed class EnginesTest
             if (count is 20)
                 return;
         }
-        Assert.Fail("No works found.");
+
+        if (count is 0)
+            Assert.Fail("No works found.");
     }
 
     [TestMethod]
-    public async Task TestNewIllustrationsEngineAsync()
+    public async Task TestIllustrationNewEngineAsync()
     {
         var engines = TestSettings.Client.IllustrationNew(false, 99999);
         var count = 0;
@@ -110,6 +114,24 @@ public sealed class EnginesTest
             if (count is 20)
                 return;
         }
-        Assert.Fail("No works found.");
+        if (count is 0)
+            Assert.Fail("No works found.");
+    }
+
+    [TestMethod]
+    [DataRow(WorkType.Manga)]
+    [DataRow(WorkType.Novel)]
+    public async Task TestWorkSeriesWatchlistEngineAsync(WorkType type)
+    {
+        var engines = TestSettings.Client.WorkSeriesWatchlist(type);
+        var count = 0;
+        await foreach (var series in engines)
+        {
+            ++count;
+            if (count is 20)
+                return;
+        }
+        if (count is 0)
+            Assert.Fail("No works found.");
     }
 }

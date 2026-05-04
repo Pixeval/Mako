@@ -8,7 +8,7 @@ using Mako.Utilities;
 namespace Mako.Net.Response;
 
 [Factory]
-public partial record SpotlightDetailResponse
+public partial record PixivisionDetailResponse
 {
     [JsonPropertyName("error")]
     public required bool Error { get; set; }
@@ -17,11 +17,11 @@ public partial record SpotlightDetailResponse
     public required string Message { get; set; } = "";
 
     [JsonPropertyName("body")]
-    public required IReadOnlyList<SpotlightBody> ResponseBody { get; set; } = [];
+    public required IReadOnlyList<PixivisionBody> ResponseBody { get; set; } = [];
 }
 
 [Factory]
-public partial record SpotlightBody
+public partial record PixivisionBody
 {
     [JsonPropertyName("id")]
     public required string Id { get; set; } = "";
@@ -30,7 +30,7 @@ public partial record SpotlightBody
     public required string Lang { get; set; } = "";
 
     [JsonPropertyName("entry")]
-    public required Entry Entry { get; set; }
+    public required PixivisionEntry Entry { get; set; }
 
     [JsonPropertyName("tags")]
     public required IReadOnlyList<PixivisionTag> Tags { get; set; } = [];
@@ -66,14 +66,14 @@ public partial record SpotlightBody
     public required IReadOnlyList<PixivisionIllustration> Illustrations { get; set; } = [];
 
     [JsonPropertyName("relatedArticles")]
-    public required IReadOnlyList<RelatedArticle> RelatedArticles { get; set; } = [];
+    public required IReadOnlyList<PixivisionRelatedArticle> RelatedArticles { get; set; } = [];
 
     [JsonPropertyName("isOnlyOneUser")]
     public required bool IsOnlyOneUser { get; set; }
 }
 
 [Factory]
-public partial record Entry
+public partial record PixivisionEntry
 {
     [JsonPropertyName("id")]
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)]
@@ -177,7 +177,7 @@ public partial record PixivisionTag
 public partial record PixivisionIllustration
 {
     [JsonPropertyName("spotlight_article_id")]
-    public required long SpotlightArticleId { get; set; }
+    public required long PixivisionArticleId { get; set; }
 
     [JsonPropertyName("illust_id")]
     public required long Id { get; set; }
@@ -246,14 +246,14 @@ public partial record PixivisionIllustration
     public required string UserComment { get; set; } = "";
 
     [JsonPropertyName("url")]
-    public required Url Url { get; set; }
+    public required PixivisionUrl Url { get; set; }
 
     [JsonPropertyName("user_icon")]
     public required string UserIcon { get; set; } = "";
 }
 
 [Factory]
-public partial record Url
+public partial record PixivisionUrl
 {
     [JsonPropertyName("1200x1200")]
     public required string The1200X1200 { get; set; } = "";
@@ -269,7 +269,7 @@ public partial record Url
 }
 
 [Factory]
-public partial record RelatedArticle
+public partial record PixivisionRelatedArticle
 {
     [JsonPropertyName("id")]
     public required string Id { get; set; } = "";
