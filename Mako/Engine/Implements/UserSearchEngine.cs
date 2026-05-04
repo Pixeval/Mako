@@ -3,20 +3,27 @@
 
 using System.Collections.Generic;
 using System.Threading;
-using Mako.Global.Enum;
 using Mako.Model;
 using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-public class UserSearchEngine(MakoClient makoClient, TargetFilter targetFilter,
-        string keyword, EngineHandle? engineHandle)
-    : AbstractPixivFetchEngine<User>(makoClient, engineHandle)
+/// <summary>
+/// Search user in Pixiv.
+/// </summary>
+/// <param name="keyword">The text in searching</param>
+/// <returns>
+/// The <see cref="IFetchEngine{T}" /> containing the search results for users.
+/// </returns>
+[method: MakoExtensionConstructor]
+internal class UserSearchEngine(
+    MakoClient makoClient,
+    string keyword) : AbstractPixivFetchEngine<User>(makoClient)
 {
     public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.User<UserSearchEngine>(
             this,
             "/v1/search/user" +
-            $"?filter={targetFilter.GetDescription()}" +
+            $"?{TargetFilterParam}" +
             $"&word={keyword}");
 }

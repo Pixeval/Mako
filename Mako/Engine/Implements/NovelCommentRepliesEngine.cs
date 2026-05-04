@@ -4,11 +4,14 @@
 using System.Collections.Generic;
 using System.Threading;
 using Mako.Model;
+using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-public class NovelCommentRepliesEngine(string commentId, MakoClient makoClient, EngineHandle? engineHandle)
-    : AbstractPixivFetchEngine<Comment>(makoClient, engineHandle)
+/// <inheritdoc cref="IllustrationCommentRepliesEngine.IllustrationCommentRepliesEngine" />
+[method: MakoExtensionConstructor]
+internal class NovelCommentRepliesEngine(long commentId, MakoClient makoClient)
+    : AbstractPixivFetchEngine<Comment>(makoClient)
 {
     public override IAsyncEnumerator<Comment> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Comment<NovelCommentRepliesEngine>(

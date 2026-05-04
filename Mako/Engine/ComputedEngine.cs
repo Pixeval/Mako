@@ -3,10 +3,12 @@
 
 using System.Collections.Generic;
 using System.Threading;
+using Mako.Utilities;
 
 namespace Mako.Engine;
 
-public class ComputedFetchEngine<T>(IAsyncEnumerable<T> result, MakoClient makoClient, EngineHandle engineHandle)
+[method: MakoExtensionConstructor]
+internal class ComputedEngine<T>(MakoClient makoClient, IAsyncEnumerable<T> result)
     : IFetchEngine<T>
 {
     public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
@@ -16,10 +18,10 @@ public class ComputedFetchEngine<T>(IAsyncEnumerable<T> result, MakoClient makoC
 
     public MakoClient MakoClient { get; } = makoClient;
 
-    public EngineHandle EngineHandle { get; } = engineHandle;
+    public EngineHandle EngineHandle { get; } = new EngineHandle(makoClient.CancelInstance);
 
     /// <summary>
-    /// The <see cref="RequestedPages"/> in <see cref="ComputedFetchEngine{T}"/> should always returns -1
+    /// The <see cref="RequestedPages"/> in <see cref="ComputedEngine{T}"/> should always returns -1
     /// </summary>
     public int RequestedPages { get; set; } = -1;
 }

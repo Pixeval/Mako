@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using Mako.Global.Exception;
 using Mako.Model;
@@ -14,13 +15,16 @@ using Misaki;
 
 namespace Mako.Engine;
 
-internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
+internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(
+    TFetchEngine pixivFetchEngine,
+    string initialUrl,
+    JsonTypeInfo<TRawEntity> jsonTypeInfo)
     : AbstractPixivAsyncEnumerator<TEntity, TRawEntity, TFetchEngine>(pixivFetchEngine, MakoApiKind.AppApi)
     where TEntity : class, IMisakiModel
     where TRawEntity : class, IPixivNextUrlResponse<TEntity>
     where TFetchEngine : class, IFetchEngine<TEntity>
 {
-    private TRawEntity? CurrentEntity { get; set; }
+    private IPixivNextUrlResponse<TEntity>? CurrentEntity { get; set; }
 
     protected string InitialUrl => initialUrl;
 
@@ -60,14 +64,14 @@ internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetc
     }
 
     [MemberNotNull(nameof(CurrentEntity))]
-    private void Update(TRawEntity rawEntity)
+    private void Update(IPixivNextUrlResponse<TEntity> rawEntity)
     {
         CurrentEntity = rawEntity;
         CurrentEntityEnumerator = rawEntity.Entities.GetEnumerator();
         ++PixivFetchEngine.RequestedPages;
     }
 
-    protected async Task<TRawEntity?> GetJsonResponseAsync(string url)
+    protected async Task<IPixivNextUrlResponse<TEntity>?> GetJsonResponseAsync(string url)
     {
         try
         {
@@ -84,10 +88,10 @@ internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetc
                 return null;
             }
 
-            var json = await responseMessage.Content.ReadFromJsonAsync(typeof(TRawEntity), MakoJsonSerializerContext.Default).ConfigureAwait(false);
+            var json = await responseMessage.Content.ReadFromJsonAsync(jsonTypeInfo).ConfigureAwait(false);
 
-            if (json is TRawEntity result)
-                return result;
+            if (json is not null)
+                return json;
 
             MakoClient.LogException(new MakoNetworkException(url, MakoClient.Configuration.DomainFronting, "Result is null", (int) responseMessage.StatusCode));
         }
@@ -103,26 +107,30 @@ internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetc
 internal static class RecursivePixivAsyncEnumerators
 {
     public class User<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : RecursivePixivAsyncEnumerator<User, UserResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
+        : RecursivePixivAsyncEnumerator<User, UserResponse, TFetchEngine>(pixivFetchEngine, initialUrl, MakoJsonSerializerContext.Default.UserResponse)
         where TFetchEngine : class, IFetchEngine<User>;
 
     public class Illustration<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : RecursivePixivAsyncEnumerator<Illustration, IllustrationResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
+        : RecursivePixivAsyncEnumerator<Illustration, IllustrationResponse, TFetchEngine>(pixivFetchEngine, initialUrl, MakoJsonSerializerContext.Default.IllustrationResponse)
         where TFetchEngine : class, IFetchEngine<Illustration>;
 
     public class Novel<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : RecursivePixivAsyncEnumerator<Novel, NovelResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
+        : RecursivePixivAsyncEnumerator<Novel, NovelResponse, TFetchEngine>(pixivFetchEngine, initialUrl, MakoJsonSerializerContext.Default.NovelResponse)
         where TFetchEngine : class, IFetchEngine<Novel>;
 
     public class Comment<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : RecursivePixivAsyncEnumerator<Comment, CommentResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
+        : RecursivePixivAsyncEnumerator<Comment, CommentResponse, TFetchEngine>(pixivFetchEngine, initialUrl, MakoJsonSerializerContext.Default.CommentResponse)
         where TFetchEngine : class, IFetchEngine<Comment>;
 
     public class BookmarkTag<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : RecursivePixivAsyncEnumerator<BookmarkTag, BookmarkTagResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
+        : RecursivePixivAsyncEnumerator<BookmarkTag, BookmarkTagResponse, TFetchEngine>(pixivFetchEngine, initialUrl, MakoJsonSerializerContext.Default.BookmarkTagResponse)
         where TFetchEngine : class, IFetchEngine<BookmarkTag>;
 
-    public class Spotlight<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
-        : RecursivePixivAsyncEnumerator<Spotlight, SpotlightResponse, TFetchEngine>(pixivFetchEngine, initialUrl)
+    public class Spotlight<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)  
+        : RecursivePixivAsyncEnumerator<Spotlight, SpotlightResponse, TFetchEngine>(pixivFetchEngine, initialUrl, MakoJsonSerializerContext.Default.SpotlightResponse)
         where TFetchEngine : class, IFetchEngine<Spotlight>;
+
+    public class Series<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
+        : RecursivePixivAsyncEnumerator<Series, SeriesResponse, TFetchEngine>(pixivFetchEngine, initialUrl, MakoJsonSerializerContext.Default.SeriesResponse)
+        where TFetchEngine : class, IFetchEngine<Series>;
 }

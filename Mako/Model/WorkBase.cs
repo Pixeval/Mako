@@ -56,17 +56,27 @@ public abstract record WorkBase
     public required bool IsMuted { get; set; }
 
     [JsonPropertyName("series")]
-    public required Series? Series
+    public required SimpleSeries? Series
     {
         get;
         set
         {
+            // 此属性为空时响应是一个空对象 {} 而非 null
             if (value != _DefaultSeries)
                 field = value;
         }
     }
 
-    private static readonly Series _DefaultSeries = new();
+    private static readonly SimpleSeries _DefaultSeries = new();
+}
+
+public record SimpleSeries : IIdEntry
+{
+    [JsonPropertyName("id")]
+    public long Id { get; set; }
+
+    [JsonPropertyName("title")]
+    public string Title { get; set; } = "";
 }
 
 internal class BoolToNumberJsonConverter : JsonConverter<bool>

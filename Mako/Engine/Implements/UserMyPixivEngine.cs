@@ -4,14 +4,16 @@
 using System.Collections.Generic;
 using System.Threading;
 using Mako.Model;
+using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-internal class MyPixivUserEngine(MakoClient makoClient, long userId, EngineHandle? engineHandle)
-    : AbstractPixivFetchEngine<User>(makoClient, engineHandle)
+[method: MakoExtensionConstructor]
+internal class UserMyPixivEngine(MakoClient makoClient, long userId)
+    : AbstractPixivFetchEngine<User>(makoClient)
 {
     public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
-        new RecursivePixivAsyncEnumerators.User<MyPixivUserEngine>(
+        new RecursivePixivAsyncEnumerators.User<UserMyPixivEngine>(
             this,
             "/v1/user/mypixiv" +
             $"?user_id={userId}");

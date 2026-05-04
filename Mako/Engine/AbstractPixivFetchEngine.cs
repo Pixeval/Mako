@@ -1,9 +1,9 @@
 // Copyright (c) Mako.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
+using Mako.Utilities;
 
 namespace Mako.Engine;
 
@@ -14,7 +14,7 @@ namespace Mako.Engine;
 /// <typeparam name="TE">
 /// <inheritdoc cref="IFetchEngine{TE}" />
 /// </typeparam>
-public abstract class AbstractPixivFetchEngine<TE>(MakoClient makoClient, EngineHandle? engineHandle) : IFetchEngine<TE>
+public abstract class AbstractPixivFetchEngine<TE>(MakoClient makoClient) : IFetchEngine<TE>
 {
     public abstract IAsyncEnumerator<TE> GetAsyncEnumerator(CancellationToken cancellationToken = default); // the 'CancellationToken' is no longer useful, we use 'EngineHandle' to track the lifetime
 
@@ -34,5 +34,8 @@ public abstract class AbstractPixivFetchEngine<TE>(MakoClient makoClient, Engine
     /// <summary>
     /// The <see cref="EngineHandle" /> used to manage the lifetime of <see cref="IFetchEngine{E}" />
     /// </summary>
-    public EngineHandle EngineHandle { get; } = engineHandle ?? new EngineHandle(Guid.NewGuid());
+    public EngineHandle EngineHandle { get; } = new EngineHandle(makoClient.CancelInstance);
+
+    private protected string TargetFilterParam =>
+        $"filter={MakoClient.Configuration.TargetFilter.GetDescription()}";
 }

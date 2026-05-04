@@ -16,7 +16,8 @@ using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-internal partial class FeedEngine(MakoClient makoClient, EngineHandle? engineHandle) : AbstractPixivFetchEngine<Feed>(makoClient, engineHandle)
+[method: MakoExtensionConstructor]
+internal partial class FeedEngine(MakoClient makoClient) : AbstractPixivFetchEngine<Feed>(makoClient)
 {
     public override IAsyncEnumerator<Feed> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new UserFeedsAsyncEnumerator(this);

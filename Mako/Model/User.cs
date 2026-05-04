@@ -65,6 +65,9 @@ public partial record UserInfo : IUser, IIdEntry
     [JsonPropertyName("profile_image_urls")]
     public required ProfileImageUrls ProfileImageUrls { get; set; }
 
+    [JsonPropertyName("is_accept_request")]
+    public required bool IsAcceptRequest { get; set; }
+
     [JsonPropertyName("is_followed")]
     public bool IsFollowed { get; set; }
 }

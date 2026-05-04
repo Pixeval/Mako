@@ -9,13 +9,13 @@ using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-public class RecentPostedNovelEngine(MakoClient makoClient, PrivacyPolicy privacyPolicy,
-    EngineHandle? engineHandle)
-    : AbstractPixivFetchEngine<Novel>(makoClient, engineHandle)
+/// <inheritdoc cref="IllustrationFollowingEngine.IllustrationFollowingEngine" />
+[method: MakoExtensionConstructor]
+internal class NovelFollowingEngine(MakoClient makoClient, PrivacyPolicy privacyPolicy)
+    : AbstractPixivFetchEngine<Novel>(makoClient)
 {
-
     public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
-        new RecursivePixivAsyncEnumerators.Novel<RecentPostedNovelEngine>(
+        new RecursivePixivAsyncEnumerators.Novel<NovelFollowingEngine>(
             this,
             "/v1/novel/follow"
             + $"?restrict={privacyPolicy.GetDescription()}");

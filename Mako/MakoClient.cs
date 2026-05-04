@@ -6,8 +6,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Mako.Engine;
-using Mako.Global.Enum;
-using Mako.Global.Exception;
 using Mako.Model;
 using Mako.Net;
 using Mako.Net.EndPoints;
@@ -144,23 +142,10 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
     /// removes an instance from the running instances list
     /// </summary>
     /// <param name="handle"></param>
-    private void CancelInstance(EngineHandle handle)
+    internal void CancelInstance(EngineHandle handle)
     {
         EnsureBuilt();
         _ = _runningInstances.RemoveAll(instance => instance.EngineHandle == handle);
-    }
-
-    /// <summary>
-    /// <see cref="PrivacyPolicy.Private"/> is only allowed when the uid is pointing to yourself
-    /// </summary>
-    /// <param name="uid"></param>
-    /// <param name="privacyPolicy"></param>
-    /// <returns></returns>
-    private void CheckPrivacyPolicy(long uid, PrivacyPolicy privacyPolicy)
-    {
-        EnsureBuilt();
-        if (privacyPolicy is PrivacyPolicy.Private && Me?.Id != uid)
-            throw new IllegalPrivatePolicyException(uid);
     }
 
     /// <summary>

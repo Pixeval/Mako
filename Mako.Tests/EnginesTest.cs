@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Mako.Engine.Implements;
 using Mako.Global.Enum;
 using Mako.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,7 +18,10 @@ public sealed class EnginesTest
     [DataRow(WorkType.Novel)]
     public async Task TestRecommendedWorksEngineAsync(WorkType type)
     {
-        var engines = TestSettings.Client.RecommendedWorks(type);
+        var engines = TestSettings.Client.WorkRecommended(
+            type,
+            true,
+            true);
         await foreach (var work in engines)
         {
             Assert.IsInstanceOfType(work, type switch
@@ -38,7 +40,7 @@ public sealed class EnginesTest
     [TestMethod]
     public async Task TestSearchIllustrationsEngineAsync()
     {
-        var engines = TestSettings.Client.SearchIllustrations(
+        var engines = TestSettings.Client.IllustrationSearch(
             "女",
             SearchIllustrationTagMatchOption.PartialMatchForTags,
             WorkSortOption.PublishDateDescending,
@@ -47,8 +49,8 @@ public sealed class EnginesTest
             true,
             SearchIllustrationContentType.IllustrationAndMangaAndUgoira,
             SearchIllustrationRatioPattern.All,
-            widthMin: 49,
-            widthMax: 49,
+            widthMin: null,
+            widthMax: null,
             heightMin: null,
             heightMax: null,
             true,
@@ -69,7 +71,7 @@ public sealed class EnginesTest
     [TestMethod]
     public async Task TestSearchNovelsEngineAsync()
     {
-        var engines = TestSettings.Client.SearchNovels(
+        var engines = TestSettings.Client.NovelSearch(
             "女",
             SearchNovelTagMatchOption.Text,
             WorkSortOption.PublishDateDescending,
@@ -100,7 +102,7 @@ public sealed class EnginesTest
     [TestMethod]
     public async Task TestNewIllustrationsEngineAsync()
     {
-        var engines = TestSettings.Client.NewIllustrations(false, 99999);
+        var engines = TestSettings.Client.IllustrationNew(false, 99999);
         var count = 0;
         await foreach (var illustration in engines)
         {

@@ -20,7 +20,7 @@ namespace Mako.Model;
 public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingleAnimatedImage, IImageSet
 {
     [JsonPropertyName("type")]
-    [JsonConverter(typeof(JsonStringEnumConverter<IllustrationType>))]
+    [JsonConverter(typeof(SnakeCaseLowerEnumConverter<IllustrationType>))]
     public required IllustrationType Type { get; set; }
 
     [JsonPropertyName("tools")]

@@ -3,22 +3,24 @@
 
 using System.Collections.Generic;
 using System.Threading;
-using Mako.Global.Enum;
 using Mako.Model;
 using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-internal class RecommendedNovelEngine(
+[method: MakoExtensionConstructor]
+internal class NovelRecommendedEngine(
     MakoClient makoClient,
-    TargetFilter filter,
-    uint? maxBookmarkIdForRecommend,
-    EngineHandle? engineHandle)
-    : AbstractPixivFetchEngine<Novel>(makoClient, engineHandle)
+    // TODO url-encoded
+    bool includeRankingNovels = true,
+    bool includePrivacyPolicy = true,
+    // 下面这个参数好像没用
+    uint? maxBookmarkIdForRecommend = null)
+    : AbstractPixivFetchEngine<Novel>(makoClient)
 {
     public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
-        new RecursivePixivAsyncEnumerators.Novel<RecommendedNovelEngine>(this,
+        new RecursivePixivAsyncEnumerators.Novel<NovelRecommendedEngine>(this,
             "/v1/novel/recommended"
-            + $"?filter={filter.GetDescription()}"
+            + $"?{TargetFilterParam}"
             + maxBookmarkIdForRecommend?.Let(static s => $"&max_bookmark_id_for_recommend={s}"));
 }
