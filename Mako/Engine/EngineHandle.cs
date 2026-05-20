@@ -6,7 +6,7 @@ using System;
 namespace Mako.Engine;
 
 #pragma warning disable 660,661 // Object.Equals() and Object.GetHashCode() are not overwritten
-public class EngineHandle : ICancellable, INotifyCompletion, ICompletionCallback<EngineHandle>
+public class EngineHandle : ICancellable, INotifyCompletion
 #pragma warning restore 660,661
 {
     public static readonly EngineHandle Default = new(Guid.Empty);
@@ -63,15 +63,10 @@ public class EngineHandle : ICancellable, INotifyCompletion, ICompletionCallback
     public void Complete()
     {
         IsCompleted = true;
-        OnCompletion(this);
+        _onCompletion?.Invoke(this);
     }
 
     public static bool operator ==(EngineHandle lhs, EngineHandle rhs) => Equals(lhs, rhs);
 
     public static bool operator !=(EngineHandle lhs, EngineHandle rhs) => !Equals(lhs, rhs);
-
-    public void OnCompletion(EngineHandle engineHandle)
-    {
-        _onCompletion?.Invoke(engineHandle);
-    }
 }

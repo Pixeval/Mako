@@ -15,7 +15,7 @@ public sealed class DomainFrontingTest
         TestSettings.Client.Configuration.DomainFronting = true;
         TestSettings.Client.Configuration.DomainFrontingType = domainFrontingType;
 
-        var tags = await TestSettings.Client.GetTrendingTagsAsync();
+        var tags = await TestSettings.Client.GetIllustrationTrendingTagsAsync();
 
         Assert.IsNotEmpty(tags);
     }

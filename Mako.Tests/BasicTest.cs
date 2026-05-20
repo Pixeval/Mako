@@ -19,7 +19,7 @@ public sealed class BasicTest
 
         Assert.IsTrue(result);
 
-        var tags = await TestSettings.Client.GetTrendingTagsAsync();
+        var tags = await TestSettings.Client.GetIllustrationTrendingTagsAsync();
 
         Assert.IsNotEmpty(tags);
     }

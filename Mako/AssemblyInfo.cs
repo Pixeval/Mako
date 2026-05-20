@@ -4,6 +4,8 @@
 // a specific target and scoped to a namespace, type, member, etc.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 // 不支持源生成器的Runtime中，WebApiClient会降级到IL代理，此时网络接口不能使用internal。本项目面向.NET 10所以直接抑制
 [assembly: SuppressMessage("Error", "WA1007:不支持的修饰符", Justification = "<挂起>")]
+[assembly: InternalsVisibleTo("Mako.Tests")]

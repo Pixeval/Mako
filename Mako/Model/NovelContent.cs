@@ -89,10 +89,10 @@ public partial record NovelContent
     public required bool IsOriginal { get; set; }
 
     [JsonPropertyName("seasonalEffectTagData")]
-    public required string SeasonalEffectTagData { get; set; } = "";
+    public required string? SeasonalEffectTagData { get; set; } = "";
 
     [JsonPropertyName("eventBanners")]
-    public required string EventBanners { get; set; } = "";
+    public required string? EventBanners { get; set; } = "";
 
     [JsonPropertyName("language")]
     public required string Language { get; set; } = "";
@@ -151,8 +151,13 @@ public partial record NovelImage
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)]
     public required long NovelImageId { get; set; }
 
+    /// <summary>
+    /// <see cref="NovelContent.Images"/>中为字符串
+    /// <see cref="NovelReplaceableGlossary.Cover"/>中为整数
+    /// </summary>
     [JsonPropertyName("sl")]
-    public required string Sl { get; set; } = "";
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)]
+    public required int Sl { get; set; }
 
     [JsonPropertyName("urls")]
     public required NovelImageUrls Urls { get; set; }
@@ -294,7 +299,7 @@ public partial record NovelReplaceableGlossary
     public required string Overview { get; set; } = "";
 
     [JsonPropertyName("coverImage")]
-    public required string Cover { get; set; } = DefaultImageUrls.ImageNotAvailable;
+    public required NovelImage Cover { get; set; }
 }
 
 [Factory]

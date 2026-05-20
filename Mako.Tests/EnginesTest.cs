@@ -2,8 +2,8 @@
 // Licensed under the GPL-3.0 License.
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
+using Mako.Engine.Implements;
 using Mako.Global.Enum;
 using Mako.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -42,21 +42,11 @@ public sealed class EnginesTest
     public async Task TestIllustrationSearchEngineAsync()
     {
         var engines = TestSettings.Client.IllustrationSearch(
-            "女",
-            SearchIllustrationTagMatchOption.PartialMatchForTags,
-            WorkSortOption.PublishDateDescending,
-            null,
-            null,
-            true,
-            SearchIllustrationContentType.IllustrationAndMangaAndUgoira,
-            SearchIllustrationRatioPattern.All,
-            widthMin: null,
-            widthMax: null,
-            heightMin: null,
-            heightMax: null,
-            true,
-            true,
-            false);
+            new IllustrationSearchArguments("女")
+            {
+                MatchOption = SearchIllustrationTagMatchOption.PartialMatchForTags,
+                SortOption = WorkSortOption.PublishDateDescending
+            });
         var count = 0;
         await foreach (var illustration in engines)
         {
@@ -74,22 +64,11 @@ public sealed class EnginesTest
     public async Task TestNovelSearchEngineAsync()
     {
         var engines = TestSettings.Client.NovelSearch(
-            "女",
-            SearchNovelTagMatchOption.Text,
-            WorkSortOption.PublishDateDescending,
-            null,
-            null,
-            true,
-            null,
-            SearchNovelContentLengthOption.None,
-            null,
-            null,
-            false,
-            null,
-            false,
-            true,
-            true,
-            false);
+            new NovelSearchArguments("女")
+            {
+                MatchOption = SearchNovelTagMatchOption.Text,
+                SortOption = WorkSortOption.PublishDateDescending
+            });
         var count = 0;
         await foreach (var novel in engines)
         {

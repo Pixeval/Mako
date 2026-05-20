@@ -10,7 +10,7 @@ namespace Mako.Tests;
 public sealed class AppEndPointTest
 {
     [TestMethod]
-    [DataRow(144303976)]
+    [DataRow(144968140)]
     public async Task TestGetIllustrationAsync(long id)
     {
         var result = await TestSettings.Client.GetIllustrationFromIdAsync(id);
