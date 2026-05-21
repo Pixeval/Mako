@@ -40,17 +40,18 @@ public partial record Stamp
 }
 
 [Factory]
-public partial record CommentUser
+public partial record CommentUser : UserBasicInfo
 {
-    [JsonPropertyName("id")]
-    public required long Id { get; set; }
-
-    [JsonPropertyName("name")]
-    public required string Name { get; set; } = "";
-
-    [JsonPropertyName("account")]
-    public required string Account { get; set; } = "";
-
     [JsonPropertyName("profile_image_urls")]
     public required MediumOnlyImageUrl ProfileImageUrls { get; set; }
+
+    /// <inheritdoc />
+    public override string AvatarUrl => ProfileImageUrls.Medium;
+
+    /// <inheritdoc />
+    public override string Description
+    {
+        get => "";
+        set { }
+    }
 }

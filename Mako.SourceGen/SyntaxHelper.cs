@@ -63,6 +63,7 @@ public static class SyntaxHelper
 
     internal static IEnumerable<IPropertySymbol> GetProperties(this ITypeSymbol typeSymbol, INamedTypeSymbol attribute)
     {
+        var seenProperties = new HashSet<IPropertySymbol>(SymbolEqualityComparer.Default);
         var symbol = typeSymbol;
         do
         {
@@ -74,7 +75,23 @@ public static class SyntaxHelper
                 if (IgnoreAttribute(property, attribute))
                     continue;
 
+                if (seenProperties.Contains(property))
+                    continue;
+
+                var overriddenProperty = property.OverriddenProperty;
+                while (overriddenProperty is not null)
+                {
+                    if (!seenProperties.Add(overriddenProperty))
+                        goto ContinueLoop;
+
+                    overriddenProperty = overriddenProperty.OverriddenProperty;
+                }
+
+                seenProperties.Add(property);
+
                 yield return property;
+
+                ContinueLoop:;
             }
 
             symbol = symbol.BaseType;

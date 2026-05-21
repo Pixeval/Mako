@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Immutable;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -28,23 +28,35 @@ public class FactoryGenerator : IIncrementalGenerator
         var typeSyntax = typeSymbol.GetTypeSyntax(false);
         const string createDefault = "CreateDefault";
         var defaultFactory = $"{AttributeNamespace}.IDefaultFactory<{name}>";
-        var list = typeSymbol.GetProperties(attributeList[0].AttributeClass!)
-            .Where(symbol => symbol is { IsStatic: false, IsReadOnly: false, IsOverride: false })
-            .Select(symbol =>
+
+        var list = new List<ExpressionSyntax>();
+        foreach (var symbol in typeSymbol.GetProperties(attributeList[0].AttributeClass!))
+        {
+            if (symbol.IsStatic || symbol.IsReadOnly)
+                continue;
+
+            var syntax = (PropertyDeclarationSyntax) symbol.DeclaringSyntaxReferences[0].GetSyntax();
+            var initializer = syntax.Initializer;
+            var isDefaultFactory = false;
+
+            if (initializer is null)
             {
-                var syntax = (PropertyDeclarationSyntax) symbol.DeclaringSyntaxReferences[0].GetSyntax();
-                return (ExpressionSyntax) AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
-                    IdentifierName(symbol.Name),
-                    syntax.Initializer is { } init
-                        ? init.Value
-                        : symbol.Type.NullableAnnotation is NullableAnnotation.NotAnnotated && symbol.Type
-                            .GetAttributes().Any(i => i.AttributeClass?.MetadataName == AttributeName)
-                            ? InvocationExpression(MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                IdentifierName(symbol.Type.ToDisplayString()),
-                                IdentifierName(createDefault)))
-                            : DefaultExpression(symbol.Type.GetTypeSyntax(false)));
-            });
+                isDefaultFactory = symbol.Type.GetAttributes().Any(i => i.AttributeClass?.MetadataName == AttributeName);
+                if (!symbol.IsRequired && !isDefaultFactory)
+                    continue;
+            }
+
+            list.Add(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression,
+                IdentifierName(symbol.Name),
+                initializer is not null
+                    ? initializer.Value
+                    : symbol.Type.NullableAnnotation is NullableAnnotation.NotAnnotated && isDefaultFactory
+                        ? InvocationExpression(MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            IdentifierName(symbol.Type.ToDisplayString()),
+                            IdentifierName(createDefault)))
+                        : DefaultExpression(symbol.Type.GetTypeSyntax(false))));
+        }
 
         var method = MethodDeclaration(typeSyntax, createDefault)
             //.WithExplicitInterfaceSpecifier(ExplicitInterfaceSpecifier(IdentifierName(defaultFactory)))

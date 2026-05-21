@@ -42,20 +42,10 @@ public partial record TokenResponse
 }
 
 [Factory]
-public partial record TokenUser
+public partial record TokenUser : UserBasicInfo
 {
     [JsonPropertyName("profile_image_urls")]
     public required TokenProfileImageUrls ProfileImageUrls { get; set; }
-
-    [JsonPropertyName("id")]
-    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)]
-    public required long Id { get; set; }
-
-    [JsonPropertyName("name")]
-    public required string Name { get; set; } = "";
-
-    [JsonPropertyName("account")]
-    public required string Account { get; set; } = "";
 
     [JsonPropertyName("mail_address")]
     public required string MailAddress { get; set; } = "";
@@ -64,13 +54,23 @@ public partial record TokenUser
     public required bool IsPremium { get; set; }
 
     [JsonPropertyName("x_restrict")]
-    public required long XRestrict { get; set; }
+    public required XRestrict XRestrict { get; set; }
 
     [JsonPropertyName("is_mail_authorized")]
     public required bool IsMailAuthorized { get; set; }
 
     [JsonPropertyName("require_policy_agreement")]
     public required bool RequirePolicyAgreement { get; set; }
+
+    /// <inheritdoc />
+    public override string AvatarUrl => ProfileImageUrls.Px170X170;
+
+    /// <inheritdoc />
+    public override string Description
+    {
+        get => "";
+        set { }
+    }
 }
 
 [Factory]
