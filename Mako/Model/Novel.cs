@@ -89,7 +89,7 @@ public partial record Novel : WorkBase, IWorkEntry
 
     public string Serialize() => JsonSerializer.Serialize(this, MakoJsonSerializerContext.Default.Novel);
 
-    public static ISerializable Deserialize(string data) => JsonSerializer.Deserialize(data, MakoJsonSerializerContext.Default.Novel)!;
+    public static Novel Deserialize(string data) => JsonSerializer.Deserialize(data, MakoJsonSerializerContext.Default.Novel)!;
 
     [JsonIgnore]
     public string SerializeKey => typeof(Novel).FullName!;
