@@ -15,8 +15,7 @@ namespace Mako.Engine.Implements;
 /// The <see cref="SpotlightEngine" /> containing the spotlight articles.
 /// </returns>
 [method: MakoExtensionConstructor]
-internal class SpotlightEngine(MakoClient makoClient,
-    SpotlightCategory category = SpotlightCategory.All)
+internal class SpotlightEngine(MakoClient makoClient)
     : AbstractPixivFetchEngine<Spotlight>(makoClient)
 {
     public override IAsyncEnumerator<Spotlight> GetAsyncEnumerator(
@@ -24,6 +23,6 @@ internal class SpotlightEngine(MakoClient makoClient,
         new RecursivePixivAsyncEnumerators.Spotlight<SpotlightEngine>(
             this,
             "/v1/spotlight/articles"
-            + $"?{TargetFilterParam}"
-            + $"&category={category.GetDescription()}");
+            + $"?{TargetFilterParam}");
+            // + $"&category=all" 只有all能用
 }
