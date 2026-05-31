@@ -88,10 +88,10 @@ public partial class MakoClient
     /// <param name="id">The ID of the illustration which needs to be bookmarked</param>
     /// <param name="privacyPolicy">Indicates the privacy of the illustration in the bookmark</param>
     /// <param name="tags"></param>
-    public Task<bool> PostIllustrationBookmarkAsync(long id, PrivacyPolicy privacyPolicy, IEnumerable<string>? tags = null) =>
+    public Task<bool> PostIllustrationBookmarkAsync(long id, PrivacyPolicy privacyPolicy, IReadOnlyCollection<string>? tags = null) =>
         RunWithLoggerAsync(t =>
         {
-            var urlTags = tags is null ? null : string.Join(' ', tags);
+            var urlTags = tags is { Count: > 0 } ? string.Join(' ', tags) : null;
             return t.AddIllustrationBookmarkAsync(new AddIllustrationBookmarkRequest(privacyPolicy, id, urlTags));
         });
 
@@ -120,10 +120,10 @@ public partial class MakoClient
         => RunWithLoggerAsync(t => t
             .RemoveIllustrationBookmarkAsync(id));
 
-    public Task<bool> PostNovelBookmarkAsync(long id, PrivacyPolicy privacyPolicy, IEnumerable<string>? tags = null) =>
+    public Task<bool> PostNovelBookmarkAsync(long id, PrivacyPolicy privacyPolicy, IReadOnlyCollection<string>? tags = null) =>
         RunWithLoggerAsync(t =>
         {
-            var urlTags = tags is null ? null : string.Join(' ', tags);
+            var urlTags = tags is { Count: > 0 } ? string.Join(' ', tags) : null;
             return t.AddNovelBookmarkAsync(new AddNovelBookmarkRequest(privacyPolicy, id, urlTags));
         });
 
