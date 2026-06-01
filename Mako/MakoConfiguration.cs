@@ -8,7 +8,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Mako.Global.Enum;
 using Mako.Net;
-using Pixeval.Network.Maho.Ech;
+using Pixeval.Network.Maho;
 
 namespace Mako;
 
@@ -30,7 +30,7 @@ public record MakoConfiguration(
     string? MirrorHost,
     TargetFilter TargetFilter,
     int ApiRequestCooldown,
-    CultureInfo CultureInfo) : INativeInteropDnsResolver
+    CultureInfo CultureInfo) : IDnsResolver // , INativeInteropDnsResolver
 {
     public MakoConfiguration() : this(false, DomainFrontingType.Fragmentation, "", "", "", TargetFilter.ForAndroid, 800, CultureInfo.CurrentCulture) { }
 

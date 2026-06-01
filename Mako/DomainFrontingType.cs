@@ -5,7 +5,7 @@ namespace Mako;
 
 public enum DomainFrontingType
 {
-    Fragmentation,
-    Ech
+    Fragmentation
+    // , Ech
     // , Desync
 }

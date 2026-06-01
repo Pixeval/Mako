@@ -12,7 +12,6 @@ using Mako.Net.EndPoints;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Misaki;
-using Pixeval.Network.Maho.Ech;
 using Pixeval.Network.Maho.Fragmentation;
 
 namespace Mako;
@@ -51,6 +50,7 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
             .AddKeyedSingleton<HttpMessageHandler>(
                 DomainFrontingType.Fragmentation,
                 static (serviceProvider, key) => TlsRecordFragmentationSocketsHttpHandlerFactory.GetTlsFragmentedHandler(serviceProvider.GetRequiredService<MakoClient>().Configuration))
+            /*
             .AddKeyedSingleton<HttpMessageHandler>(
                 DomainFrontingType.Ech,
                 static (serviceProvider, key) =>
@@ -59,7 +59,6 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
                     return NativeInteropEchEnabledHttpMessageHandlerFactory.GetNativeInteropEchEnabledHandler(
                         makoClient.Configuration, new LoggerShim(makoClient.Logger));
                 })
-            /*
             .AddKeyedSingleton<HttpMessageHandler>(
                 DomainFrontingType.Desync,
                 static (serviceProvider, key) =>
@@ -220,6 +219,7 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
     }
 }
 
+/*
 file class LoggerShim(ILogger logger) : INativeInteropLogger
 {
     /// <inheritdoc />
@@ -231,3 +231,4 @@ file class LoggerShim(ILogger logger) : INativeInteropLogger
         }
     }
 }
+*/
