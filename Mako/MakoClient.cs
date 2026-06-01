@@ -12,7 +12,6 @@ using Mako.Net.EndPoints;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Misaki;
-using Pixeval.Network.Maho.Desync;
 using Pixeval.Network.Maho.Ech;
 using Pixeval.Network.Maho.Fragmentation;
 
@@ -60,6 +59,7 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
                     return NativeInteropEchEnabledHttpMessageHandlerFactory.GetNativeInteropEchEnabledHandler(
                         makoClient.Configuration, new LoggerShim(makoClient.Logger));
                 })
+            /*
             .AddKeyedSingleton<HttpMessageHandler>(
                 DomainFrontingType.Desync,
                 static (serviceProvider, key) =>
@@ -74,6 +74,7 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
                         EmpiricalTtlSpoofer.Shared,
                         makoClient.Configuration);
                 })
+            */
             .AddTransient<PixivApiHttpMessageHandler>()
             .AddTransient<PixivImageHttpMessageHandler>()
             .AddSingleton<RefreshTokenOption>();
