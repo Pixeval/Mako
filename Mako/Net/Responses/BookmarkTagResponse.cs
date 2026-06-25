@@ -1,0 +1,19 @@
+// Copyright (c) Mako.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Mako.Model;
+using Mako.Utilities;
+
+namespace Mako.Net.Responses;
+
+[Factory]
+internal partial record BookmarkTagResponse : IPixivNextUrlResponse<BookmarkTag>
+{
+    [JsonPropertyName("next_url")]
+    public required string? NextUrl { get; set; }
+
+    [JsonPropertyName("bookmark_tags")]
+    public /*override*/ required IReadOnlyList<BookmarkTag> Entities { get; set; } = [];
+}

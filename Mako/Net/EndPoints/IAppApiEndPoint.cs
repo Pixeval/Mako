@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Mako.Engine.Implements;
 using Mako.Global.Enum;
 using Mako.Model;
-using Mako.Net.Request;
-using Mako.Net.Response;
+using Mako.Net.Requests;
+using Mako.Net.Responses;
 using WebApiClientCore;
 using WebApiClientCore.Attributes;
 
@@ -103,6 +103,7 @@ internal interface IAppApiEndPoint
     Task<UgoiraMetadataResponse> GetUgoiraMetadataAsync([AliasAs("illust_id")] long id);
 
     [HttpGet("/v2/search/autocomplete")]
+    [LoggingFilter]
     Task<AutoCompletionResponse> GetAutoCompletionAsync(string word, [AliasAs("merge_plain_keyword_results")] bool mergePlainKeywordResult = true);
 
     [HttpPost("/v1/illust/comment/add")]
@@ -127,13 +128,14 @@ internal interface IAppApiEndPoint
     Task<ShowAiSettingsResponse> GetAiShowSettingsAsync();
 
     [HttpPost("/v1/user/ai-show-settings/edit")]
-    Task<HttpResponseMessage> PostAiShowSettingsAsync([FormField][AliasAs("show_ai")] bool showAi);
+    [LoggingFilter]
+    Task<ShowAiSettingsResponse> PostAiShowSettingsAsync([FormContent] AiShowSettingsRequest request);
 
     [HttpGet("/v1/user/restricted-mode-settings")]
     Task<RestrictedModeSettingsResponse> GetRestrictedModeSettingsAsync();
 
     [HttpPost("/v1/user/restricted-mode-settings")]
-    Task<HttpResponseMessage> PostRestrictedModeSettingsAsync([FormField][AliasAs("is_restricted_mode_enabled")] bool isRestrictedModeEnabled);
+    Task<RestrictedModeSettingsResponse> PostRestrictedModeSettingsAsync([FormContent] RestrictedModeSettingsRequest request);
 
     [HttpGet("/v1/search/options")]
     Task<SearchOptions> GetSearchOptionsAsync(/*和搜索参数一样，但参数没意义*/);

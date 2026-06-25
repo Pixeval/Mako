@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Mako.Net.Request;
-using Mako.Net.Response;
+using Mako.Net.Requests;
+using Mako.Net.Responses;
 using WebApiClientCore.Attributes;
 using WebApiClientCore.Parameters;
 

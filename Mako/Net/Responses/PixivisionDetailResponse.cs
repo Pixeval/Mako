@@ -1,0 +1,330 @@
+// Copyright (c) Mako.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Mako.Utilities;
+
+namespace Mako.Net.Responses;
+
+[Factory]
+public partial record PixivisionDetailResponse
+{
+    [JsonPropertyName("error")]
+    public required bool Error { get; set; }
+
+    [JsonPropertyName("message")]
+    public required string Message { get; set; } = "";
+
+    [JsonPropertyName("body")]
+    public required IReadOnlyList<PixivisionBody> ResponseBody { get; set; } = [];
+}
+
+[Factory]
+public partial record PixivisionBody
+{
+    [JsonPropertyName("id")]
+    public required string Id { get; set; } = "";
+
+    [JsonPropertyName("lang")]
+    public required string Lang { get; set; } = "";
+
+    [JsonPropertyName("entry")]
+    public required PixivisionEntry Entry { get; set; }
+
+    [JsonPropertyName("tags")]
+    public required IReadOnlyList<PixivisionTag> Tags { get; set; } = [];
+
+    [JsonPropertyName("thumbnailUrl")]
+    public required string ThumbnailUrl { get; set; } = "";
+
+    [JsonPropertyName("title")]
+    public required string Title { get; set; } = "";
+
+    [JsonPropertyName("publishDate")]
+    public required long PublishDate { get; set; }
+
+    [JsonPropertyName("category")]
+    public required string Category { get; set; } = "";
+
+    [JsonPropertyName("subCategory")]
+    public required string SubCategory { get; set; } = "";
+
+    [JsonPropertyName("subCategoryLabel")]
+    public required string SubCategoryLabel { get; set; } = "";
+
+    [JsonPropertyName("subCategoryIntroduction")]
+    public required string SubCategoryIntroduction { get; set; } = "";
+
+    [JsonPropertyName("introduction")]
+    public required string Introduction { get; set; } = "";
+
+    [JsonPropertyName("footer")]
+    public required string Footer { get; set; } = "";
+
+    [JsonPropertyName("illusts")]
+    public required IReadOnlyList<PixivisionIllustration> Illustrations { get; set; } = [];
+
+    [JsonPropertyName("relatedArticles")]
+    public required IReadOnlyList<PixivisionRelatedArticle> RelatedArticles { get; set; } = [];
+
+    [JsonPropertyName("isOnlyOneUser")]
+    public required bool IsOnlyOneUser { get; set; }
+}
+
+[Factory]
+public partial record PixivisionEntry
+{
+    [JsonPropertyName("id")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)]
+    public required long Id { get; set; }
+
+    [JsonPropertyName("title")]
+    public required string Title { get; set; } = "";
+
+    [JsonPropertyName("pure_title")]
+    public required string PureTitle { get; set; } = "";
+
+    [JsonPropertyName("catchphrase")]
+    public required string Catchphrase { get; set; } = "";
+
+    [JsonPropertyName("header")]
+    public required string Header { get; set; } = "";
+
+    [JsonPropertyName("footer")]
+    public required string Footer { get; set; } = "";
+
+    [JsonPropertyName("sidebar")]
+    public required string Sidebar { get; set; } = "";
+
+    [JsonPropertyName("publish_date")]
+    public required long PublishDate { get; set; }
+
+    [JsonPropertyName("language")]
+    public required string Language { get; set; } = "";
+
+    [JsonPropertyName("pixivision_category_slug")]
+    public required string PixivisionCategorySlug { get; set; } = "";
+
+    [JsonPropertyName("pixivision_category")]
+    public required PixivisionCategory PixivisionCategory { get; set; }
+
+    [JsonPropertyName("pixivision_subcategory_slug")]
+    public required string PixivisionSubcategorySlug { get; set; } = "";
+
+    [JsonPropertyName("pixivision_subcategory")]
+    public required PixivisionSubcategory PixivisionSubcategory { get; set; }
+
+    [JsonPropertyName("tags")]
+    public required IReadOnlyList<PixivisionTag> Tags { get; set; } = [];
+
+    [JsonPropertyName("article_url")]
+    public required string ArticleUrl { get; set; } = "";
+
+    [JsonPropertyName("intro")]
+    public required string Intro { get; set; } = "";
+
+    [JsonPropertyName("facebook_count")]
+    public required string FacebookCount { get; set; } = "";
+
+    [JsonPropertyName("twitter_count")]
+    public required string TwitterCount { get; set; } = "";
+}
+
+[Factory]
+public partial record PixivisionCategory
+{
+    [JsonPropertyName("label")]
+    public required string Label { get; set; } = "";
+
+    [JsonPropertyName("introduction")]
+    public required string Introduction { get; set; } = "";
+}
+
+[Factory]
+public partial record PixivisionSubcategory
+{
+    [JsonPropertyName("label")]
+    public required string Label { get; set; } = "";
+
+    [JsonPropertyName("label_en")]
+    public required string LabelEn { get; set; } = "";
+
+    [JsonPropertyName("title")]
+    public required string Title { get; set; } = "";
+
+    [JsonPropertyName("introduction")]
+    public required string Introduction { get; set; } = "";
+
+    [JsonPropertyName("image_url")]
+    public required string ImageUrl { get; set; } = "";
+
+    [JsonPropertyName("big_image_url")]
+    public required string BigImageUrl { get; set; } = "";
+}
+
+[Factory]
+public partial record PixivisionTag
+{
+    [JsonPropertyName("id")]
+    public required string Id { get; set; } = "";
+
+    [JsonPropertyName("name")]
+    public required string Name { get; set; } = "";
+}
+
+[Factory]
+public partial record PixivisionIllustration
+{
+    [JsonPropertyName("spotlight_article_id")]
+    public required long PixivisionArticleId { get; set; }
+
+    [JsonPropertyName("illust_id")]
+    public required long Id { get; set; }
+
+    [JsonPropertyName("description")]
+    public required string Description { get; set; } = "";
+
+    [JsonPropertyName("language")]
+    public required string Language { get; set; } = "";
+
+    [JsonPropertyName("illust_user_id")]
+    public required string UserId { get; set; } = "";
+
+    [JsonPropertyName("illust_title")]
+    public required string Title { get; set; } = "";
+
+    [JsonPropertyName("illust_ext")]
+    public required string Ext { get; set; } = "";
+
+    [JsonPropertyName("illust_width")]
+    public required string Width { get; set; } = "";
+
+    [JsonPropertyName("illust_height")]
+    public required string Height { get; set; } = "";
+
+    [JsonPropertyName("illust_restrict")]
+    public required string Restrict { get; set; } = "";
+
+    [JsonPropertyName("illust_x_restrict")]
+    public required string XRestrict { get; set; } = "";
+
+    [JsonPropertyName("illust_create_date")]
+    public required string CreateDate { get; set; } = "";
+
+    [JsonPropertyName("illust_upload_date")]
+    public required string UploadDate { get; set; } = "";
+
+    [JsonPropertyName("illust_server_id")]
+    public required string ServerId { get; set; } = "";
+
+    [JsonPropertyName("illust_type")]
+    public required string Type { get; set; } = "";
+
+    [JsonPropertyName("illust_sanity_level")]
+    public required long SanityLevel { get; set; }
+
+    [JsonPropertyName("illust_book_style")]
+    public required string BookStyle { get; set; } = "";
+
+    [JsonPropertyName("illust_page_count")]
+    public required string PageCount { get; set; } = "";
+
+    [JsonPropertyName("illust_custom_thumbnail_upload_datetime")]
+    public required string CustomThumbnailUploadDatetime { get; set; } = "";
+
+    [JsonPropertyName("illust_comment")]
+    public required string Comment { get; set; } = "";
+
+    [JsonPropertyName("user_account")]
+    public required string UserAccount { get; set; } = "";
+
+    [JsonPropertyName("user_name")]
+    public required string UserName { get; set; } = "";
+
+    [JsonPropertyName("user_comment")]
+    public required string UserComment { get; set; } = "";
+
+    [JsonPropertyName("url")]
+    public required PixivisionUrl Url { get; set; }
+
+    [JsonPropertyName("user_icon")]
+    public required string UserIcon { get; set; } = "";
+}
+
+[Factory]
+public partial record PixivisionUrl
+{
+    [JsonPropertyName("1200x1200")]
+    public required string The1200X1200 { get; set; } = "";
+
+    [JsonPropertyName("768x1200")]
+    public required string The768X1200 { get; set; } = "";
+
+    [JsonPropertyName("ugoira600x600")]
+    public required string Ugoira600X600 { get; set; } = "";
+
+    [JsonPropertyName("ugoira1920x1080")]
+    public required string Ugoira1920X1080 { get; set; } = "";
+}
+
+[Factory]
+public partial record PixivisionRelatedArticle
+{
+    [JsonPropertyName("id")]
+    public required string Id { get; set; } = "";
+
+    [JsonPropertyName("publish_date")]
+    public required long PublishDate { get; set; }
+
+    [JsonPropertyName("category")]
+    public required string Category { get; set; } = "";
+
+    [JsonPropertyName("pixivision_category_slug")]
+    public required string PixivisionCategorySlug { get; set; } = "";
+
+    [JsonPropertyName("pixivision_subcategory_slug")]
+    public required string PixivisionSubcategorySlug { get; set; } = "";
+
+    [JsonPropertyName("thumbnail")]
+    public required string Thumbnail { get; set; } = "";
+
+    [JsonPropertyName("thumbnail_illust_id")]
+    public required string ThumbnailIllustrationId { get; set; } = "";
+
+    [JsonPropertyName("has_body")]
+    public required string HasBody { get; set; } = "";
+
+    [JsonPropertyName("is_pr")]
+    public required string IsPr { get; set; } = "";
+
+    [JsonPropertyName("pr_client_name")]
+    public required string PrClientName { get; set; } = "";
+
+    [JsonPropertyName("edit_status")]
+    public required string EditStatus { get; set; } = "";
+
+    [JsonPropertyName("translation_status")]
+    public required string TranslationStatus { get; set; } = "";
+
+    [JsonPropertyName("is_sample")]
+    public required string IsSample { get; set; } = "";
+
+    [JsonPropertyName("memo")]
+    public required string Memo { get; set; } = "";
+
+    [JsonPropertyName("facebook_count")]
+    public required string FacebookCount { get; set; } = "";
+
+    [JsonPropertyName("tweet_count")]
+    public required string TweetCount { get; set; } = "";
+
+    [JsonPropertyName("tweet_max_count")]
+    public required string TweetMaxCount { get; set; } = "";
+
+    [JsonPropertyName("main_abtest_pattern_id")]
+    public required string MainAbtestPatternId { get; set; } = "";
+
+    [JsonPropertyName("advertisement_id")]
+    public required string AdvertisementId { get; set; } = "";
+}

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using Mako.Model;
-using Mako.Net.Response;
+using Mako.Net.Responses;
 
 namespace Mako.Engine.Implements;
 

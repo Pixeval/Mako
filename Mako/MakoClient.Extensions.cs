@@ -10,8 +10,8 @@ using Mako.Engine.Implements;
 using Mako.Global.Enum;
 using Mako.Model;
 using Mako.Net.EndPoints;
-using Mako.Net.Request;
-using Mako.Net.Response;
+using Mako.Net.Requests;
+using Mako.Net.Responses;
 using Microsoft.Extensions.DependencyInjection;
 using Misaki;
 using WebApiClientCore.Parameters;
@@ -215,13 +215,13 @@ public partial class MakoClient
         => RunWithLoggerAsync<bool, ShowAiSettingsResponse>(t => t.GetAiShowSettingsAsync());
 
     public Task<bool> PostAiShowSettingsAsync(bool showAi)
-        => RunWithLoggerAsync(t => t.PostAiShowSettingsAsync(showAi));
+        => RunWithLoggerAsync<bool, ShowAiSettingsResponse>(t => t.PostAiShowSettingsAsync(new(showAi)));
 
     public Task<bool> GetRestrictedModeSettingsAsync()
         => RunWithLoggerAsync<bool, RestrictedModeSettingsResponse>(t => t.GetRestrictedModeSettingsAsync());
 
     public Task<bool> PostRestrictedModeSettingsAsync(bool isRestrictedModeEnabled)
-        => RunWithLoggerAsync(t => t.PostRestrictedModeSettingsAsync(isRestrictedModeEnabled));
+        => RunWithLoggerAsync<bool, RestrictedModeSettingsResponse>(t => t.PostRestrictedModeSettingsAsync(new(isRestrictedModeEnabled)));
 
     public Task<SearchOptions> GetSearchOptionsAsync()
         => RunWithLoggerAsync(t => t.GetSearchOptionsAsync());

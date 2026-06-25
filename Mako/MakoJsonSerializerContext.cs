@@ -5,8 +5,8 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Mako.Model;
-using Mako.Net.Request;
-using Mako.Net.Response;
+using Mako.Net.Requests;
+using Mako.Net.Responses;
 
 namespace Mako;
 
@@ -46,6 +46,8 @@ namespace Mako;
 [JsonSerializable(typeof(AddStampNovelCommentRequest))]
 [JsonSerializable(typeof(FollowUserRequest))]
 [JsonSerializable(typeof(ReverseSearchRequest))]
+[JsonSerializable(typeof(AiShowSettingsRequest))]
+[JsonSerializable(typeof(RestrictedModeSettingsRequest))]
 
 [JsonSerializable(typeof(RefreshSessionRequest))]
 [JsonSerializable(typeof(RequestSessionRequest))]

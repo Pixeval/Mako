@@ -36,7 +36,7 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
     /// <returns>The <see cref="ServiceProvider" /> contains all the required dependencies</returns>
     private ServiceProvider BuildServiceProvider(IServiceCollection serviceCollection)
     {
-#if false
+#if true
         _ = serviceCollection.AddLogging(logging =>
             logging.AddDebug()
                 .SetMinimumLevel(LogLevel.Debug)

@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Mako.Net.EndPoints;
-using Mako.Net.Response;
+using Mako.Net.Responses;
 using Mako.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

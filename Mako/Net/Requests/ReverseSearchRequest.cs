@@ -1,0 +1,23 @@
+// Copyright (c) Mako.
+// Licensed under the MIT License.
+
+using System.Text.Json.Serialization;
+
+namespace Mako.Net.Requests;
+
+public class ReverseSearchRequest(string apiKey)
+{
+    [JsonPropertyName("api_key")]
+    public string ApiKey { get; } = apiKey;
+
+    [JsonPropertyName("db")]
+    public int Db { get; } = 999;
+
+    [JsonPropertyName("output_type")]
+    public OutputTypeEnum OutputType { get; } = OutputTypeEnum.Json;
+
+    public enum OutputTypeEnum
+    {
+        Html, Xml, Json
+    }
+}

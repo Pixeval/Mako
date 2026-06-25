@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 using Mako.Model;
-using Mako.Net.Request;
+using Mako.Net.Requests;
 using WebApiClientCore;
 using WebApiClientCore.Attributes;
 

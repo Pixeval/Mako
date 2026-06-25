@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
-using Mako.Net.Response;
+using Mako.Net.Responses;
 using Mako.Utilities;
 using Misaki;
 

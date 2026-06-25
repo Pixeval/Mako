@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Mako.Global.Exception;
 using Mako.Model;
 using Mako.Net;
-using Mako.Net.Response;
+using Mako.Net.Responses;
 using Misaki;
 
 namespace Mako.Engine;
