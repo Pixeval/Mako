@@ -23,7 +23,6 @@ namespace Mako;
 [JsonSerializable(typeof(SpotlightResponse))]
 [JsonSerializable(typeof(UserResponse))]
 [JsonSerializable(typeof(PostCommentResponse))]
-[JsonSerializable(typeof(ReverseSearchResponse))]
 [JsonSerializable(typeof(TrendingTagResponse))]
 [JsonSerializable(typeof(UgoiraMetadataResponse))]
 [JsonSerializable(typeof(UserSpecifiedBookmarkTagResponse))]
@@ -45,7 +44,6 @@ namespace Mako;
 [JsonSerializable(typeof(AddStampIllustrationCommentRequest))]
 [JsonSerializable(typeof(AddStampNovelCommentRequest))]
 [JsonSerializable(typeof(FollowUserRequest))]
-[JsonSerializable(typeof(ReverseSearchRequest))]
 [JsonSerializable(typeof(AiShowSettingsRequest))]
 [JsonSerializable(typeof(RestrictedModeSettingsRequest))]
 

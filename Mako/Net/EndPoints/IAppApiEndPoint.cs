@@ -13,9 +13,6 @@ using WebApiClientCore.Attributes;
 
 namespace Mako.Net.EndPoints;
 
-/// <summary>
-/// 方法上 [LoggingFilter] 输出日志
-/// </summary>
 [HttpHost(MakoHttpOptions.AppApiBaseUrl)]
 [OAuthToken]
 internal interface IAppApiEndPoint
@@ -103,7 +100,6 @@ internal interface IAppApiEndPoint
     Task<UgoiraMetadataResponse> GetUgoiraMetadataAsync([AliasAs("illust_id")] long id);
 
     [HttpGet("/v2/search/autocomplete")]
-    [LoggingFilter]
     Task<AutoCompletionResponse> GetAutoCompletionAsync(string word, [AliasAs("merge_plain_keyword_results")] bool mergePlainKeywordResult = true);
 
     [HttpPost("/v1/illust/comment/add")]
@@ -128,7 +124,6 @@ internal interface IAppApiEndPoint
     Task<ShowAiSettingsResponse> GetAiShowSettingsAsync();
 
     [HttpPost("/v1/user/ai-show-settings/edit")]
-    [LoggingFilter]
     Task<ShowAiSettingsResponse> PostAiShowSettingsAsync([FormContent] AiShowSettingsRequest request);
 
     [HttpGet("/v1/user/restricted-mode-settings")]

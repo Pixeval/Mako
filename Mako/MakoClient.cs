@@ -36,7 +36,8 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
     /// <returns>The <see cref="ServiceProvider" /> contains all the required dependencies</returns>
     private ServiceProvider BuildServiceProvider(IServiceCollection serviceCollection)
     {
-#if true
+#if false
+        // EndPoint 接口方法上加上 [LoggingFilter]  以输出日志
         _ = serviceCollection.AddLogging(logging =>
             logging.AddDebug()
                 .SetMinimumLevel(LogLevel.Debug)
@@ -113,8 +114,6 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
             .AddWebApiClient()
             .UseSourceGeneratorHttpApiActivator()
             .ConfigureHttpApi(t => t.PrependJsonSerializerContext(MakoJsonSerializerContext.Default));
-
-        _ = serviceCollection.AddHttpApi<IReverseSearchApiEndPoint>();
 
         return serviceCollection.BuildServiceProvider();
     }

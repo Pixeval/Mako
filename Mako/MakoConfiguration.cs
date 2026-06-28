@@ -32,7 +32,7 @@ public record MakoConfiguration(
     int ApiRequestCooldown,
     CultureInfo CultureInfo) : IDnsResolver // , INativeInteropDnsResolver
 {
-    public MakoConfiguration() : this(false, DomainFrontingType.Fragmentation, "", "", "", TargetFilter.ForAndroid, 800, CultureInfo.CurrentCulture) { }
+    public MakoConfiguration() : this(false, DomainFrontingType.Fragmentation, null, "", "", TargetFilter.ForAndroid, 800, CultureInfo.CurrentCulture) { }
 
     public CultureInfo CultureInfo { get; set; } = CultureInfo;
 
@@ -42,9 +42,9 @@ public record MakoConfiguration(
         new("(Windows NT 10.0; Win64; x64)"),
         new("AppleWebKit", "537.36"),
         new("(KHTML, like Gecko)"),
-        new("Chrome", "133.0.0.0"),
+        new("Chrome", "149.0.0.0"),
         new("Safari", "537.36"),
-        new("Edg", "133.0.0.0")
+        new("Edg", "149.0.0.0")
     ];
 
     public bool DomainFronting { get; set; } = DomainFronting;
@@ -52,7 +52,7 @@ public record MakoConfiguration(
     public DomainFrontingType DomainFrontingType { get; set; } = DomainFrontingType;
 
     /// <summary>
-    /// <see langword="null"/> to disable proxy, <see cref="string.Empty"/> to use system proxy, otherwise use the specified proxy
+    /// <see cref="string.Empty"/> to disable proxy, <see langword="null"/> to use system proxy, otherwise use the specified proxy
     /// </summary>
     public string? Proxy { get; set; } = Proxy;
 
@@ -76,9 +76,6 @@ public record MakoConfiguration(
         [MakoHttpOptions.ImageHost2] = [],
         [MakoHttpOptions.OAuthHost] = []
     };
-
-    /// <inheritdoc />
-    public string BaseResolutionUrl => "https://dns.alidns.com/resolve?name=cloudflare-ech.com&type=HTTPS";
 
     /// <inheritdoc />
     public Task<IPAddress[]> LookupAsync(string hostname) =>

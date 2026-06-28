@@ -2,19 +2,15 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Mako.Engine;
 using Mako.Engine.Implements;
 using Mako.Global.Enum;
 using Mako.Model;
-using Mako.Net.EndPoints;
 using Mako.Net.Requests;
 using Mako.Net.Responses;
-using Microsoft.Extensions.DependencyInjection;
 using Misaki;
-using WebApiClientCore.Parameters;
 
 namespace Mako;
 
@@ -240,12 +236,4 @@ public partial class MakoClient
         var response = await RunWithLoggerAsync(t => t.GetNovelSeriesDetailAsync(seriesId)).ConfigureAwait(false);
         return (response.SeriesDetail, response.First, response.Latest, new NovelSeriesDetailEngine(this, seriesId, response));
     }
-
-    public Task<IReadOnlyList<Result>> ReverseSearchAsync(Stream imgStream, string apiKey)
-        => RunWithLoggerAsync(async () =>
-        {
-            var result = await Provider.GetRequiredService<IReverseSearchApiEndPoint>()
-                .GetSauceAsync(new FormDataFile(imgStream, "img"), new ReverseSearchRequest(apiKey));
-            return result.Header.Status is 0 ? result.Results : [];
-        });
 }
