@@ -85,8 +85,8 @@ internal sealed class MakoHttpMessageInvokerProvider(
     {
         return proxySetting switch
         {
-            null => "disabled",
-            "" => proxy is null
+            "" => "disabled",
+            null => proxy is null
                 ? "system:"
                 : $"system:{string.Join("|", _ProxyProbeUris.Select(uri => GetProxyCacheKeyPart(proxy, uri)))}",
             _ => $"explicit:{proxySetting}"

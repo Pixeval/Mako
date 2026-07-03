@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Mako.Net;
 using Mako.Net.EndPoints;
 using Mako.Net.Responses;
 using Mako.Utilities;
@@ -109,33 +109,19 @@ public partial class MakoClient
 
     static MakoClient()
     {
-        HttpClient.DefaultProxy = GetSystemProxy();
+        _ = SystemProxyProvider.GetCurrent();
     }
-
-    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "ConstructSystemProxy")]
-    private static extern IWebProxy GetSystemProxy([UnsafeAccessorType("System.Net.Http.SystemProxyInfo, System.Net.Http")] object? _ = null);
 
     public IWebProxy? CurrentProxy => GetConfiguredProxy(Configuration.Proxy);
 
     /// <inheritdoc cref="MakoConfiguration.Proxy" />
     internal IWebProxy? GetConfiguredProxy(string? proxy)
     {
-        switch (proxy)
+        return proxy switch
         {
-            case "":
-                return null;
-            case null:
-            {
-                var now = DateTime.UtcNow;
-                if (now < Cooldown)
-                    return HttpClient.DefaultProxy;
-                Cooldown = now.AddSeconds(2);
-                return HttpClient.DefaultProxy = GetSystemProxy();
-            }
-            default:
-                return new WebProxy(proxy);
-        }
+            "" => null,
+            null => SystemProxyProvider.GetCurrent(),
+            _ => new WebProxy(proxy)
+        };
     }
-
-    private static DateTime Cooldown { get; set; } = DateTime.UtcNow.AddSeconds(2);
 }

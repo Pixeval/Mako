@@ -17,7 +17,7 @@ namespace Mako;
 /// </summary>
 /// <param name="DomainFronting"></param>
 /// <param name="DomainFrontingType"></param>
-/// <param name="Proxy"><see langword="null"/> to disable proxy, <see cref="string.Empty"/> to use system proxy, otherwise use the specified proxy</param>
+/// <param name="Proxy"><see langword="null"/> to use system proxy, <see cref="string.Empty"/> to disable proxy, otherwise use the specified proxy</param>
 /// <param name="Cookie"></param>
 /// <param name="MirrorHost"></param>
 /// <param name="ApiRequestCooldown"></param>
@@ -52,7 +52,7 @@ public record MakoConfiguration(
     public DomainFrontingType DomainFrontingType { get; set; } = DomainFrontingType;
 
     /// <summary>
-    /// <see cref="string.Empty"/> to disable proxy, <see langword="null"/> to use system proxy, otherwise use the specified proxy
+    /// <see langword="null"/> to use system proxy, <see cref="string.Empty"/> to disable proxy, otherwise use the specified proxy
     /// </summary>
     public string? Proxy { get; set; } = Proxy;
 
