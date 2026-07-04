@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -221,6 +222,14 @@ public partial record NovelIllustration : IIdEntry
     public required int Page { get; set; } = 1;
 
     public string ThumbnailUrl => Illustration.Images.Medium;
+
+    [field: AllowNull, MaybeNull]
+    [JsonIgnore]
+    public Uri WebsiteUri => field ??= new($"https://www.pixiv.net/artworks/{Id}");
+
+    [field: AllowNull, MaybeNull]
+    [JsonIgnore]
+    public Uri AppUri => field ??= new($"pixeval://illust/{Id}");
 }
 
 [Factory]

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Mako.Model;
@@ -32,4 +33,12 @@ public record Spotlight : IIdEntry
 
     [JsonPropertyName("subcategory_label")]
     public required string SubcategoryLabel { get; set; }
+
+    [field: AllowNull, MaybeNull]
+    [JsonIgnore]
+    public Uri WebsiteUri => field ??= new($"https://www.pixivision.net/a/{Id}");
+
+    [field: AllowNull, MaybeNull]
+    [JsonIgnore]
+    public Uri AppUri => field ??= new($"pixeval://spotlight/{Id}");
 }
