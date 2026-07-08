@@ -50,6 +50,7 @@ public partial class MakoClient
             : IllustrationRanking(rankOption, dateTime);
     }
 
+    /// <inheritdoc cref="IllustrationNew" />
     public IFetchEngine<IWorkEntry> WorkNew(
         WorkType type,
         uint? maxWorkId = null)
@@ -57,6 +58,16 @@ public partial class MakoClient
         return type is WorkType.Novel
             ? NovelNew(maxWorkId)
             : IllustrationNew(type is WorkType.Manga, maxWorkId);
+    }
+
+    /// <inheritdoc cref="IllustrationMyPixiv" />
+    public IFetchEngine<IWorkEntry> WorkMyPixiv(
+        SimpleWorkType type,
+        long userId)
+    {
+        return type is SimpleWorkType.Novel
+            ? NovelMyPixiv(userId)
+            : IllustrationMyPixiv(userId);
     }
 
     /// <inheritdoc cref="IllustrationBookmarkTags" />

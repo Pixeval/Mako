@@ -45,6 +45,7 @@ internal class IllustrationSearchEngine : AbstractPixivFetchEngine<Illustration>
             + _arguments.WidthMin?.Let(dn => $"&width_min={dn}")
             + _arguments.WidthMax?.Let(dn => $"&width_max={dn}")
             + _arguments.HeightMin?.Let(dn => $"&height_min={dn}")
-            + _arguments.HeightMax?.Let(dn => $"&height_max={dn}"));
+            + _arguments.HeightMax?.Let(dn => $"&height_max={dn}")
+            + _arguments.Tool?.Let(dn => $"&tool={dn}"));
     }
 }

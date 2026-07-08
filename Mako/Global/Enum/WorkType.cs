@@ -19,7 +19,7 @@ public enum WorkType
 
 public enum SimpleWorkType
 {
-    IllustrationAndManga,
+    Illustration,
 
     Novel
 }

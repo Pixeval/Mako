@@ -22,7 +22,7 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
 
     private const string EngineHandleNamespace = "Mako.Engine";
 
-    private static readonly SymbolDisplayFormat TypeDisplayFormat = new(
+    private static readonly SymbolDisplayFormat _TypeDisplayFormat = new(
         globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Included,
         typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
         genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
@@ -319,7 +319,7 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
         => $"global::Mako.Engine.IFetchEngine<{DisplayType(fetchResultType)}>";
 
     private static string DisplayType(ITypeSymbol typeSymbol)
-        => typeSymbol.ToDisplayString(TypeDisplayFormat);
+        => typeSymbol.ToDisplayString(_TypeDisplayFormat);
 
     private static string BuildTypeParameterList(ImmutableArray<ITypeParameterSymbol> typeParameters)
         => typeParameters.IsDefaultOrEmpty
@@ -360,7 +360,7 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
 
         constraints.AddRange(typeParameter.ConstraintTypes.Select(DisplayType));
 
-        if (typeParameter.HasConstructorConstraint && !typeParameter.HasValueTypeConstraint && !typeParameter.HasUnmanagedTypeConstraint)
+        if (typeParameter is { HasConstructorConstraint: true, HasValueTypeConstraint: false, HasUnmanagedTypeConstraint: false })
             constraints.Add("new()");
 
         return constraints.Count is 0

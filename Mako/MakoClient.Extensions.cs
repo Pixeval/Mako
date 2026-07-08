@@ -16,16 +16,9 @@ namespace Mako;
 
 public partial class MakoClient
 {
-    /// <summary>
-    /// Gets the detail of an illustration from the illustration id
-    /// </summary>
-    /// <param name="id">The illustration id</param>
-    /// <returns></returns>
     public Task<Illustration> GetIllustrationFromIdAsync(long id)
         => RunWithLoggerAsync<Illustration, SingleIllustrationResponse>(t => t
             .GetSingleIllustrationAsync(id, Configuration.TargetFilter));
-
-    async Task<IArtworkInfo> IGetArtworkService.GetArtworkAsync(string id) => await GetIllustrationFromIdAsync(long.Parse(id)).ConfigureAwait(false);
 
     public Task<IReadOnlyList<Tag>> GetAutoCompletionForKeyword(string word)
         => RunWithLoggerAsync<IReadOnlyList<Tag>, AutoCompletionResponse>(t => t
@@ -78,54 +71,77 @@ public partial class MakoClient
             return JsonSerializer.Deserialize(span, MakoJsonSerializerContext.Default.NovelContent)!;
         });
 
-    /// <summary>
-    /// Sends a request to the Pixiv to add it to the bookmark
-    /// </summary>
-    /// <param name="id">The ID of the illustration which needs to be bookmarked</param>
-    /// <param name="privacyPolicy">Indicates the privacy of the illustration in the bookmark</param>
-    /// <param name="tags"></param>
-    public Task<bool> PostIllustrationBookmarkAsync(long id, PrivacyPolicy privacyPolicy, IReadOnlyCollection<string>? tags = null) =>
+    public Task<bool> PostWorkBookmarkAsync(SimpleWorkType type, long id, PrivacyPolicy privacyPolicy, IReadOnlyCollection<string>? tags = null) =>
         RunWithLoggerAsync(t =>
         {
             var urlTags = tags is { Count: > 0 } ? string.Join(' ', tags) : null;
-            return t.AddIllustrationBookmarkAsync(new AddIllustrationBookmarkRequest(privacyPolicy, id, urlTags));
+            return type is SimpleWorkType.Illustration
+                ? t.AddIllustrationBookmarkAsync(new(privacyPolicy, id, urlTags))
+                : t.AddNovelBookmarkAsync(new(privacyPolicy, id, urlTags));
         });
 
-    async Task<bool> IPostFavoriteService.PostFavoriteAsync(string id, bool favorite)
-    {
-        var l = long.Parse(id);
-        try
-        {
-            if (favorite)
-                return await PostIllustrationBookmarkAsync(l, PrivacyPolicy.Public).ConfigureAwait(false);
+    public Task<bool> RemoveWorkBookmarkAsync(SimpleWorkType type, long id)
+        => RunWithLoggerAsync(t => type is SimpleWorkType.Illustration
+            ? t.RemoveIllustrationBookmarkAsync(id)
+            : t.RemoveNovelBookmarkAsync(id));
 
-            return !await RemoveIllustrationBookmarkAsync(l).ConfigureAwait(false);
-        }
-        catch
-        {
-            return !favorite;
-        }
-    }
+    public Task<IReadOnlyList<User>> RelatedUserAsync(long id)
+        => RunWithLoggerAsync<IReadOnlyList<User>, RelatedUsersResponse>(t => t
+            .RelatedUserAsync(id, Configuration.TargetFilter));
 
-    /// <summary>
-    /// Sends a request to the Pixiv to remove it from the bookmark
-    /// </summary>
-    /// <param name="id">The ID of the illustration which needs to be removed from the bookmark</param>
-    /// <returns>A <see cref="Task" /> represents the operation</returns>
-    public Task<bool> RemoveIllustrationBookmarkAsync(long id)
+    public Task<bool> PostFollowUserAsync(long id, PrivacyPolicy privacyPolicy)
         => RunWithLoggerAsync(t => t
-            .RemoveIllustrationBookmarkAsync(id));
+            .FollowUserAsync(new FollowUserRequest(id, privacyPolicy)));
 
-    public Task<bool> PostNovelBookmarkAsync(long id, PrivacyPolicy privacyPolicy, IReadOnlyCollection<string>? tags = null) =>
-        RunWithLoggerAsync(t =>
-        {
-            var urlTags = tags is { Count: > 0 } ? string.Join(' ', tags) : null;
-            return t.AddNovelBookmarkAsync(new AddNovelBookmarkRequest(privacyPolicy, id, urlTags));
-        });
-
-    public Task<bool> RemoveNovelBookmarkAsync(long id)
+    public Task<bool> RemoveFollowUserAsync(long id)
         => RunWithLoggerAsync(t => t
-            .RemoveNovelBookmarkAsync(id));
+            .RemoveFollowUserAsync(id));
+
+    public Task<IReadOnlyList<TrendingTag>> GetWorkTrendingTagsAsync(SimpleWorkType type)
+        => RunWithLoggerAsync<IReadOnlyList<TrendingTag>, TrendingTagResponse>(t => type is SimpleWorkType.Illustration
+            ? t.GetIllustrationTrendingTagsAsync(Configuration.TargetFilter)
+            : t.GetNovelTrendingTagsAsync(Configuration.TargetFilter));
+
+    public Task<UgoiraMetadata> GetUgoiraMetadataAsync(long id)
+        => RunWithLoggerAsync<UgoiraMetadata, UgoiraMetadataResponse>(t => t
+            .GetUgoiraMetadataAsync(id));
+
+    public Task<bool> DeleteWorkCommentAsync(SimpleWorkType type, long commentId)
+        => RunWithLoggerAsync(t => type is SimpleWorkType.Illustration
+            ? t.DeleteIllustrationCommentAsync(commentId)
+            : t.DeleteNovelCommentAsync(commentId));
+
+    public Task<Comment> AddWorkCommentAsync(SimpleWorkType type, long workId, string content)
+        => RunWithLoggerAsync<Comment, PostCommentResponse>(t => type is SimpleWorkType.Illustration
+            ? t.AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(workId, null, content))
+            : t.AddNovelCommentAsync(new AddNormalNovelCommentRequest(workId, null, content)));
+
+    public Task<Comment> AddWorkCommentAsync(SimpleWorkType type, long workId, int stampId)
+        => RunWithLoggerAsync<Comment, PostCommentResponse>(t => type is SimpleWorkType.Illustration
+            ? t.AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(workId, null, stampId))
+            : t.AddNovelCommentAsync(new AddStampNovelCommentRequest(workId, null, stampId)));
+
+    public Task<Comment> AddWorkCommentAsync(SimpleWorkType type, long workId, long parentCommentId, string content)
+        => RunWithLoggerAsync<Comment, PostCommentResponse>(t => type is SimpleWorkType.Illustration
+            ? t.AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(workId, parentCommentId, content))
+            : t.AddNovelCommentAsync(new AddNormalNovelCommentRequest(workId, parentCommentId, content)));
+
+    public Task<Comment> AddWorkCommentAsync(SimpleWorkType type, long workId, long parentCommentId, int stampId)
+        => RunWithLoggerAsync<Comment, PostCommentResponse>(t => type is SimpleWorkType.Illustration
+            ? t.AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(workId, parentCommentId, stampId))
+            : t.AddNovelCommentAsync(new AddStampNovelCommentRequest(workId, parentCommentId, stampId)));
+
+    public Task<bool> GetAiShowSettingsAsync()
+        => RunWithLoggerAsync<bool, ShowAiSettingsResponse>(t => t.GetAiShowSettingsAsync());
+
+    public Task<bool> PostAiShowSettingsAsync(bool showAi)
+        => RunWithLoggerAsync<bool, ShowAiSettingsResponse>(t => t.PostAiShowSettingsAsync(new(showAi)));
+
+    public Task<bool> GetRestrictedModeSettingsAsync()
+        => RunWithLoggerAsync<bool, RestrictedModeSettingsResponse>(t => t.GetRestrictedModeSettingsAsync());
+
+    public Task<bool> PostRestrictedModeSettingsAsync(bool isRestrictedModeEnabled)
+        => RunWithLoggerAsync<bool, RestrictedModeSettingsResponse>(t => t.PostRestrictedModeSettingsAsync(new(isRestrictedModeEnabled)));
 
     public Task<bool> PostMangaSeriesWatchlistAsync(long id) =>
         RunWithLoggerAsync(t => t
@@ -142,82 +158,6 @@ public partial class MakoClient
     public Task<bool> RemoveNovelSeriesWatchlistAsync(long id)
         => RunWithLoggerAsync(t => t
             .RemoveNovelSeriesWatchlistAsync(id));
-
-    public Task<IReadOnlyList<User>> RelatedUserAsync(long id)
-        => RunWithLoggerAsync<IReadOnlyList<User>, RelatedUsersResponse>(t => t
-            .RelatedUserAsync(id, Configuration.TargetFilter));
-
-    public Task<bool> PostFollowUserAsync(long id, PrivacyPolicy privacyPolicy)
-        => RunWithLoggerAsync(t => t
-            .FollowUserAsync(new FollowUserRequest(id, privacyPolicy)));
-
-    public Task<bool> RemoveFollowUserAsync(long id)
-        => RunWithLoggerAsync(t => t
-            .RemoveFollowUserAsync(id));
-
-    public Task<IReadOnlyList<TrendingTag>> GetIllustrationTrendingTagsAsync()
-        => RunWithLoggerAsync<IReadOnlyList<TrendingTag>, TrendingTagResponse>(t => t
-            .GetIllustrationTrendingTagsAsync(Configuration.TargetFilter));
-
-    public Task<IReadOnlyList<TrendingTag>> GetNovelTrendingTagsAsync()
-        => RunWithLoggerAsync<IReadOnlyList<TrendingTag>, TrendingTagResponse>(t => t
-            .GetNovelTrendingTagsAsync(Configuration.TargetFilter));
-
-    public Task<UgoiraMetadata> GetUgoiraMetadataAsync(long id)
-        => RunWithLoggerAsync<UgoiraMetadata, UgoiraMetadataResponse>(t => t
-            .GetUgoiraMetadataAsync(id));
-
-    public Task<bool> DeleteIllustrationCommentAsync(long commentId)
-        => RunWithLoggerAsync(t => t
-            .DeleteIllustrationCommentAsync(commentId));
-
-    public Task<bool> DeleteNovelCommentAsync(long commentId)
-        => RunWithLoggerAsync(t => t
-            .DeleteNovelCommentAsync(commentId));
-
-    public Task<Comment> AddIllustrationCommentAsync(long illustrationId, string content)
-        => RunWithLoggerAsync<Comment, PostCommentResponse>(t => t
-            .AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(illustrationId, null, content)));
-
-    public Task<Comment> AddIllustrationCommentAsync(long illustrationId, int stampId)
-        => RunWithLoggerAsync<Comment, PostCommentResponse>(t => t
-            .AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(illustrationId, null, stampId)));
-
-    public Task<Comment> AddIllustrationCommentAsync(long illustrationId, long parentCommentId, string content)
-        => RunWithLoggerAsync<Comment, PostCommentResponse>(t => t
-            .AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(illustrationId, parentCommentId, content)));
-
-    public Task<Comment> AddIllustrationCommentAsync(long illustrationId, long parentCommentId, int stampId)
-        => RunWithLoggerAsync<Comment, PostCommentResponse>(t => t
-            .AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(illustrationId, parentCommentId, stampId)));
-
-    public Task<Comment> AddNovelCommentAsync(long novelId, string content)
-        => RunWithLoggerAsync<Comment, PostCommentResponse>(t => t
-            .AddNovelCommentAsync(new AddNormalNovelCommentRequest(novelId, null, content)));
-
-    public Task<Comment> AddNovelCommentAsync(long novelId, int stampId)
-        => RunWithLoggerAsync<Comment, PostCommentResponse>(t => t
-            .AddNovelCommentAsync(new AddStampNovelCommentRequest(novelId, null, stampId)));
-
-    public Task<Comment> AddNovelCommentAsync(long novelId, long parentCommentId, string content)
-        => RunWithLoggerAsync<Comment, PostCommentResponse>(t => t
-            .AddNovelCommentAsync(new AddNormalNovelCommentRequest(novelId, parentCommentId, content)));
-
-    public Task<Comment> AddNovelCommentAsync(long novelId, long parentCommentId, int stampId)
-        => RunWithLoggerAsync<Comment, PostCommentResponse>(t => t
-            .AddNovelCommentAsync(new AddStampNovelCommentRequest(novelId, parentCommentId, stampId)));
-
-    public Task<bool> GetAiShowSettingsAsync()
-        => RunWithLoggerAsync<bool, ShowAiSettingsResponse>(t => t.GetAiShowSettingsAsync());
-
-    public Task<bool> PostAiShowSettingsAsync(bool showAi)
-        => RunWithLoggerAsync<bool, ShowAiSettingsResponse>(t => t.PostAiShowSettingsAsync(new(showAi)));
-
-    public Task<bool> GetRestrictedModeSettingsAsync()
-        => RunWithLoggerAsync<bool, RestrictedModeSettingsResponse>(t => t.GetRestrictedModeSettingsAsync());
-
-    public Task<bool> PostRestrictedModeSettingsAsync(bool isRestrictedModeEnabled)
-        => RunWithLoggerAsync<bool, RestrictedModeSettingsResponse>(t => t.PostRestrictedModeSettingsAsync(new(isRestrictedModeEnabled)));
 
     public Task<SearchOptions> GetSearchOptionsAsync()
         => RunWithLoggerAsync(t => t.GetSearchOptionsAsync());
@@ -236,4 +176,26 @@ public partial class MakoClient
         var response = await RunWithLoggerAsync(t => t.GetNovelSeriesDetailAsync(seriesId)).ConfigureAwait(false);
         return (response.SeriesDetail, response.First, response.Latest, new NovelSeriesDetailEngine(this, seriesId, response));
     }
+
+    #region Misaki
+
+    async Task<IArtworkInfo> IGetArtworkService.GetArtworkAsync(string id) => await GetIllustrationFromIdAsync(long.Parse(id)).ConfigureAwait(false);
+
+    async Task<bool> IPostFavoriteService.PostFavoriteAsync(string id, bool favorite)
+    {
+        var l = long.Parse(id);
+        try
+        {
+            if (favorite)
+                return await PostWorkBookmarkAsync(SimpleWorkType.Illustration, l, PrivacyPolicy.Public).ConfigureAwait(false);
+
+            return !await RemoveWorkBookmarkAsync(SimpleWorkType.Illustration, l).ConfigureAwait(false);
+        }
+        catch
+        {
+            return !favorite;
+        }
+    }
+
+    #endregion
 }
