@@ -8,7 +8,8 @@ using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-[method: MakoExtensionConstructor]
+/// <inheritdoc cref="MangaSeriesWatchlistEngine.MangaSeriesWatchlistEngine" />
+[method: MakoExtensionConstructor(true)]
 internal class NovelSeriesWatchlistEngine(MakoClient makoClient)
     : AbstractPixivFetchEngine<Series>(makoClient)
 {

@@ -8,7 +8,7 @@ using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-[method: MakoExtensionConstructor]
+[method: MakoExtensionConstructor(true)]
 internal class IllustrationNewEngine(
     MakoClient makoClient,
     bool contentTypeIsManga,

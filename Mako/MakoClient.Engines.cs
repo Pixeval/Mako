@@ -62,12 +62,11 @@ public partial class MakoClient
 
     /// <inheritdoc cref="IllustrationMyPixiv" />
     public IFetchEngine<IWorkEntry> WorkMyPixiv(
-        SimpleWorkType type,
-        long userId)
+        SimpleWorkType type)
     {
         return type is SimpleWorkType.Novel
-            ? NovelMyPixiv(userId)
-            : IllustrationMyPixiv(userId);
+            ? NovelMyPixiv()
+            : IllustrationMyPixiv();
     }
 
     /// <inheritdoc cref="IllustrationBookmarkTags" />
@@ -92,7 +91,7 @@ public partial class MakoClient
     }
 
     /// <inheritdoc cref="IllustrationPosted" />
-    public IFetchEngine<IWorkEntry> WorkPosts(
+    public IFetchEngine<IWorkEntry> WorkPosted(
         long uid,
         WorkType type)
     {
@@ -101,12 +100,20 @@ public partial class MakoClient
             : IllustrationPosted(uid, type);
     }
 
-    /// <inheritdoc cref="IllustrationPosted" />
-    public IFetchEngine<Series> WorkSeriesWatchlist(WorkType type)
+    /// <inheritdoc cref="IllustrationRelated" />
+    public IFetchEngine<IWorkEntry> WorkRelated(
+        long id,
+        SimpleWorkType type)
     {
-        if (type is WorkType.Illustration)
-            throw new ArgumentOutOfRangeException(nameof(type));
-        return type is WorkType.Novel
+        return type is SimpleWorkType.Novel
+            ? NovelRelated(id)
+            : IllustrationRelated(id);
+    }
+
+    /// <inheritdoc cref="MangaSeriesWatchlist" />
+    public IFetchEngine<Series> WorkSeriesWatchlist(SimpleWorkType type)
+    {
+        return type is SimpleWorkType.Novel
             ? NovelSeriesWatchlist()
             : MangaSeriesWatchlist();
     }

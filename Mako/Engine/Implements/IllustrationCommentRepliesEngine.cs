@@ -15,7 +15,7 @@ namespace Mako.Engine.Implements;
 /// <returns>
 /// The <see cref="IllustrationCommentRepliesEngine" /> containing replies of the comment.
 /// </returns>
-[method: MakoExtensionConstructor]
+[method: MakoExtensionConstructor(true)]
 internal class IllustrationCommentRepliesEngine(long commentId, MakoClient makoClient)
     : AbstractPixivFetchEngine<Comment>(makoClient)
 {

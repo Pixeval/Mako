@@ -23,7 +23,7 @@ internal class UserSearchEngine(
     public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.User<UserSearchEngine>(
             this,
-            "/v1/search/user" +
-            $"?{TargetFilterParam}" +
-            $"&word={keyword}");
+            "/v1/search/user"
+            + $"?{TargetFilterParam}"
+            + $"&word={keyword}");
 }

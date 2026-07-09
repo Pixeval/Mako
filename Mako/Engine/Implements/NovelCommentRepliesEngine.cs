@@ -9,7 +9,7 @@ using Mako.Utilities;
 namespace Mako.Engine.Implements;
 
 /// <inheritdoc cref="IllustrationCommentRepliesEngine.IllustrationCommentRepliesEngine" />
-[method: MakoExtensionConstructor]
+[method: MakoExtensionConstructor(true)]
 internal class NovelCommentRepliesEngine(long commentId, MakoClient makoClient)
     : AbstractPixivFetchEngine<Comment>(makoClient)
 {

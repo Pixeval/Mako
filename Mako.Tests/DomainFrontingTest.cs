@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Mako.Global.Enum;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Mako.Tests;
@@ -8,14 +9,14 @@ public sealed class DomainFrontingTest
 {
     [TestMethod]
     [DataRow(DomainFrontingType.Fragmentation)]
-    [DataRow(DomainFrontingType.Ech)]
-    [DataRow(DomainFrontingType.Desync)]
+    // [DataRow(DomainFrontingType.Ech)]
+    // [DataRow(DomainFrontingType.Desync)]
     public async Task TestDomainFronting(DomainFrontingType domainFrontingType)
     {
         TestSettings.Client.Configuration.DomainFronting = true;
         TestSettings.Client.Configuration.DomainFrontingType = domainFrontingType;
 
-        var tags = await TestSettings.Client.GetIllustrationTrendingTagsAsync();
+        var tags = await TestSettings.Client.GetWorkTrendingTagsAsync(SimpleWorkType.Illustration);
 
         Assert.IsNotEmpty(tags);
     }

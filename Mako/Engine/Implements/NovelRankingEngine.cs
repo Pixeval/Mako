@@ -16,7 +16,7 @@ internal class NovelRankingEngine : AbstractPixivFetchEngine<Novel>
     private readonly DateOnly _dateOnly;
 
     /// <inheritdoc cref="IllustrationRankingEngine.IllustrationRankingEngine" />
-    [MakoExtensionConstructor]
+    [MakoExtensionConstructor(true)]
     public NovelRankingEngine(
         MakoClient makoClient,
         RankOption rankOption,
@@ -34,8 +34,8 @@ internal class NovelRankingEngine : AbstractPixivFetchEngine<Novel>
     public override IAsyncEnumerator<Novel> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Novel<NovelRankingEngine>(
             this,
-            "/v1/novel/ranking" +
-            $"?{TargetFilterParam}" +
-            $"&mode={_rankOption.GetDescription()}" +
-            $"&date={_dateOnly:yyyy-MM-dd}");
+            "/v1/novel/ranking"
+            + $"?{TargetFilterParam}"
+            + $"&mode={_rankOption.GetDescription()}"
+            + $"&date={_dateOnly:yyyy-MM-dd}");
 }

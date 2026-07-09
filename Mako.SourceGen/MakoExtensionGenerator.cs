@@ -18,6 +18,8 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
 {
     private const string ConstructorAttributeFullName = "Mako.Utilities.MakoExtensionConstructorAttribute";
 
+    private const string ConstructorAttributeIsPrivatePropertyName = "IsPrivate";
+
     private const string GeneratedExtensionAttributeFullName = "Mako.Utilities.GeneratedMakoExtensionAttribute";
 
     private const string EngineHandleNamespace = "Mako.Engine";
@@ -34,19 +36,19 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var attributedConstructors = context.SyntaxProvider.ForAttributeWithMetadataName(
-            ConstructorAttributeFullName,
-            static (_, _) => true,
-            static (syntaxContext, _) => TryGetAttributedConstructor(syntaxContext))
-            .Where(static symbol => symbol is not null)
-            .Select(static (symbol, _) => symbol!);
+                ConstructorAttributeFullName,
+                static (_, _) => true,
+                static (syntaxContext, _) => TryGetAttributedConstructor(syntaxContext))
+            .Where(static constructor => constructor is not null)
+            .Select(static (constructor, _) => constructor!);
 
         // see also: https://github.com/dotnet/roslyn/issues/80511
         // TODO: 傻逼ForAttributeWithMetadataName不支持method:这种主构造器，看什么时候支持
         var primaryConstructors = context.SyntaxProvider.CreateSyntaxProvider(
-            static (node, _) => node is TypeDeclarationSyntax { ParameterList: not null, AttributeLists.Count: > 0 },
-            static (syntaxContext, _) => TryGetPrimaryConstructor(syntaxContext))
-            .Where(static symbol => symbol is not null)
-            .Select(static (symbol, _) => symbol!);
+                static (node, _) => node is TypeDeclarationSyntax { ParameterList: not null, AttributeLists.Count: > 0 },
+                static (syntaxContext, _) => TryGetPrimaryConstructor(syntaxContext))
+            .Where(static constructor => constructor is not null)
+            .Select(static (constructor, _) => constructor!);
 
         var extensionConstructors = attributedConstructors
             .Collect()
@@ -67,7 +69,7 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
         SourceProductionContext context,
         Compilation compilation,
         ImmutableArray<INamedTypeSymbol> hosts,
-        ImmutableArray<IMethodSymbol> constructors)
+        ImmutableArray<ExtensionConstructor> constructors)
     {
         foreach (var host in DistinctHosts(hosts))
         {
@@ -99,23 +101,25 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
         }
     }
 
-    private static IEnumerable<IMethodSymbol> DistinctConstructors(
-        ImmutableArray<IMethodSymbol> constructors,
-        ImmutableArray<IMethodSymbol> primaryConstructors)
+    private static IEnumerable<ExtensionConstructor> DistinctConstructors(
+        ImmutableArray<ExtensionConstructor> constructors,
+        ImmutableArray<ExtensionConstructor> primaryConstructors)
     {
         var seen = new HashSet<string>(StringComparer.Ordinal);
 
         foreach (var constructor in constructors.Concat(primaryConstructors))
         {
-            if (seen.Add(constructor.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)))
+            if (seen.Add(constructor.Symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)))
                 yield return constructor;
         }
     }
 
-    private static IMethodSymbol? TryGetAttributedConstructor(GeneratorAttributeSyntaxContext syntaxContext)
+    private static ExtensionConstructor? TryGetAttributedConstructor(GeneratorAttributeSyntaxContext syntaxContext)
     {
+        var isPrivate = IsPrivateConstructor(syntaxContext.Attributes);
+
         if (syntaxContext.TargetSymbol is IMethodSymbol { MethodKind: MethodKind.Constructor } constructor)
-            return constructor;
+            return new ExtensionConstructor(constructor, isPrivate);
 
         if (syntaxContext.TargetSymbol is not INamedTypeSymbol typeSymbol)
             return null;
@@ -123,10 +127,12 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
         if (syntaxContext.TargetNode is not TypeDeclarationSyntax { ParameterList: { } parameterList })
             return null;
 
-        return FindMatchingConstructor(typeSymbol, parameterList, syntaxContext.SemanticModel);
+        return FindMatchingConstructor(typeSymbol, parameterList, syntaxContext.SemanticModel) is { } matchingConstructor
+            ? new ExtensionConstructor(matchingConstructor, isPrivate)
+            : null;
     }
 
-    private static IMethodSymbol? TryGetPrimaryConstructor(GeneratorSyntaxContext syntaxContext)
+    private static ExtensionConstructor? TryGetPrimaryConstructor(GeneratorSyntaxContext syntaxContext)
     {
         if (syntaxContext.Node is not TypeDeclarationSyntax typeDeclaration)
             return null;
@@ -144,9 +150,12 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
         if (constructor is null)
             return null;
 
-        return constructor.GetAttributes().Any(attribute =>
-            attribute.AttributeClass?.ToDisplayString() == ConstructorAttributeFullName)
-            ? constructor
+        var attributes = constructor.GetAttributes()
+            .Where(attribute => attribute.AttributeClass?.ToDisplayString() == ConstructorAttributeFullName)
+            .ToImmutableArray();
+
+        return attributes.Any()
+            ? new ExtensionConstructor(constructor, IsPrivateConstructor(attributes))
             : null;
     }
 
@@ -155,7 +164,6 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
         ParameterListSyntax parameterList,
         SemanticModel semanticModel)
     {
-
         foreach (var constructorCandidate in typeSymbol.InstanceConstructors)
         {
             if (constructorCandidate.MethodKind is not MethodKind.Constructor)
@@ -200,8 +208,14 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
         return null;
     }
 
-    private static GeneratedMethod? TryCreateMethod(IMethodSymbol constructor, INamedTypeSymbol host, Compilation compilation)
+    private static bool IsPrivateConstructor(ImmutableArray<AttributeData> attributes)
+        => attributes.Any(static attribute =>
+            attribute.ConstructorArguments is [{ Value: true }, ..]
+            || attribute.NamedArguments.Any(static argument => argument is { Key: ConstructorAttributeIsPrivatePropertyName, Value.Value: true }));
+
+    private static GeneratedMethod? TryCreateMethod(ExtensionConstructor extensionConstructor, INamedTypeSymbol host, Compilation compilation)
     {
+        var constructor = extensionConstructor.Symbol;
         var fetchResultType = TryGetFetchResultType(constructor.ContainingType);
         if (fetchResultType is null)
             return null;
@@ -240,6 +254,7 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
             BuildFetchEngineReturnType(fetchResultType),
             DisplayType(constructor.ContainingType),
             constructor.GetDocumentationCommentId(),
+            extensionConstructor.IsPrivate ? "private" : "public",
             BuildTypeParameterList(methodTypeParameters),
             BuildConstraintClauses(methodTypeParameters),
             parameters.ToImmutable(),
@@ -436,7 +451,9 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
             if (method.ConstructorDocumentationId is { Length: > 0 } documentationId)
                 builder.Append("    /// <inheritdoc cref=\"").Append(documentationId).AppendLine("\" />");
 
-            builder.Append("    public ")
+            builder.Append("    ")
+                .Append(method.Accessibility)
+                .Append(' ')
                 .Append(method.ReturnType)
                 .Append(' ')
                 .Append(method.Name)
@@ -462,11 +479,19 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
         return builder.ToString();
     }
 
+    private sealed class ExtensionConstructor(IMethodSymbol symbol, bool isPrivate)
+    {
+        public IMethodSymbol Symbol { get; } = symbol;
+
+        public bool IsPrivate { get; } = isPrivate;
+    }
+
     private sealed class GeneratedMethod(
         string name,
         string returnType,
         string constructorType,
         string? constructorDocumentationId,
+        string accessibility,
         string typeParameterList,
         ImmutableArray<string> constraintClauses,
         ImmutableArray<string> parameters,
@@ -479,6 +504,8 @@ public sealed class MakoExtensionGenerator : IIncrementalGenerator
         public string ConstructorType { get; } = constructorType;
 
         public string? ConstructorDocumentationId { get; } = constructorDocumentationId;
+
+        public string Accessibility { get; } = accessibility;
 
         public string TypeParameterList { get; } = typeParameterList;
 

@@ -17,7 +17,7 @@ internal class NovelBookmarksEngine : AbstractPixivFetchEngine<Novel>
     private readonly PrivacyPolicy _privacyPolicy;
 
     /// <inheritdoc cref="IllustrationBookmarksEngine.IllustrationBookmarksEngine" />
-    [MakoExtensionConstructor]
+    [MakoExtensionConstructor(true)]
     public NovelBookmarksEngine(MakoClient makoClient,
         long uid,
         string? tag,
@@ -36,6 +36,5 @@ internal class NovelBookmarksEngine : AbstractPixivFetchEngine<Novel>
             "/v1/user/bookmarks/novel"
             + $"?user_id={_uid}"
             + $"&restrict={_privacyPolicy.GetDescription()}"
-            + $"&{TargetFilterParam}"
             + _tag?.Let(s => $"&tag={HttpUtility.UrlEncode(s)}"));
 }

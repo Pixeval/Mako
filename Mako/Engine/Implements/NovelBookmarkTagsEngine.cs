@@ -9,13 +9,13 @@ using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-
 internal class NovelBookmarkTagsEngine : AbstractPixivFetchEngine<BookmarkTag>
 {
     private readonly long _uid;
     private readonly PrivacyPolicy _privacyPolicy;
 
-    [MakoExtensionConstructor]
+    /// <inheritdoc cref="IllustrationBookmarkTagsEngine.IllustrationBookmarkTagsEngine" />
+    [MakoExtensionConstructor(true)]
     public NovelBookmarkTagsEngine(MakoClient makoClient, long uid, PrivacyPolicy privacyPolicy) : base(makoClient)
     {
         makoClient.CheckPrivacyPolicy(privacyPolicy, uid);

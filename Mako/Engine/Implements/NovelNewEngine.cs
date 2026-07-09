@@ -8,7 +8,8 @@ using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-[method: MakoExtensionConstructor]
+/// <inheritdoc cref="IllustrationNewEngine.IllustrationNewEngine" />
+[method: MakoExtensionConstructor(true)]
 internal class NovelNewEngine(
     MakoClient makoClient,
     uint? maxNovelId)

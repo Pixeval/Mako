@@ -83,11 +83,11 @@ public sealed class EnginesTest
     }
 
     [TestMethod]
-    public async Task TestIllustrationNewEngineAsync()
+    public async Task TestNovelRelatedEngineAsync()
     {
-        var engines = TestSettings.Client.IllustrationNew(false, 99999);
+        var engines = TestSettings.Client.WorkRelated(20851904, SimpleWorkType.Novel);
         var count = 0;
-        await foreach (var illustration in engines)
+        await foreach (var novel in engines)
         {
             ++count;
             if (count is 20)
@@ -98,9 +98,9 @@ public sealed class EnginesTest
     }
 
     [TestMethod]
-    [DataRow(WorkType.Manga)]
-    [DataRow(WorkType.Novel)]
-    public async Task TestWorkSeriesWatchlistEngineAsync(WorkType type)
+    [DataRow(SimpleWorkType.Illustration)]
+    [DataRow(SimpleWorkType.Novel)]
+    public async Task TestWorkSeriesWatchlistEngineAsync(SimpleWorkType type)
     {
         var engines = TestSettings.Client.WorkSeriesWatchlist(type);
         var count = 0;

@@ -12,6 +12,7 @@ internal class NovelSearchEngine : AbstractPixivFetchEngine<Novel>
 {
     private readonly NovelSearchArguments _arguments;
 
+    /// <inheritdoc cref="IllustrationSearchEngine.IllustrationSearchEngine" />
     [MakoExtensionConstructor]
     public NovelSearchEngine(
         MakoClient makoClient,
@@ -27,9 +28,9 @@ internal class NovelSearchEngine : AbstractPixivFetchEngine<Novel>
         return new RecursivePixivAsyncEnumerators.Novel<NovelSearchEngine>(
             this,
             "/v1/search/novel"
-            + $"?search_target={_arguments.MatchOption.GetDescription()}"
+            + $"?{TargetFilterParam}"
+            + $"&search_target={_arguments.MatchOption.GetDescription()}"
             + $"&word={_arguments.SearchText}"
-            + $"&{TargetFilterParam}"
             + $"&sort={_arguments.SortOption.GetDescription()}"
             + $"&search_ai_type={(_arguments.AiType ? 1 : 0)}"
             + _arguments.LangCode?.Let(t => $"&lang={t}")

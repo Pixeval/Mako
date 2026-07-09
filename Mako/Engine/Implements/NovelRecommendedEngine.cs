@@ -8,10 +8,10 @@ using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-[method: MakoExtensionConstructor]
+/// <inheritdoc cref="NovelRecommendedEngine.NovelRecommendedEngine" />
+[method: MakoExtensionConstructor(true)]
 internal class NovelRecommendedEngine(
     MakoClient makoClient,
-    // TODO url-encoded
     bool includeRankingNovels = true,
     bool includePrivacyPolicy = true,
     // 下面这个参数好像没用
@@ -22,5 +22,7 @@ internal class NovelRecommendedEngine(
         new RecursivePixivAsyncEnumerators.Novel<NovelRecommendedEngine>(this,
             "/v1/novel/recommended"
             + $"?{TargetFilterParam}"
+            + $"&include_ranking_novels={includeRankingNovels.ToString().ToLower()}"
+            + $"&include_privacy_policy={includePrivacyPolicy.ToString().ToLower()}"
             + maxBookmarkIdForRecommend?.Let(static s => $"&max_bookmark_id_for_recommend={s}"));
 }

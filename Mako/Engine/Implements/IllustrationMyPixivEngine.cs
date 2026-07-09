@@ -8,13 +8,12 @@ using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-[method: MakoExtensionConstructor]
-internal class IllustrationMyPixivEngine(MakoClient makoClient, long userId)
+[method: MakoExtensionConstructor(true)]
+internal class IllustrationMyPixivEngine(MakoClient makoClient)
     : AbstractPixivFetchEngine<Illustration>(makoClient)
 {
     public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.Illustration<IllustrationMyPixivEngine>(
             this,
-            "/v2/illust/mypixiv" +
-            $"?user_id={userId}");
+            "/v2/illust/mypixiv");
 }

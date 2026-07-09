@@ -15,7 +15,7 @@ internal class IllustrationBookmarkTagsEngine : AbstractPixivFetchEngine<Bookmar
     private readonly long _uid;
     private readonly PrivacyPolicy _privacyPolicy;
 
-    [MakoExtensionConstructor]
+    [MakoExtensionConstructor(true)]
     public IllustrationBookmarkTagsEngine(MakoClient makoClient, long uid, PrivacyPolicy privacyPolicy) : base(makoClient)
     {
         makoClient.CheckPrivacyPolicy(privacyPolicy, uid);

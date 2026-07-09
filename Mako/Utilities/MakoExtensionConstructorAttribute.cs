@@ -6,7 +6,10 @@ using System;
 namespace Mako.Utilities;
 
 [AttributeUsage(AttributeTargets.Constructor)]
-internal class MakoExtensionConstructorAttribute : Attribute;
+internal class MakoExtensionConstructorAttribute(bool isPrivate = false) : Attribute
+{
+    public bool IsPrivate { get; } = isPrivate;
+}
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 internal class GeneratedMakoExtensionAttribute : Attribute;

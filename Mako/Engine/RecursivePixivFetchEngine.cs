@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -28,6 +29,8 @@ internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetc
 
     protected string InitialUrl => initialUrl;
 
+    public IReadOnlyDictionary<string, string>? FormData { get; init; }
+
     public override async ValueTask<bool> MoveNextAsync()
     {
         if (IsCancellationRequested || PixivFetchEngine.EngineHandle.IsCompleted)
@@ -35,7 +38,7 @@ internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetc
 
         if (CurrentEntity is null)
         {
-            if (await GetJsonResponseAsync(InitialUrl).ConfigureAwait(false) is { } raw)
+            if (await GetJsonResponseAsync(InitialUrl, FormData).ConfigureAwait(false) is { } raw)
                 Update(raw);
             else
                 return false;
@@ -50,7 +53,7 @@ internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetc
             return false;
         }
 
-        if (await GetJsonResponseAsync(CurrentEntity.NextUrl).ConfigureAwait(false) is { } value) // Else request a new page
+        if (await GetJsonResponseAsync(CurrentEntity.NextUrl, FormData).ConfigureAwait(false) is { } value) // Else request a new page
         {
             if (IsCancellationRequested)
                 return false;
@@ -71,12 +74,20 @@ internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetc
         ++PixivFetchEngine.RequestedPages;
     }
 
-    protected async Task<IPixivNextUrlResponse<TEntity>?> GetJsonResponseAsync(string url)
+    protected async Task<IPixivNextUrlResponse<TEntity>?> GetJsonResponseAsync(string url, IEnumerable<KeyValuePair<string, string>>? formData)
     {
         try
         {
-            // Authorization
             var request = new HttpRequestMessage(HttpMethod.Get, url);
+            if (formData is not null)
+            {
+                request.Method = HttpMethod.Post;
+                request.Content = new FormUrlEncodedContent(formData)
+                {
+                    Headers = { ContentType = new("application/x-www-form-urlencoded") }
+                };
+            }
+            // Authorization
             var tokenProvider = MakoClient.GetTokenProvider();
             var tokenResult = await tokenProvider.GetTokenAsync().ConfigureAwait(false);
             request.Headers.Authorization = new(tokenResult.Token_type ?? "Bearer", tokenResult.Access_token);

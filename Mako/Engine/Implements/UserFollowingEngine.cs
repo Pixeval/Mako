@@ -32,7 +32,8 @@ internal class UserFollowingEngine : AbstractPixivFetchEngine<User>
     public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = new()) =>
         new RecursivePixivAsyncEnumerators.User<UserFollowingEngine>(
             this,
-            "/v1/user/following" +
-            $"?user_id={_uid}" +
-            $"&restrict={_privacyPolicy.GetDescription()}");
+            "/v1/user/following"
+            + $"?{TargetFilterParam}"
+            + $"&user_id={_uid}"
+            + $"&restrict={_privacyPolicy.GetDescription()}");
 }

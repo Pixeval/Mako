@@ -21,6 +21,6 @@ internal class UserRecommendedEngine(MakoClient makoClient)
     public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
         new RecursivePixivAsyncEnumerators.User<UserRecommendedEngine>(
             this,
-            "/v1/user/recommended" +
-            $"?{TargetFilterParam}");
+            "/v1/user/recommended"
+            + $"?{TargetFilterParam}");
 }

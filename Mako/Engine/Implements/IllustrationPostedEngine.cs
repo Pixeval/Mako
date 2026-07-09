@@ -17,7 +17,7 @@ namespace Mako.Engine.Implements;
 /// <returns>
 /// The <see cref="IllustrationPostedEngine" /> containing posts of that user.
 /// </returns>
-[method: MakoExtensionConstructor]
+[method: MakoExtensionConstructor(true)]
 internal class IllustrationPostedEngine(MakoClient makoClient, long uid, WorkType type)
     : AbstractPixivFetchEngine<Illustration>(makoClient)
 {

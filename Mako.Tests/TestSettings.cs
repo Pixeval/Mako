@@ -66,7 +66,7 @@ public static class TestSettings
         var conf = new MakoConfiguration(
             DomainFronting: false,
             DomainFrontingType: DomainFrontingType.Fragmentation,
-            Proxy: "" /*UseSystemProxy*/,
+            Proxy: null /*UseSystemProxy*/,
             Cookie: null,
             MirrorHost: null,
             TargetFilter: TargetFilter.ForAndroid,

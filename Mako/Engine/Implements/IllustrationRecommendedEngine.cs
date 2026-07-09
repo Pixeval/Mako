@@ -9,7 +9,7 @@ using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-[method: MakoExtensionConstructor]
+[method: MakoExtensionConstructor(true)]
 internal class IllustrationRecommendedEngine(
     MakoClient makoClient,
     bool includeRankingIllusts = true,

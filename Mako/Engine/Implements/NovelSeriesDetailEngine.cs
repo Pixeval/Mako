@@ -5,6 +5,7 @@ using Mako.Net.Responses;
 
 namespace Mako.Engine.Implements;
 
+/// <inheritdoc cref="MangaSeriesDetailEngine.MangaSeriesDetailEngine" />
 internal class NovelSeriesDetailEngine(MakoClient makoClient, long novelSeriesId, NovelSeriesDetailResponse current)
     : AbstractPixivFetchEngine<Novel>(makoClient)
 {

@@ -16,7 +16,7 @@ namespace Mako.Engine.Implements;
 /// <returns>
 /// The <see cref="IllustrationFollowingEngine" /> containing the recent posts.
 /// </returns>
-[method: MakoExtensionConstructor]
+[method: MakoExtensionConstructor(true)]
 internal class IllustrationFollowingEngine(MakoClient makoClient, PrivacyPolicy privacyPolicy)
     : AbstractPixivFetchEngine<Illustration>(makoClient)
 {

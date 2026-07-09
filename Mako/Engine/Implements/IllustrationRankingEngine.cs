@@ -26,7 +26,7 @@ internal class IllustrationRankingEngine : AbstractPixivFetchEngine<Illustration
     /// </returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    [MakoExtensionConstructor]
+    [MakoExtensionConstructor(true)]
     public IllustrationRankingEngine(
         MakoClient makoClient,
         RankOption rankOption,

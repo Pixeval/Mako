@@ -26,7 +26,7 @@ internal class IllustrationBookmarksEngine : AbstractPixivFetchEngine<Illustrati
     /// <param name="uid">ID of the user</param>
     /// <param name="tag"></param>
     /// <param name="privacyPolicy">The privacy option</param>
-    [MakoExtensionConstructor]
+    [MakoExtensionConstructor(true)]
     public IllustrationBookmarksEngine(MakoClient makoClient,
         long uid,
         string? tag,
@@ -43,8 +43,8 @@ internal class IllustrationBookmarksEngine : AbstractPixivFetchEngine<Illustrati
         new RecursivePixivAsyncEnumerators.Illustration<IllustrationBookmarksEngine>(
             this,
             "/v1/user/bookmarks/illust"
-            + $"?user_id={_uid}"
+            + $"?{TargetFilterParam}"
+            + $"&user_id={_uid}"
             + $"&restrict={_privacyPolicy.GetDescription()}"
-            + $"&{TargetFilterParam}"
             + _tag?.Let(s => $"&tag={HttpUtility.UrlEncode(s)}"));
 }
