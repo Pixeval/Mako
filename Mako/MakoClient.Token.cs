@@ -86,6 +86,8 @@ public partial class MakoClient
 
     internal void SetTokenInternal(TokenResponse? response)
     {
+        if (Me is null && response is null)
+            return;
         Me = response?.User;
         OnTokenRefreshed(response);
     }
