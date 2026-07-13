@@ -46,6 +46,6 @@ internal class IllustrationRankingEngine : AbstractPixivFetchEngine<Illustration
             this,
             $"/v1/illust/ranking" +
             $"?{TargetFilterParam}" +
-            $"&mode={_rankOption.GetDescription()}" +
+            $"&mode={_rankOption.GetEnumMemberName()}" +
             $"&date={_dateOnly:yyyy-MM-dd}");
 }

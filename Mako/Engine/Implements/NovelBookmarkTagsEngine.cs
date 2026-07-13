@@ -28,5 +28,5 @@ internal class NovelBookmarkTagsEngine : AbstractPixivFetchEngine<BookmarkTag>
             this,
             "/v1/user/bookmark-tags/novel"
             + $"?user_id={_uid}"
-            + $"&restrict={_privacyPolicy.GetDescription()}");
+            + $"&restrict={_privacyPolicy.GetEnumMemberName()}");
 }

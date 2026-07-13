@@ -1,21 +1,22 @@
 // Copyright (c) Mako.
 // Licensed under the MIT License.
 
-using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace Mako.Model;
 
+[JsonConverter(typeof(SnakeCaseLowerEnumConverter<SpotlightCategory>))]
 public enum SpotlightCategory
 {
-    [Description("all")]
+    [JsonStringEnumMemberName("all")]
     All,
 
-    [Description("spotlight")]
+    [JsonStringEnumMemberName("spotlight")]
     Spotlight,
 
-    [Description("tutorial")]
+    [JsonStringEnumMemberName("tutorial")]
     Tutorial,
 
-    [Description("inspiration")]
+    [JsonStringEnumMemberName("inspiration")]
     Inspiration
 }

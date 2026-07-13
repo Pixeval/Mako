@@ -1,19 +1,19 @@
 // Copyright (c) Mako.
 // Licensed under the MIT License.
 
-using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace Mako.Global.Enum;
 
 public enum WorkType
 {
-    [Description("illust")]
+    [JsonStringEnumMemberName("illust")]
     Illustration,
 
-    [Description("manga")]
+    [JsonStringEnumMemberName("manga")]
     Manga,
 
-    [Description("novel")]
+    [JsonStringEnumMemberName("novel")]
     Novel
 }
 

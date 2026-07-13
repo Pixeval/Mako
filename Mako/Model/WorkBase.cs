@@ -61,7 +61,7 @@ public abstract record WorkBase
         get;
         set
         {
-            // 此属性为空时响应是一个空对象 {} 而非 null
+            // 此属性为空时响应可能是一个空对象 {} 而非 null
             if (value != _DefaultSeries)
                 field = value;
         }

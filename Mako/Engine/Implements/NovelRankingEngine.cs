@@ -36,6 +36,6 @@ internal class NovelRankingEngine : AbstractPixivFetchEngine<Novel>
             this,
             "/v1/novel/ranking"
             + $"?{TargetFilterParam}"
-            + $"&mode={_rankOption.GetDescription()}"
+            + $"&mode={_rankOption.GetEnumMemberName()}"
             + $"&date={_dateOnly:yyyy-MM-dd}");
 }

@@ -29,8 +29,8 @@ public partial class MakoClient
 
     /// <inheritdoc cref="IllustrationBookmarks" />
     public IFetchEngine<IWorkEntry> WorkBookmarks(
-        long uid,
         SimpleWorkType type,
+        long uid,
         PrivacyPolicy privacyPolicy,
         string? tag)
     {
@@ -71,8 +71,8 @@ public partial class MakoClient
 
     /// <inheritdoc cref="IllustrationBookmarkTags" />
     public IFetchEngine<BookmarkTag> WorkBookmarkTags(
-        long uid,
         SimpleWorkType type,
+        long uid,
         PrivacyPolicy policy)
     {
         return type is SimpleWorkType.Novel
@@ -92,8 +92,8 @@ public partial class MakoClient
 
     /// <inheritdoc cref="IllustrationPosted" />
     public IFetchEngine<IWorkEntry> WorkPosted(
-        long uid,
-        WorkType type)
+        WorkType type,
+        long uid)
     {
         return type is WorkType.Novel
             ? NovelPosted(uid)
@@ -111,15 +111,28 @@ public partial class MakoClient
     }
 
     /// <inheritdoc cref="MangaSeriesWatchlist" />
-    public IFetchEngine<Series> WorkSeriesWatchlist(SimpleWorkType type)
+    public IFetchEngine<Series> WorkSeriesWatchlist(
+        SimpleWorkType type)
     {
         return type is SimpleWorkType.Novel
             ? NovelSeriesWatchlist()
             : MangaSeriesWatchlist();
     }
 
+    /// <inheritdoc cref="MangaSeriesWatchlist" />
+    public IFetchEngine<IWorkEntry> WorkSeries(
+        SimpleWorkType type,
+        long seriesId)
+    {
+        return type is SimpleWorkType.Novel
+            ? NovelSeries(seriesId)
+            : MangaSeries(seriesId);
+    }
+
     /// <inheritdoc cref="IllustrationComments" />
-    public IFetchEngine<Comment> WorkComments(SimpleWorkType type, long workId)
+    public IFetchEngine<Comment> WorkComments(
+        SimpleWorkType type,
+        long workId)
     {
         return type is SimpleWorkType.Novel
             ? NovelComments(workId)
@@ -127,7 +140,9 @@ public partial class MakoClient
     }
 
     /// <inheritdoc cref="IllustrationCommentReplies" />
-    public IFetchEngine<Comment> WorkCommentReplies(SimpleWorkType type, long commentId)
+    public IFetchEngine<Comment> WorkCommentReplies(
+        SimpleWorkType type,
+        long commentId)
     {
         return type is SimpleWorkType.Novel
             ? NovelCommentReplies(commentId)
@@ -144,21 +159,31 @@ public partial class MakoClient
     public static DateOnly RankingMaxDate => RankingMaxDateTime.ToDateOnly();
 
     /// <exception cref="ArgumentException"></exception>
-    internal static void CheckRankingMaxDate(DateOnly dateOnly, [CallerArgumentExpression(nameof(dateOnly))] string memberName = "")
+    internal static void CheckRankingMaxDate(
+        DateOnly dateOnly,
+        [CallerArgumentExpression(nameof(dateOnly))]
+        string memberName = "")
     {
         if (dateOnly > RankingMaxDate)
             throw new ArgumentException("The specified date is out of range.", memberName);
     }
 
     /// <exception cref="ArgumentException"></exception>
-    internal void CheckPrivacyPolicy(PrivacyPolicy privacyPolicy, long uid, [CallerArgumentExpression(nameof(privacyPolicy))] string memberName = "")
+    internal void CheckPrivacyPolicy(
+        PrivacyPolicy privacyPolicy,
+        long uid,
+        [CallerArgumentExpression(nameof(privacyPolicy))]
+        string memberName = "")
     {
         if (privacyPolicy is PrivacyPolicy.Private && Me?.Id != uid)
             throw new ArgumentException("Cannot request other user's private data.", memberName);
     }
 
     /// <exception cref="ArgumentException"></exception>
-    internal void CheckWorkSortOption(WorkSortOption workSortOption, [CallerArgumentExpression(nameof(workSortOption))] string memberName = "")
+    internal void CheckWorkSortOption(
+        WorkSortOption workSortOption,
+        [CallerArgumentExpression(nameof(workSortOption))]
+        string memberName = "")
     {
         if (!(Me?.IsPremium ?? false) && workSortOption is WorkSortOption.PopularityDescending)
             throw new ArgumentException("Cannot request premium sort option.", memberName);

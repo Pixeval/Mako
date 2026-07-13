@@ -28,7 +28,6 @@ public record Spotlight : IIdEntry
     public required DateTimeOffset PublishDate { get; set; }
 
     [JsonPropertyName("category")]
-    [JsonConverter(typeof(SnakeCaseLowerEnumConverter<SpotlightCategory>))]
     public required SpotlightCategory Category { get; set; }
 
     [JsonPropertyName("subcategory_label")]

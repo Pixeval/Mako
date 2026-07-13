@@ -1,18 +1,18 @@
 // Copyright (c) Mako.
 // Licensed under the MIT License.
 
-using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace Mako.Global.Enum;
 
 public enum WorkSortOption
 {
-    [Description("date_desc")]
+    [JsonStringEnumMemberName("date_desc")]
     PublishDateDescending,
 
-    [Description("date_asc")]
+    [JsonStringEnumMemberName("date_asc")]
     PublishDateAscending,
 
-    [Description("popular_desc")]
+    [JsonStringEnumMemberName("popular_desc")]
     PopularityDescending
 }

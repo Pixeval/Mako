@@ -20,17 +20,22 @@ public partial class MakoClient
         => RunWithLoggerAsync<Illustration, SingleIllustrationResponse>(t => t
             .GetSingleIllustrationAsync(id, Configuration.TargetFilter));
 
-    public Task<IReadOnlyList<Tag>> GetAutoCompletionForKeyword(string word)
-        => RunWithLoggerAsync<IReadOnlyList<Tag>, AutoCompletionResponse>(t => t
-            .GetAutoCompletionAsync(word));
+    public Task<Novel> GetNovelFromIdAsync(long id)
+        => RunWithLoggerAsync<Novel, SingleNovelResponse>(t => t
+            .GetSingleNovelAsync(id, Configuration.TargetFilter));
+
+    public Task<IWorkEntry> GetWorkFromIdAsync(SimpleWorkType type, long id)
+        => RunWithLoggerAsync<IWorkEntry, ISingleResultResponse<IWorkEntry>>(async t => type is SimpleWorkType.Illustration
+            ? await t.GetSingleIllustrationAsync(id, Configuration.TargetFilter).ConfigureAwait(false)
+            : await t.GetSingleNovelAsync(id, Configuration.TargetFilter).ConfigureAwait(false));
 
     public Task<SingleUserResponse> GetUserFromIdAsync(long id)
         => RunWithLoggerAsync<SingleUserResponse>(t => t
             .GetSingleUserAsync(id, Configuration.TargetFilter));
 
-    public Task<Novel> GetNovelFromIdAsync(long id)
-        => RunWithLoggerAsync<Novel, SingleNovelResponse>(t => t
-            .GetSingleNovelAsync(id, Configuration.TargetFilter));
+    public Task<IReadOnlyList<Tag>> GetAutoCompletionForKeyword(string word)
+        => RunWithLoggerAsync<IReadOnlyList<Tag>, AutoCompletionResponse>(t => t
+            .GetAutoCompletionAsync(word));
 
     public Task<NovelContent> GetNovelContentAsync(long id)
         => RunWithLoggerAsync(async t =>
@@ -143,38 +148,49 @@ public partial class MakoClient
     public Task<bool> PostRestrictedModeSettingsAsync(bool isRestrictedModeEnabled)
         => RunWithLoggerAsync<bool, RestrictedModeSettingsResponse>(t => t.PostRestrictedModeSettingsAsync(new(isRestrictedModeEnabled)));
 
-    public Task<bool> PostMangaSeriesWatchlistAsync(long id) =>
-        RunWithLoggerAsync(t => t
-            .AddMangaSeriesWatchlistAsync(id));
+    public Task<bool> PostWorkSeriesWatchlistAsync(SimpleWorkType type, long id) =>
+        RunWithLoggerAsync(t => type is SimpleWorkType.Novel
+            ? t.AddNovelSeriesWatchlistAsync(id)
+            : t.AddMangaSeriesWatchlistAsync(id));
 
-    public Task<bool> RemoveMangaSeriesWatchlistAsync(long id)
-        => RunWithLoggerAsync(t => t
-            .RemoveMangaSeriesWatchlistAsync(id));
-
-    public Task<bool> PostNovelSeriesWatchlistAsync(long id) =>
-        RunWithLoggerAsync(t => t
-            .AddNovelSeriesWatchlistAsync(id));
-
-    public Task<bool> RemoveNovelSeriesWatchlistAsync(long id)
-        => RunWithLoggerAsync(t => t
-            .RemoveNovelSeriesWatchlistAsync(id));
+    public Task<bool> RemoveWorkSeriesWatchlistAsync(SimpleWorkType type, long id)
+        => RunWithLoggerAsync(t => type is SimpleWorkType.Novel
+            ? t.RemoveNovelSeriesWatchlistAsync(id)
+            : t.RemoveMangaSeriesWatchlistAsync(id));
 
     public Task<SearchOptions> GetSearchOptionsAsync()
         => RunWithLoggerAsync(t => t.GetSearchOptionsAsync());
 
-    public Task<MangaSeriesContext> GetMangaSeriesContextAsync(long seriesId)
+    /// <remarks>
+    /// 对标 <see cref="GetNovelContentAsync"/>（<see cref="NovelContent"/> 有系列信息）
+    /// </remarks>
+    public Task<MangaSeriesContextResponse> GetMangaSeriesContextAsync(long seriesId)
         => RunWithLoggerAsync(t => t.GetMangaSeriesContextAsync(seriesId, Configuration.TargetFilter));
 
-    public async Task<(MangaSeriesDetail Detail, Illustration First, IFetchEngine<Illustration>)> GetMangaSeriesAsync(long seriesId)
+    public async Task<(MangaSeriesDetail Detail, Illustration First, IFetchEngine<Illustration> Engine)> GetMangaSeriesAsync(long seriesId)
     {
         var response = await RunWithLoggerAsync(t => t.GetMangaSeriesDetailAsync(seriesId, Configuration.TargetFilter)).ConfigureAwait(false);
-        return (response.SeriesDetail, response.First, new MangaSeriesDetailEngine(this, seriesId, response));
+        return (response.SeriesDetail, response.First, new MangaSeriesEngine(this, seriesId, response));
     }
 
-    public async Task<(NovelSeriesDetail Detail, Novel First, Novel Latest, IFetchEngine<Novel>)> GetNovelSeriesAsync(long seriesId)
+    public async Task<(NovelSeriesDetail Detail, Novel First, Novel Latest, IFetchEngine<Novel> Engine)> GetNovelSeriesAsync(long seriesId)
     {
         var response = await RunWithLoggerAsync(t => t.GetNovelSeriesDetailAsync(seriesId)).ConfigureAwait(false);
-        return (response.SeriesDetail, response.First, response.Latest, new NovelSeriesDetailEngine(this, seriesId, response));
+        return (response.SeriesDetail, response.First, response.Latest, new NovelSeriesEngine(this, seriesId, response));
+    }
+
+    public async Task<(SeriesDetailBase Detail, IWorkEntry First, IFetchEngine<IWorkEntry>)> GetWorkSeriesAsync(SimpleWorkType type, long seriesId)
+    {
+        if (type is SimpleWorkType.Novel)
+        {
+            var response = await GetNovelSeriesAsync(seriesId).ConfigureAwait(false);
+            return (response.Detail, response.First, response.Engine);
+        }
+        else
+        {
+            var response = await GetMangaSeriesAsync(seriesId).ConfigureAwait(false);
+            return (response.Detail, response.First, response.Engine);
+        }
     }
 
     #region Misaki

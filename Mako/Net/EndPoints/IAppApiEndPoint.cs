@@ -56,12 +56,12 @@ internal interface IAppApiEndPoint
     Task<SingleNovelResponse> GetSingleNovelAsync([AliasAs("novel_id")] long id, TargetFilter filter);
 
     [HttpGet("/v1/illust-series/illust")]
-    Task<MangaSeriesContext> GetMangaSeriesContextAsync([AliasAs("illust_id")] long id, TargetFilter filter);
+    Task<MangaSeriesContextResponse> GetMangaSeriesContextAsync([AliasAs("illust_id")] long id, TargetFilter filter);
 
-    [HttpGet(MangaSeriesDetailEngine.UrlSegment)]
+    [HttpGet(MangaSeriesEngine.UrlSegment)]
     Task<MangaSeriesDetailResponse> GetMangaSeriesDetailAsync([AliasAs("illust_series_id")] long id, TargetFilter filter);
 
-    [HttpGet(NovelSeriesDetailEngine.UrlSegment)]
+    [HttpGet(NovelSeriesEngine.UrlSegment)]
     Task<NovelSeriesDetailResponse> GetNovelSeriesDetailAsync([AliasAs("series_id")] long id);
 
     [Cache(60 * 1000)]

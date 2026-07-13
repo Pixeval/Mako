@@ -18,5 +18,5 @@ internal class NovelFollowingEngine(MakoClient makoClient, PrivacyPolicy privacy
         new RecursivePixivAsyncEnumerators.Novel<NovelFollowingEngine>(
             this,
             "/v1/novel/follow"
-            + $"?restrict={privacyPolicy.GetDescription()}");
+            + $"?restrict={privacyPolicy.GetEnumMemberName()}");
 }

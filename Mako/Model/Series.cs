@@ -17,7 +17,7 @@ public partial record Series : SimpleSeries
     public required string? MaskText { get; set; }
 
     [JsonPropertyName("url")]
-    public required string Url { get; set; } = "";
+    public required string CoverUrl { get; set; } = DefaultImageUrls.ImageNotAvailable;
 
     [JsonPropertyName("published_content_count")]
     public required int PublishedContentCount { get; set; }

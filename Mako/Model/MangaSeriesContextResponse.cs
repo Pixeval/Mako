@@ -7,11 +7,18 @@ using Mako.Utilities;
 namespace Mako.Model;
 
 [Factory]
-public partial record MangaSeriesContext
+public partial record MangaSeriesContextResponse
 {
     [JsonPropertyName("illust_series_detail")]
-    public required MangaSeriesDetail SeriesDetail { get; set; }
+    public required MangaSeriesDetail Detail { get; set; }
 
+    [JsonPropertyName("illust_series_context")]
+    public required MangaSeriesContext Context { get; set; }
+}
+
+[Factory]
+public partial record MangaSeriesContext
+{
     /// <summary>
     /// 1 based
     /// </summary>

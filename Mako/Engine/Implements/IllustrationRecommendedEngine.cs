@@ -26,7 +26,7 @@ internal class IllustrationRecommendedEngine(
             + $"?{TargetFilterParam}"
             + $"&include_ranking_illusts={includeRankingIllusts.ToString().ToLower()}"
             + $"&include_privacy_policy={includePrivacyPolicy.ToString().ToLower()}"
-            + contentType?.Let(static s => $"&content_type={s.GetDescription()}")
+            + contentType?.Let(static s => $"&content_type={s.GetEnumMemberName()}")
             + maxBookmarkIdForRecommend?.Let(static s => $"&max_bookmark_id_for_recommend={s}")
             + minBookmarkIdForRecentIllustration?.Let(static s => $"&min_bookmark_id_for_recent_illust={s}"));
 }

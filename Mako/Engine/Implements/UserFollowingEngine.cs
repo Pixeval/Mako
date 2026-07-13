@@ -35,5 +35,5 @@ internal class UserFollowingEngine : AbstractPixivFetchEngine<User>
             "/v1/user/following"
             + $"?{TargetFilterParam}"
             + $"&user_id={_uid}"
-            + $"&restrict={_privacyPolicy.GetDescription()}");
+            + $"&restrict={_privacyPolicy.GetEnumMemberName()}");
 }

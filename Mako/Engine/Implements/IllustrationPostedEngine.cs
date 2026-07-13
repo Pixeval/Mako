@@ -27,5 +27,5 @@ internal class IllustrationPostedEngine(MakoClient makoClient, long uid, WorkTyp
             "/v1/user/illusts"
             + $"?user_id={uid}"
             + $"&{TargetFilterParam}"
-            + $"&type={type.GetDescription()}");
+            + $"&type={type.GetEnumMemberName()}");
 }

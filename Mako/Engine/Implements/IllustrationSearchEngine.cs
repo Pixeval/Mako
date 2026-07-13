@@ -30,13 +30,13 @@ internal class IllustrationSearchEngine : AbstractPixivFetchEngine<Illustration>
         return new RecursivePixivAsyncEnumerators.Illustration<IllustrationSearchEngine>(
             this,
             "/v1/search/illust"
-            + $"?search_target={_arguments.MatchOption.GetDescription()}"
+            + $"?search_target={_arguments.MatchOption.GetEnumMemberName()}"
             + $"&word={_arguments.SearchText}"
             + $"&{TargetFilterParam}"
-            + $"&sort={_arguments.SortOption.GetDescription()}"
+            + $"&sort={_arguments.SortOption.GetEnumMemberName()}"
             + $"&search_ai_type={(_arguments.AiType ? 1 : 0)}"
-            + $"&content_type={_arguments.ContentType.GetDescription()}"
-            + _arguments.RatioPattern.TryGetDescription()?.Let(d => $"&ratio_pattern={d}")
+            + $"&content_type={_arguments.ContentType.GetEnumMemberName()}"
+            + _arguments.RatioPattern.TryGetEnumMemberName()?.Let(d => $"&ratio_pattern={d}")
             + $"&merge_plain_keyword_results={_arguments.MergePlainKeywordResults.ToString().ToLower()}"
             + $"&include_translated_tag_results={_arguments.IncludeTranslatedTagResults.ToString().ToLower()}"
             + $"&include_potential_violation_works={_arguments.IncludePotentialViolationWorks.ToString().ToLower()}"

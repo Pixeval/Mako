@@ -20,7 +20,6 @@ namespace Mako.Model;
 public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingleAnimatedImage, IImageSet
 {
     [JsonPropertyName("type")]
-    [JsonConverter(typeof(SnakeCaseLowerEnumConverter<IllustrationType>))]
     public required IllustrationType Type { get; set; }
 
     [JsonPropertyName("tools")]
@@ -236,105 +235,105 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// (official square_medium) standard square
         /// </summary>
-        [Description("c/360x360_70/")]
+        [JsonStringEnumMemberName("c/360x360_70/")]
         [ImageFrame.Size(360, 360)]
         C360X360Q70,
 
         /// <summary>
         /// (official medium) standard square
         /// </summary>
-        [Description("c/540x540_70/")]
+        [JsonStringEnumMemberName("c/540x540_70/")]
         [ImageFrame.Size(540, 540)]
         C540X540Q70,
 
         /// <summary>
         /// (official large) standard
         /// </summary>
-        [Description("c/600x1200_90/")]
+        [JsonStringEnumMemberName("c/600x1200_90/")]
         [ImageFrame.Size(600, 1200)]
         C600X1200Q90,
 
         /// <summary>
         /// standard square
         /// </summary>
-        [Description("c/100x100/")]
+        [JsonStringEnumMemberName("c/100x100/")]
         [ImageFrame.Size(100, 100)]
         C100X100,
 
         /// <summary>
         /// standard square
         /// </summary>
-        [Description("c/128x128/")]
+        [JsonStringEnumMemberName("c/128x128/")]
         [ImageFrame.Size(128, 128)]
         C128X128,
 
         /// <summary>
         /// standard square
         /// </summary>
-        [Description("c/150x150/")]
+        [JsonStringEnumMemberName("c/150x150/")]
         [ImageFrame.Size(150, 150)]
         C150X150,
 
         /// <summary>
         /// standard square
         /// </summary>
-        [Description("c/240x240/")]
+        [JsonStringEnumMemberName("c/240x240/")]
         [ImageFrame.Size(240, 240)]
         C240X240,
 
         /// <summary>
         /// standard
         /// </summary>
-        [Description("c/240x480/")]
+        [JsonStringEnumMemberName("c/240x480/")]
         [ImageFrame.Size(240, 480)]
         C240X480,
 
         /// <summary>
         /// square
         /// </summary>
-        [Description("c/250x250_80_a2/")]
+        [JsonStringEnumMemberName("c/250x250_80_a2/")]
         [ImageFrame.Size(250, 250)]
         C250X250Q80A2,
 
         /// <summary>
         /// standard square
         /// </summary>
-        [Description("c/260x260_80/")]
+        [JsonStringEnumMemberName("c/260x260_80/")]
         [ImageFrame.Size(260, 260)]
         C260X260Q80,
 
         /// <summary>
         /// square
         /// </summary>
-        [Description("c/288x288_80_a2/")]
+        [JsonStringEnumMemberName("c/288x288_80_a2/")]
         [ImageFrame.Size(288, 288)]
         C288X288Q80A2,
 
         /// <summary>
         /// standard
         /// </summary>
-        [Description("c/400x250_80/")]
+        [JsonStringEnumMemberName("c/400x250_80/")]
         [ImageFrame.Size(400, 250)]
         C400X250Q80,
 
         /// <summary>
         /// standard
         /// </summary>
-        [Description("c/600x600/")]
+        [JsonStringEnumMemberName("c/600x600/")]
         [ImageFrame.Size(600, 600)]
         C600X600,
 
         /// <summary>
         /// standard
         /// </summary>
-        [Description("c/768x1200_80/")]
+        [JsonStringEnumMemberName("c/768x1200_80/")]
         [ImageFrame.Size(768, 1200)]
         C768X1200Q80,
 
         /// <summary>
         /// standard square (1200x1200)
         /// </summary>
-        [Description("")]
+        [JsonStringEnumMemberName("")]
         [ImageFrame.Size(1200, 1200)]
         C
 
@@ -342,35 +341,35 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
         /// <summary>
         /// crop
         /// </summary>
-        [Description("c/300x200_a2/")]
+        [JsonStringEnumMemberName("c/300x200_a2/")]
         [ImageFrame.Size(300, 200)]
         C300X200A2,
 
         /// <summary>
         /// standard square webp
         /// </summary>
-        [Description("c/360x360_10_webp/")]
+        [JsonStringEnumMemberName("c/360x360_10_webp/")]
         [ImageFrame.Size(360, 360)]
         C360X360Q10Webp,
 
         /// <summary>
         /// standard square webp
         /// </summary>
-        [Description("c/540x540_10_webp/")]
+        [JsonStringEnumMemberName("c/540x540_10_webp/")]
         [ImageFrame.Size(540, 540)]
         C540X540Q10Webp,
 
         /// <summary>
         /// standard webp (square gives 600x600)
         /// </summary>
-        [Description("c/600x1200_90_webp/")]
+        [JsonStringEnumMemberName("c/600x1200_90_webp/")]
         [ImageFrame.Size(600, 600)]
         C600X1200Q90Webp,
 
         /// <summary>
         /// crop webp
         /// </summary>
-        [Description("c/1080x600_10_a2_u1_webp/")]
+        [JsonStringEnumMemberName("c/1080x600_10_a2_u1_webp/")]
         [ImageFrame.Size(1080, 600)]
         C1080X600Q10A2U1Webp
         */

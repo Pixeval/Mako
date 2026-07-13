@@ -29,5 +29,5 @@ internal class IllustrationBookmarkTagsEngine : AbstractPixivFetchEngine<Bookmar
             this,
             "/v1/user/bookmark-tags/illust"
             + $"?user_id={_uid}"
-            + $"&restrict={_privacyPolicy.GetDescription()}");
+            + $"&restrict={_privacyPolicy.GetEnumMemberName()}");
 }

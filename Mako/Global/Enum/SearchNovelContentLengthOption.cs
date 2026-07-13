@@ -1,7 +1,7 @@
 // Copyright (c) Mako.
 // Licensed under the GPL-3.0 License.
 
-using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace Mako.Global.Enum;
 
@@ -21,7 +21,7 @@ public enum SearchNovelContentLengthOption
     /// 80000- 长篇小说
     /// </code>
     /// </remarks>
-    [Description("text_length")]
+    [JsonStringEnumMemberName("text_length")]
     TextLength,
 
     /// <summary>
@@ -36,7 +36,7 @@ public enum SearchNovelContentLengthOption
     /// 80000-
     /// </code>
     /// </remarks>
-    [Description("word_count")]
+    [JsonStringEnumMemberName("word_count")]
     WordCount,
 
     /// <summary>
@@ -51,6 +51,6 @@ public enum SearchNovelContentLengthOption
     /// 180-
     /// </code>
     /// </remarks>
-    [Description("reading_time")]
+    [JsonStringEnumMemberName("reading_time")]
     ReadingTime
 }

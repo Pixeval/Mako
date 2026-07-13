@@ -1,7 +1,6 @@
 // Copyright (c) Mako.
 // Licensed under the MIT License.
 
-using System.ComponentModel;
 using System.Text.Json.Serialization;
 
 namespace Mako.Global.Enum;
@@ -13,9 +12,9 @@ namespace Mako.Global.Enum;
 [JsonConverter(typeof(SnakeCaseLowerEnumConverter<PrivacyPolicy>))]
 public enum PrivacyPolicy
 {
-    [Description("public")]
+    [JsonStringEnumMemberName("public")]
     Public,
 
-    [Description("private")]
+    [JsonStringEnumMemberName("private")]
     Private
 }

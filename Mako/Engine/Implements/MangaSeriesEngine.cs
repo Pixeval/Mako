@@ -2,22 +2,25 @@ using System.Collections.Generic;
 using System.Threading;
 using Mako.Model;
 using Mako.Net.Responses;
+using Mako.Utilities;
 
 namespace Mako.Engine.Implements;
 
-internal class MangaSeriesDetailEngine(MakoClient makoClient, long mangaSeriesId, MangaSeriesDetailResponse current)
+[method: MakoExtensionConstructor(true)]
+internal class MangaSeriesEngine(MakoClient makoClient, long mangaSeriesId, MangaSeriesDetailResponse? current = null)
     : AbstractPixivFetchEngine<Illustration>(makoClient)
 {
     public const string UrlSegment = "/v1/illust/series";
 
     public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
     {
-        var engine = new RecursivePixivAsyncEnumerators.Illustration<MangaSeriesDetailEngine>(
+        var engine = new RecursivePixivAsyncEnumerators.Illustration<MangaSeriesEngine>(
             this,
             UrlSegment
             + $"?{TargetFilterParam}"
             + $"&illust_series_id={mangaSeriesId}");
-        engine.Update(current);
+        if (current is not null)
+            engine.Update(current);
         return engine;
     }
 }

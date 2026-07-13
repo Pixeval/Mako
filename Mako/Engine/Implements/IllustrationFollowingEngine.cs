@@ -24,5 +24,5 @@ internal class IllustrationFollowingEngine(MakoClient makoClient, PrivacyPolicy 
         new RecursivePixivAsyncEnumerators.Illustration<IllustrationFollowingEngine>(
             this,
             "/v2/illust/follow" +
-            $"?restrict={privacyPolicy.GetDescription()}");
+            $"?restrict={privacyPolicy.GetEnumMemberName()}");
 }

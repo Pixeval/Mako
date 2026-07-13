@@ -1,94 +1,94 @@
 // Copyright (c) Mako.
 // Licensed under the MIT License.
 
-using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace Mako.Global.Enum;
 
 public enum RankOption
 {
-    [Description("day")]
+    [JsonStringEnumMemberName("day")]
     Day,
 
-    [Description("week")]
+    [JsonStringEnumMemberName("week")]
     Week,
 
     /// <summary>
     /// Novel 不支持
     /// </summary>
-    [Description("month")]
+    [JsonStringEnumMemberName("month")]
     Month,
 
-    [Description("day_male")]
+    [JsonStringEnumMemberName("day_male")]
     DayMale,
 
-    [Description("day_female")]
+    [JsonStringEnumMemberName("day_female")]
     DayFemale,
 
     /// <summary>
     /// Novel 不支持
     /// </summary>
-    [Description("day_manga")]
+    [JsonStringEnumMemberName("day_manga")]
     DayManga,
 
     /// <summary>
     /// Novel 不支持
     /// </summary>
-    [Description("week_manga")]
+    [JsonStringEnumMemberName("week_manga")]
     WeekManga,
 
     /// <summary>
     /// Novel 不支持
     /// </summary>
-    [Description("month_manga")]
+    [JsonStringEnumMemberName("month_manga")]
     MonthManga,
 
     /// <summary>
     /// Novel 不支持
     /// </summary>
-    [Description("week_original")]
+    [JsonStringEnumMemberName("week_original")]
     WeekOriginal,
 
-    [Description("week_rookie")]
+    [JsonStringEnumMemberName("week_rookie")]
     WeekRookie,
 
-    [Description("day_r18")]
+    [JsonStringEnumMemberName("day_r18")]
     DayR18,
 
-    [Description("day_male_r18")]
+    [JsonStringEnumMemberName("day_male_r18")]
     DayMaleR18,
 
-    [Description("day_female_r18")]
+    [JsonStringEnumMemberName("day_female_r18")]
     DayFemaleR18,
 
-    [Description("week_r18")]
+    [JsonStringEnumMemberName("week_r18")]
     WeekR18,
 
-    [Description("week_r18g")]
+    [JsonStringEnumMemberName("week_r18g")]
     WeekR18G,
 
     /// <summary>
     /// Novel 不支持
     /// </summary>
-    [Description("day_ai")]
+    [JsonStringEnumMemberName("day_ai")]
     DayAi,
 
     /// <summary>
     /// Novel 不支持
     /// </summary>
-    [Description("day_r18_ai")]
+    [JsonStringEnumMemberName("day_r18_ai")]
     DayR18Ai,
 
     /// <summary>
     /// Illustration 不支持
     /// </summary>
-    [Description("week_ai")]
+    [JsonStringEnumMemberName("week_ai")]
     WeekAi,
 
     /// <summary>
     /// Illustration 不支持
     /// </summary>
-    [Description("week_ai_r18")]
+    [JsonStringEnumMemberName("week_ai_r18")]
     WeekAiR18
 }
 

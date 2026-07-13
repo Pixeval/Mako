@@ -1,7 +1,7 @@
 // Copyright (c) Mako.
 // Licensed under the GPL-3.0 License.
 
-using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace Mako.Global.Enum;
 
@@ -9,12 +9,12 @@ public enum SearchIllustrationRatioPattern
 {
     All,
 
-    [Description("landscape")]
+    [JsonStringEnumMemberName("landscape")]
     Landscape,
 
-    [Description("portrait")]
+    [JsonStringEnumMemberName("portrait")]
     Portrait,
 
-    [Description("square")]
+    [JsonStringEnumMemberName("square")]
     Square,
 }

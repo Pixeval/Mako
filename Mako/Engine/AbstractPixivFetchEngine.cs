@@ -37,5 +37,5 @@ public abstract class AbstractPixivFetchEngine<TE>(MakoClient makoClient) : IFet
     public EngineHandle EngineHandle { get; } = new EngineHandle(makoClient.CancelInstance);
 
     private protected string TargetFilterParam =>
-        $"filter={MakoClient.Configuration.TargetFilter.GetDescription()}";
+        $"filter={MakoClient.Configuration.TargetFilter.GetEnumMemberName()}";
 }

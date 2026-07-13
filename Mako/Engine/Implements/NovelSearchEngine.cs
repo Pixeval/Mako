@@ -29,12 +29,12 @@ internal class NovelSearchEngine : AbstractPixivFetchEngine<Novel>
             this,
             "/v1/search/novel"
             + $"?{TargetFilterParam}"
-            + $"&search_target={_arguments.MatchOption.GetDescription()}"
+            + $"&search_target={_arguments.MatchOption.GetEnumMemberName()}"
             + $"&word={_arguments.SearchText}"
-            + $"&sort={_arguments.SortOption.GetDescription()}"
+            + $"&sort={_arguments.SortOption.GetEnumMemberName()}"
             + $"&search_ai_type={(_arguments.AiType ? 1 : 0)}"
             + _arguments.LangCode?.Let(t => $"&lang={t}")
-            + _arguments.Option.TryGetDescription()?.Let(o =>
+            + _arguments.Option.TryGetEnumMemberName()?.Let(o =>
                 _arguments.ContentLengthMin?.Let(t => $"&{o}_min={t}")
                 + _arguments.ContentLengthMax?.Let(t => $"&{o}_max={t}"))
             + $"&is_original_only={_arguments.IsOriginalOnly.ToString().ToLower()}"

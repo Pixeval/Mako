@@ -45,6 +45,6 @@ internal class IllustrationBookmarksEngine : AbstractPixivFetchEngine<Illustrati
             "/v1/user/bookmarks/illust"
             + $"?{TargetFilterParam}"
             + $"&user_id={_uid}"
-            + $"&restrict={_privacyPolicy.GetDescription()}"
+            + $"&restrict={_privacyPolicy.GetEnumMemberName()}"
             + _tag?.Let(s => $"&tag={HttpUtility.UrlEncode(s)}"));
 }
