@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Mako.Model;
 using Mako.Net.EndPoints;
@@ -25,7 +26,7 @@ internal class PixivTokenProvider(IServiceProvider serviceProvider) : TokenProvi
     private MakoClient MakoClient { get; } = serviceProvider.GetRequiredService<MakoClient>();
 
     /// <inheritdoc />
-    protected override async Task<TokenResult?> RequestTokenAsync(IServiceProvider serviceProvider)
+    protected override async Task<TokenResult?> RequestTokenAsync(IServiceProvider serviceProvider, CancellationToken token)
     {
         var option = serviceProvider.GetRequiredService<RefreshTokenOption>();
 
@@ -36,12 +37,12 @@ internal class PixivTokenProvider(IServiceProvider serviceProvider) : TokenProvi
                 return null;
 
             tokenResponse = await serviceProvider.GetRequiredService<IAuthEndPoint>()
-                .RefreshAsync(new(option.RefreshToken)).ConfigureAwait(false);
+                .RefreshAsync(new(option.RefreshToken), token).ConfigureAwait(false);
         }
         else
         {
             tokenResponse = await serviceProvider.GetRequiredService<IAuthEndPoint>()
-                .RequestAsync(new(option.Code, option.CodeVerifier)).ConfigureAwait(false);
+                .RequestAsync(new(option.Code, option.CodeVerifier), token).ConfigureAwait(false);
 
             option.Code = null;
             option.CodeVerifier = null;
@@ -60,5 +61,5 @@ internal class PixivTokenProvider(IServiceProvider serviceProvider) : TokenProvi
     }
 
     /// <inheritdoc />
-    protected override Task<TokenResult?> RefreshTokenAsync(IServiceProvider serviceProvider, string refreshToken) => RequestTokenAsync(serviceProvider);
+    protected override Task<TokenResult?> RefreshTokenAsync(IServiceProvider serviceProvider, string refreshToken, CancellationToken token) => RequestTokenAsync(serviceProvider, token);
 }

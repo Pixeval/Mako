@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Mako.Global.Enum;
 using Mako.Net;
 using Microsoft.Extensions.Logging.Debug;
@@ -61,7 +62,7 @@ public static class TestSettings
     public static MakoClient Client { get; private set; } = null!;
 
     [AssemblyInitialize]
-    public static void AssemblyInit(TestContext _)
+    public static Task AssemblyInitAsync(TestContext _)
     {
         var conf = new MakoConfiguration(
             DomainFronting: false,
@@ -87,7 +88,7 @@ public static class TestSettings
         using var loggerProvider = new DebugLoggerProvider();
         var logger = loggerProvider.CreateLogger(nameof(MakoClient));
         Client = new(conf, logger);
-        Client.SetToken(RefreshToken);
+        return Client.SetTokenAsync(RefreshToken);
     }
 }
 

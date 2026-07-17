@@ -1,6 +1,7 @@
 // Copyright (c) Mako.
 // Licensed under the MIT License.
 
+using System.Threading;
 using System.Threading.Tasks;
 using Mako.Model;
 using Mako.Net.Requests;
@@ -15,8 +16,8 @@ namespace Mako.Net.EndPoints;
 public interface IAuthEndPoint
 {
     [HttpPost("/auth/token")]
-    Task<TokenResponse> RefreshAsync([FormContent] RefreshSessionRequest request);
+    Task<TokenResponse> RefreshAsync([FormContent] RefreshSessionRequest request, CancellationToken token = default);
 
     [HttpPost("/auth/token")]
-    Task<TokenResponse> RequestAsync([FormContent] RequestSessionRequest request);
+    Task<TokenResponse> RequestAsync([FormContent] RequestSessionRequest request, CancellationToken token = default);
 }

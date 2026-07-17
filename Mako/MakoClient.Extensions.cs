@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Mako.Engine;
 using Mako.Engine.Implements;
@@ -16,32 +17,32 @@ namespace Mako;
 
 public partial class MakoClient
 {
-    public Task<Illustration> GetIllustrationFromIdAsync(long id)
+    public Task<Illustration> GetIllustrationFromIdAsync(long id, CancellationToken token = default)
         => RunWithLoggerAsync<Illustration, SingleIllustrationResponse>(t => t
-            .GetSingleIllustrationAsync(id, Configuration.TargetFilter));
+            .GetSingleIllustrationAsync(id, Configuration.TargetFilter, token));
 
-    public Task<Novel> GetNovelFromIdAsync(long id)
+    public Task<Novel> GetNovelFromIdAsync(long id, CancellationToken token = default)
         => RunWithLoggerAsync<Novel, SingleNovelResponse>(t => t
-            .GetSingleNovelAsync(id, Configuration.TargetFilter));
+            .GetSingleNovelAsync(id, Configuration.TargetFilter, token));
 
-    public Task<IWorkEntry> GetWorkFromIdAsync(SimpleWorkType type, long id)
+    public Task<IWorkEntry> GetWorkFromIdAsync(SimpleWorkType type, long id, CancellationToken token = default)
         => RunWithLoggerAsync<IWorkEntry, ISingleResultResponse<IWorkEntry>>(async t => type is SimpleWorkType.Illustration
-            ? await t.GetSingleIllustrationAsync(id, Configuration.TargetFilter).ConfigureAwait(false)
-            : await t.GetSingleNovelAsync(id, Configuration.TargetFilter).ConfigureAwait(false));
+            ? await t.GetSingleIllustrationAsync(id, Configuration.TargetFilter, token).ConfigureAwait(false)
+            : await t.GetSingleNovelAsync(id, Configuration.TargetFilter, token).ConfigureAwait(false));
 
-    public Task<SingleUserResponse> GetUserFromIdAsync(long id)
+    public Task<SingleUserResponse> GetUserFromIdAsync(long id, CancellationToken token = default)
         => RunWithLoggerAsync<SingleUserResponse>(t => t
-            .GetSingleUserAsync(id, Configuration.TargetFilter));
+            .GetSingleUserAsync(id, Configuration.TargetFilter, token));
 
-    public Task<IReadOnlyList<Tag>> GetAutoCompletionForKeyword(string word)
+    public Task<IReadOnlyList<Tag>> GetAutoCompletionForKeyword(string word, bool mergePlainKeywordResult = true, CancellationToken token = default)
         => RunWithLoggerAsync<IReadOnlyList<Tag>, AutoCompletionResponse>(t => t
-            .GetAutoCompletionAsync(word));
+            .GetAutoCompletionAsync(word, mergePlainKeywordResult, token));
 
-    public Task<NovelContent> GetNovelContentAsync(long id)
+    public Task<NovelContent> GetNovelContentAsync(long id, CancellationToken token = default)
         => RunWithLoggerAsync(async t =>
         {
             var contentHtml = await t
-                .GetNovelContentAsync(id)
+                .GetNovelContentAsync(id, false, token)
                 .ConfigureAwait(false);
 
             var leftStack = -2;
@@ -76,136 +77,136 @@ public partial class MakoClient
             return JsonSerializer.Deserialize(span, MakoJsonSerializerContext.Default.NovelContent)!;
         });
 
-    public Task<bool> PostWorkBookmarkAsync(SimpleWorkType type, long id, PrivacyPolicy privacyPolicy, IReadOnlyCollection<string>? tags = null) =>
+    public Task<bool> PostWorkBookmarkAsync(SimpleWorkType type, long id, PrivacyPolicy privacyPolicy, IReadOnlyCollection<string>? tags = null, CancellationToken token = default) =>
         RunWithLoggerAsync(t =>
         {
             var urlTags = tags is { Count: > 0 } ? string.Join(' ', tags) : null;
             return type is SimpleWorkType.Illustration
-                ? t.AddIllustrationBookmarkAsync(new(privacyPolicy, id, urlTags))
-                : t.AddNovelBookmarkAsync(new(privacyPolicy, id, urlTags));
+                ? t.AddIllustrationBookmarkAsync(new(privacyPolicy, id, urlTags), token)
+                : t.AddNovelBookmarkAsync(new(privacyPolicy, id, urlTags), token);
         });
 
-    public Task<bool> RemoveWorkBookmarkAsync(SimpleWorkType type, long id)
+    public Task<bool> RemoveWorkBookmarkAsync(SimpleWorkType type, long id, CancellationToken token = default)
         => RunWithLoggerAsync(t => type is SimpleWorkType.Illustration
-            ? t.RemoveIllustrationBookmarkAsync(id)
-            : t.RemoveNovelBookmarkAsync(id));
+            ? t.RemoveIllustrationBookmarkAsync(id, token)
+            : t.RemoveNovelBookmarkAsync(id, token));
 
-    public Task<IReadOnlyList<User>> RelatedUserAsync(long id)
+    public Task<IReadOnlyList<User>> RelatedUserAsync(long id, CancellationToken token = default)
         => RunWithLoggerAsync<IReadOnlyList<User>, RelatedUsersResponse>(t => t
-            .RelatedUserAsync(id, Configuration.TargetFilter));
+            .RelatedUserAsync(id, Configuration.TargetFilter, token));
 
-    public Task<bool> PostFollowUserAsync(long id, PrivacyPolicy privacyPolicy)
+    public Task<bool> PostFollowUserAsync(long id, PrivacyPolicy privacyPolicy, CancellationToken token = default)
         => RunWithLoggerAsync(t => t
-            .FollowUserAsync(new FollowUserRequest(id, privacyPolicy)));
+            .FollowUserAsync(new FollowUserRequest(id, privacyPolicy), token));
 
-    public Task<bool> RemoveFollowUserAsync(long id)
+    public Task<bool> RemoveFollowUserAsync(long id, CancellationToken token = default) 
         => RunWithLoggerAsync(t => t
-            .RemoveFollowUserAsync(id));
+            .RemoveFollowUserAsync(id, token));
 
-    public Task<IReadOnlyList<TrendingTag>> GetWorkTrendingTagsAsync(SimpleWorkType type)
+    public Task<IReadOnlyList<TrendingTag>> GetWorkTrendingTagsAsync(SimpleWorkType type, CancellationToken token = default)
         => RunWithLoggerAsync<IReadOnlyList<TrendingTag>, TrendingTagResponse>(t => type is SimpleWorkType.Illustration
-            ? t.GetIllustrationTrendingTagsAsync(Configuration.TargetFilter)
-            : t.GetNovelTrendingTagsAsync(Configuration.TargetFilter));
+            ? t.GetIllustrationTrendingTagsAsync(Configuration.TargetFilter, token)
+            : t.GetNovelTrendingTagsAsync(Configuration.TargetFilter, token));
 
-    public Task<UgoiraMetadata> GetUgoiraMetadataAsync(long id)
+    public Task<UgoiraMetadata> GetUgoiraMetadataAsync(long id, CancellationToken token = default)
         => RunWithLoggerAsync<UgoiraMetadata, UgoiraMetadataResponse>(t => t
-            .GetUgoiraMetadataAsync(id));
+            .GetUgoiraMetadataAsync(id, token));
 
-    public Task<bool> DeleteWorkCommentAsync(SimpleWorkType type, long commentId)
+    public Task<bool> DeleteWorkCommentAsync(SimpleWorkType type, long commentId, CancellationToken token = default)
         => RunWithLoggerAsync(t => type is SimpleWorkType.Illustration
-            ? t.DeleteIllustrationCommentAsync(commentId)
-            : t.DeleteNovelCommentAsync(commentId));
+            ? t.DeleteIllustrationCommentAsync(commentId, token)
+            : t.DeleteNovelCommentAsync(commentId, token));
 
-    public Task<Comment> AddWorkCommentAsync(SimpleWorkType type, long workId, string content)
+    public Task<Comment> AddWorkCommentAsync(SimpleWorkType type, long workId, string content, CancellationToken token = default)
         => RunWithLoggerAsync<Comment, PostCommentResponse>(t => type is SimpleWorkType.Illustration
-            ? t.AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(workId, null, content))
-            : t.AddNovelCommentAsync(new AddNormalNovelCommentRequest(workId, null, content)));
+            ? t.AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(workId, null, content), token)
+            : t.AddNovelCommentAsync(new AddNormalNovelCommentRequest(workId, null, content), token));
 
-    public Task<Comment> AddWorkCommentAsync(SimpleWorkType type, long workId, int stampId)
+    public Task<Comment> AddWorkCommentAsync(SimpleWorkType type, long workId, int stampId, CancellationToken token = default)
         => RunWithLoggerAsync<Comment, PostCommentResponse>(t => type is SimpleWorkType.Illustration
-            ? t.AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(workId, null, stampId))
-            : t.AddNovelCommentAsync(new AddStampNovelCommentRequest(workId, null, stampId)));
+            ? t.AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(workId, null, stampId), token)
+            : t.AddNovelCommentAsync(new AddStampNovelCommentRequest(workId, null, stampId), token));
 
-    public Task<Comment> AddWorkCommentAsync(SimpleWorkType type, long workId, long parentCommentId, string content)
+    public Task<Comment> AddWorkCommentAsync(SimpleWorkType type, long workId, long parentCommentId, string content, CancellationToken token = default)
         => RunWithLoggerAsync<Comment, PostCommentResponse>(t => type is SimpleWorkType.Illustration
-            ? t.AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(workId, parentCommentId, content))
-            : t.AddNovelCommentAsync(new AddNormalNovelCommentRequest(workId, parentCommentId, content)));
+            ? t.AddIllustrationCommentAsync(new AddNormalIllustrationCommentRequest(workId, parentCommentId, content), token)
+            : t.AddNovelCommentAsync(new AddNormalNovelCommentRequest(workId, parentCommentId, content), token));
 
-    public Task<Comment> AddWorkCommentAsync(SimpleWorkType type, long workId, long parentCommentId, int stampId)
+    public Task<Comment> AddWorkCommentAsync(SimpleWorkType type, long workId, long parentCommentId, int stampId, CancellationToken token = default)
         => RunWithLoggerAsync<Comment, PostCommentResponse>(t => type is SimpleWorkType.Illustration
-            ? t.AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(workId, parentCommentId, stampId))
-            : t.AddNovelCommentAsync(new AddStampNovelCommentRequest(workId, parentCommentId, stampId)));
+            ? t.AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(workId, parentCommentId, stampId), token)
+            : t.AddNovelCommentAsync(new AddStampNovelCommentRequest(workId, parentCommentId, stampId), token));
 
-    public Task<bool> GetAiShowSettingsAsync()
-        => RunWithLoggerAsync<bool, ShowAiSettingsResponse>(t => t.GetAiShowSettingsAsync());
+    public Task<bool> GetAiShowSettingsAsync(CancellationToken token = default)
+        => RunWithLoggerAsync<bool, ShowAiSettingsResponse>(t => t.GetAiShowSettingsAsync(token));
 
-    public Task<bool> PostAiShowSettingsAsync(bool showAi)
-        => RunWithLoggerAsync<bool, ShowAiSettingsResponse>(t => t.PostAiShowSettingsAsync(new(showAi)));
+    public Task<bool> PostAiShowSettingsAsync(bool showAi, CancellationToken token = default)
+        => RunWithLoggerAsync<bool, ShowAiSettingsResponse>(t => t.PostAiShowSettingsAsync(new(showAi), token));
 
-    public Task<bool> GetRestrictedModeSettingsAsync()
-        => RunWithLoggerAsync<bool, RestrictedModeSettingsResponse>(t => t.GetRestrictedModeSettingsAsync());
+    public Task<bool> GetRestrictedModeSettingsAsync(CancellationToken token = default)
+        => RunWithLoggerAsync<bool, RestrictedModeSettingsResponse>(t => t.GetRestrictedModeSettingsAsync(token));
 
-    public Task<bool> PostRestrictedModeSettingsAsync(bool isRestrictedModeEnabled)
-        => RunWithLoggerAsync<bool, RestrictedModeSettingsResponse>(t => t.PostRestrictedModeSettingsAsync(new(isRestrictedModeEnabled)));
+    public Task<bool> PostRestrictedModeSettingsAsync(bool isRestrictedModeEnabled, CancellationToken token = default)
+        => RunWithLoggerAsync<bool, RestrictedModeSettingsResponse>(t => t.PostRestrictedModeSettingsAsync(new(isRestrictedModeEnabled), token));
 
-    public Task<bool> PostWorkSeriesWatchlistAsync(SimpleWorkType type, long id) =>
+    public Task<bool> PostWorkSeriesWatchlistAsync(SimpleWorkType type, long id, CancellationToken token = default) =>
         RunWithLoggerAsync(t => type is SimpleWorkType.Novel
-            ? t.AddNovelSeriesWatchlistAsync(id)
-            : t.AddMangaSeriesWatchlistAsync(id));
+            ? t.AddNovelSeriesWatchlistAsync(id, token)
+            : t.AddMangaSeriesWatchlistAsync(id, token));
 
-    public Task<bool> RemoveWorkSeriesWatchlistAsync(SimpleWorkType type, long id)
+    public Task<bool> RemoveWorkSeriesWatchlistAsync(SimpleWorkType type, long id, CancellationToken token = default)
         => RunWithLoggerAsync(t => type is SimpleWorkType.Novel
-            ? t.RemoveNovelSeriesWatchlistAsync(id)
-            : t.RemoveMangaSeriesWatchlistAsync(id));
+            ? t.RemoveNovelSeriesWatchlistAsync(id, token)
+            : t.RemoveMangaSeriesWatchlistAsync(id, token));
 
-    public Task<SearchOptions> GetSearchOptionsAsync()
-        => RunWithLoggerAsync(t => t.GetSearchOptionsAsync());
+    public Task<SearchOptions> GetSearchOptionsAsync(CancellationToken token = default)
+        => RunWithLoggerAsync(t => t.GetSearchOptionsAsync(token));
 
     /// <remarks>
     /// 对标 <see cref="GetNovelContentAsync"/>（<see cref="NovelContent"/> 有系列信息）
     /// </remarks>
-    public Task<MangaSeriesContextResponse> GetMangaSeriesContextAsync(long seriesId)
-        => RunWithLoggerAsync(t => t.GetMangaSeriesContextAsync(seriesId, Configuration.TargetFilter));
+    public Task<MangaSeriesContextResponse> GetMangaSeriesContextAsync(long seriesId, CancellationToken token = default)
+        => RunWithLoggerAsync(t => t.GetMangaSeriesContextAsync(seriesId, Configuration.TargetFilter, token));
 
-    public async Task<(MangaSeriesDetail Detail, Illustration First, IFetchEngine<Illustration> Engine)> GetMangaSeriesAsync(long seriesId)
+    public async Task<(MangaSeriesDetail Detail, Illustration First, IFetchEngine<Illustration> Engine)> GetMangaSeriesAsync(long seriesId, CancellationToken token = default)
     {
-        var response = await RunWithLoggerAsync(t => t.GetMangaSeriesDetailAsync(seriesId, Configuration.TargetFilter)).ConfigureAwait(false);
+        var response = await RunWithLoggerAsync(t => t.GetMangaSeriesDetailAsync(seriesId, Configuration.TargetFilter, token)).ConfigureAwait(false);
         return (response.SeriesDetail, response.First, new MangaSeriesEngine(this, seriesId, response));
     }
 
-    public async Task<(NovelSeriesDetail Detail, Novel First, Novel Latest, IFetchEngine<Novel> Engine)> GetNovelSeriesAsync(long seriesId)
+    public async Task<(NovelSeriesDetail Detail, Novel First, Novel Latest, IFetchEngine<Novel> Engine)> GetNovelSeriesAsync(long seriesId, CancellationToken token = default)
     {
-        var response = await RunWithLoggerAsync(t => t.GetNovelSeriesDetailAsync(seriesId)).ConfigureAwait(false);
+        var response = await RunWithLoggerAsync(t => t.GetNovelSeriesDetailAsync(seriesId, token)).ConfigureAwait(false);
         return (response.SeriesDetail, response.First, response.Latest, new NovelSeriesEngine(this, seriesId, response));
     }
 
-    public async Task<(SeriesDetailBase Detail, IWorkEntry First, IFetchEngine<IWorkEntry>)> GetWorkSeriesAsync(SimpleWorkType type, long seriesId)
+    public async Task<(SeriesDetailBase Detail, IWorkEntry First, IFetchEngine<IWorkEntry>)> GetWorkSeriesAsync(SimpleWorkType type, long seriesId, CancellationToken token = default)
     {
         if (type is SimpleWorkType.Novel)
         {
-            var response = await GetNovelSeriesAsync(seriesId).ConfigureAwait(false);
+            var response = await GetNovelSeriesAsync(seriesId, token).ConfigureAwait(false);
             return (response.Detail, response.First, response.Engine);
         }
         else
         {
-            var response = await GetMangaSeriesAsync(seriesId).ConfigureAwait(false);
+            var response = await GetMangaSeriesAsync(seriesId, token).ConfigureAwait(false);
             return (response.Detail, response.First, response.Engine);
         }
     }
 
     #region Misaki
 
-    async Task<IArtworkInfo> IGetArtworkService.GetArtworkAsync(string id) => await GetIllustrationFromIdAsync(long.Parse(id)).ConfigureAwait(false);
+    async Task<IArtworkInfo> IGetArtworkService.GetArtworkAsync(string id, CancellationToken token) => await GetIllustrationFromIdAsync(long.Parse(id), token).ConfigureAwait(false);
 
-    async Task<bool> IPostFavoriteService.PostFavoriteAsync(string id, bool favorite)
+    async Task<bool> IPostFavoriteService.PostFavoriteAsync(string id, bool favorite, CancellationToken token)
     {
         var l = long.Parse(id);
         try
         {
             if (favorite)
-                return await PostWorkBookmarkAsync(SimpleWorkType.Illustration, l, PrivacyPolicy.Public).ConfigureAwait(false);
+                return await PostWorkBookmarkAsync(SimpleWorkType.Illustration, l, PrivacyPolicy.Public, token: token).ConfigureAwait(false);
 
-            return !await RemoveWorkBookmarkAsync(SimpleWorkType.Illustration, l).ConfigureAwait(false);
+            return !await RemoveWorkBookmarkAsync(SimpleWorkType.Illustration, l, token).ConfigureAwait(false);
         }
         catch
         {

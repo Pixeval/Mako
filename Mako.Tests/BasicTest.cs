@@ -14,7 +14,7 @@ public sealed class BasicTest
     [DataRow("<REFRESH_TOKEN>")]
     public async Task TestRefreshTokenValidAsync(string refreshToken)
     {
-        TestSettings.Client.SetToken(refreshToken);
+        await TestSettings.Client.SetTokenAsync(refreshToken);
 
         var result = await TestSettings.Client.IdentifyTokenAsync();
 
