@@ -10,7 +10,7 @@ namespace Mako.Model;
 public abstract record SeriesDetailBase : SimpleSeries
 {
     [JsonPropertyName("user")]
-    public required UserInfo User { get; set; }
+    public required AvatarUser User { get; set; }
 
     [JsonPropertyName("caption")]
     public required string Caption { get; set; } = "";
@@ -38,7 +38,7 @@ public partial record NovelSeriesDetail : SeriesDetailBase
     public required string DisplayText { get; set; } = "";
 
     [JsonPropertyName("novel_ai_type")]
-    public required AiType NovelAiType { get; set; }
+    public required AiType AiType { get; set; }
 }
 
 [Factory]

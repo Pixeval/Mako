@@ -144,4 +144,8 @@ internal static class RecursivePixivAsyncEnumerators
     public class Series<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
         : RecursivePixivAsyncEnumerator<Series, SeriesResponse, TFetchEngine>(pixivFetchEngine, initialUrl, MakoJsonSerializerContext.Default.SeriesResponse)
         where TFetchEngine : class, IFetchEngine<Series>;
+
+    public class BookmarkUserInfo<TFetchEngine>(TFetchEngine pixivFetchEngine, string initialUrl)
+        : RecursivePixivAsyncEnumerator<BookmarkUserInfo, BookmarkUserInfoResponse, TFetchEngine>(pixivFetchEngine, initialUrl, MakoJsonSerializerContext.Default.BookmarkUserInfoResponse)
+        where TFetchEngine : class, IFetchEngine<BookmarkUserInfo>;
 }

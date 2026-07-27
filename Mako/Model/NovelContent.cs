@@ -291,7 +291,7 @@ public partial record NovelUser
     public required string Name { get; set; } = "";
 
     [JsonPropertyName("image")]
-    public required string Image { get; set; } = DefaultImageUrls.NoProfile;
+    public required string Image { get; set; } = DefaultImageUrls.ImageNotAvailable;
 }
 
 [Factory]

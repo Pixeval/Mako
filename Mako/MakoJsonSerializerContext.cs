@@ -30,6 +30,7 @@ namespace Mako;
 [JsonSerializable(typeof(ShowAiSettingsResponse))]
 [JsonSerializable(typeof(RestrictedModeSettingsResponse))]
 [JsonSerializable(typeof(SeriesResponse))]
+[JsonSerializable(typeof(BookmarkUserInfoResponse))]
 [JsonSerializable(typeof(MangaSeriesDetailResponse))]
 [JsonSerializable(typeof(NovelSeriesDetailResponse))]
 [JsonSerializable(typeof(MangaSeriesContextResponse))]

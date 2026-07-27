@@ -149,6 +149,16 @@ public partial class MakoClient
             : IllustrationCommentReplies(commentId);
     }
 
+    /// <inheritdoc cref="BookmarkUserIllustration" />
+    public IFetchEngine<BookmarkUserInfo> BookmarkUserWork(
+        SimpleWorkType type,
+        long workId)
+    {
+        return type is SimpleWorkType.Novel
+            ? BookmarkUserNovel(workId)
+            : BookmarkUserIllustration(workId);
+    }
+
     #region Helpers
 
     public static DateTimeOffset RankingMaxDateTime =>

@@ -64,24 +64,17 @@ public partial record TokenUser : UserBasicInfo
 
     /// <inheritdoc />
     public override string AvatarUrl => ProfileImageUrls.Px170X170;
-
-    /// <inheritdoc />
-    public override string Description
-    {
-        get => "";
-        set { }
-    }
 }
 
 [Factory]
 public partial record TokenProfileImageUrls
 {
     [JsonPropertyName("px_16x16")]
-    public required string Px16X16 { get; set; } = DefaultImageUrls.NoProfile;
+    public required string Px16X16 { get; set; } = DefaultImageUrls.ImageNotAvailable;
 
     [JsonPropertyName("px_50x50")]
-    public required string Px50X50 { get; set; } = DefaultImageUrls.NoProfile;
+    public required string Px50X50 { get; set; } = DefaultImageUrls.ImageNotAvailable;
 
     [JsonPropertyName("px_170x170")]
-    public required string Px170X170 { get; set; } = DefaultImageUrls.NoProfile;
+    public required string Px170X170 { get; set; } = DefaultImageUrls.ImageNotAvailable;
 }

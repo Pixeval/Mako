@@ -12,11 +12,8 @@ namespace Mako.Net.Responses;
 [Factory]
 public partial record SingleUserResponse
 {
-    /// <summary>
-    /// 此处<see cref="UserInfo"/>一定有<see cref="UserInfo.Description"/>
-    /// </summary>
     [JsonPropertyName("user")]
-    public required UserInfo UserEntity { get; set; }
+    public required SingleUserInfo UserEntity { get; set; }
 
     [JsonPropertyName("profile")]
     public required Profile UserProfile { get; set; }
