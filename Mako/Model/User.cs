@@ -80,7 +80,7 @@ public partial record AvatarUser : UserBasicInfo
     /// <see cref="SingleUserResponse"/> 等结构里可能没有此项
     /// </remarks>
     [JsonPropertyName("is_accept_request")]
-    public required bool IsAcceptRequest { get; set; }
+    public bool IsAcceptRequest { get; set; }
 
     [JsonPropertyName("profile_image_urls")]
     public required MediumOnlyImageUrl ProfileImageUrls { get; set; }
