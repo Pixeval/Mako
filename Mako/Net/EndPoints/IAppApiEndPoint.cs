@@ -24,11 +24,17 @@ internal interface IAppApiEndPoint
     [HttpPost("/v1/illust/bookmark/delete")]
     Task<HttpResponseMessage> RemoveIllustrationBookmarkAsync([FormField] [AliasAs("illust_id")] long id, CancellationToken token = default);
 
+    [HttpGet("/v2/illust/bookmark/detail")]
+    Task<BookmarkDetailResponse> GetIllustrationBookmarkDetailAsync([AliasAs("illust_id")] long id, CancellationToken token = default);
+
     [HttpPost("/v2/novel/bookmark/add")]
     Task<HttpResponseMessage> AddNovelBookmarkAsync([FormContent] AddNovelBookmarkRequest request, CancellationToken token = default);
 
     [HttpPost("/v1/novel/bookmark/delete")]
     Task<HttpResponseMessage> RemoveNovelBookmarkAsync([FormField][AliasAs("novel_id")] long id, CancellationToken token = default);
+
+    [HttpGet("/v2/novel/bookmark/detail")]
+    Task<BookmarkDetailResponse> GetNovelBookmarkDetailAsync([AliasAs("novel_id")] long id, CancellationToken token = default);
 
     [HttpPost("/v1/watchlist/manga/add")]
     Task<HttpResponseMessage> AddMangaSeriesWatchlistAsync([FormField][AliasAs("series_id")] long id, CancellationToken token = default);

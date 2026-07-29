@@ -24,7 +24,7 @@ internal class IllustrationBookmarksEngine : AbstractPixivFetchEngine<Illustrati
     /// </remarks>
     /// <param name="makoClient">The <see cref="MakoClient" /> that owns this object</param>
     /// <param name="uid">ID of the user</param>
-    /// <param name="tag"></param>
+    /// <param name="tag"><see langword="null"/>显示全部，"未分類"显示未打标签的</param>
     /// <param name="privacyPolicy">The privacy option</param>
     [MakoExtensionConstructor(true)]
     public IllustrationBookmarksEngine(MakoClient makoClient,
