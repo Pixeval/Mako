@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Mako.Net;
 
-internal sealed class PixivApiRequestThrottleState : IDisposable
+internal sealed class PixivAppApiRequestThrottleState : IDisposable
 {
     public DateTimeOffset CooldownUntil { get; private set; } = DateTimeOffset.MinValue;
 

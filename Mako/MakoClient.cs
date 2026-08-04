@@ -46,7 +46,7 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
 
         _ = serviceCollection
             .AddSingleton(this)
-            .AddSingleton<PixivApiRequestThrottleState>()
+            .AddSingleton<PixivAppApiRequestThrottleState>()
             .AddSingleton<MakoHttpMessageInvokerProvider>()
             .AddKeyedSingleton<HttpMessageHandler>(
                 DomainFrontingType.Fragmentation,
@@ -75,15 +75,17 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
                         makoClient.Configuration);
                 })
             */
-            .AddTransient<PixivApiHttpMessageHandler>()
+            .AddTransient<PixivAppApiHttpMessageHandler>()
+            .AddTransient<PixivWebApiHttpMessageHandler>()
+            .AddTransient<PixivOAuthHttpMessageHandler>()
             .AddTransient<PixivImageHttpMessageHandler>()
             .AddSingleton<RefreshTokenOption>();
 
         _ = serviceCollection.AddHttpApi<IAuthEndPoint>()
-            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+            .ConfigurePrimaryHttpMessageHandler<PixivOAuthHttpMessageHandler>();
 
         _ = serviceCollection.AddHttpApi<IAppApiEndPoint>()
-            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+            .ConfigurePrimaryHttpMessageHandler<PixivAppApiHttpMessageHandler>();
 
         _ = serviceCollection.AddTokenProvider<IAppApiEndPoint, PixivTokenProvider>();
 
@@ -98,17 +100,17 @@ public partial class MakoClient : IDisposable, IAsyncDisposable, IDownloadHttpCl
         _ = serviceCollection
             .AddHttpClient(nameof(MakoApiKind.AppApi))
             .ConfigureHttpClient(client => client.BaseAddress = new Uri(MakoHttpOptions.AppApiBaseUrl))
-            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+            .ConfigurePrimaryHttpMessageHandler<PixivAppApiHttpMessageHandler>();
 
         _ = serviceCollection
             .AddHttpClient(nameof(MakoApiKind.WebApi))
             .ConfigureHttpClient(client => client.BaseAddress = new Uri(MakoHttpOptions.WebApiBaseUrl))
-            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+            .ConfigurePrimaryHttpMessageHandler<PixivWebApiHttpMessageHandler>();
 
         _ = serviceCollection
             .AddHttpClient(nameof(MakoApiKind.AuthApi))
             .ConfigureHttpClient(client => client.BaseAddress = new Uri(MakoHttpOptions.OAuthBaseUrl))
-            .ConfigurePrimaryHttpMessageHandler<PixivApiHttpMessageHandler>();
+            .ConfigurePrimaryHttpMessageHandler<PixivOAuthHttpMessageHandler>();
 
         _ = serviceCollection
             .AddWebApiClient()
