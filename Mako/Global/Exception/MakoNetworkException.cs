@@ -21,7 +21,7 @@ public class MakoNetworkException(string url, bool domainFronting, string? extra
     /// <param name="message"></param>
     /// <param name="domainFronting"></param>
     /// <returns></returns>
-    public static async Task<System.Exception> FromHttpResponseMessageAsync(HttpResponseMessage message, bool domainFronting)
+    public static async Task<MakoNetworkException> FromHttpResponseMessageAsync(HttpResponseMessage message, bool domainFronting)
     {
         return new MakoNetworkException(message.RequestMessage?.RequestUri?.ToString() ?? "", domainFronting, await message.Content.ReadAsStringAsync().ConfigureAwait(false), (int) message.StatusCode);
     }

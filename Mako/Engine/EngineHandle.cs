@@ -33,6 +33,8 @@ public class EngineHandle : ICancellable, INotifyCompletion
     /// </summary>
     public bool IsCompleted { get; set; }
 
+    public Exception? LastException { get; private set; }
+
     public EngineHandle(Guid id, Action<EngineHandle>? onCompletion = null)
     {
         _onCompletion = onCompletion;
@@ -62,9 +64,18 @@ public class EngineHandle : ICancellable, INotifyCompletion
     /// </summary>
     public void Complete()
     {
+        LastException = null;
         IsCompleted = true;
         _onCompletion?.Invoke(this);
     }
+
+    internal void ReportFailure(Exception exception)
+    {
+        ArgumentNullException.ThrowIfNull(exception);
+        LastException = exception;
+    }
+
+    internal void ClearFailure() => LastException = null;
 
     public static bool operator ==(EngineHandle lhs, EngineHandle rhs) => Equals(lhs, rhs);
 

@@ -95,20 +95,39 @@ internal abstract class RecursivePixivAsyncEnumerator<TEntity, TRawEntity, TFetc
             var responseMessage = await ApiClient.SendAsync(request).ConfigureAwait(false);
             if (!responseMessage.IsSuccessStatusCode)
             {
-                MakoClient.LogException(await MakoNetworkException.FromHttpResponseMessageAsync(responseMessage, MakoClient.Configuration.DomainFronting).ConfigureAwait(false));
+                var responseException = await MakoNetworkException
+                    .FromHttpResponseMessageAsync(responseMessage, MakoClient.Configuration.DomainFronting)
+                    .ConfigureAwait(false);
+                PixivFetchEngine.EngineHandle.ReportFailure(responseException);
+                MakoClient.LogException(responseException);
                 return null;
             }
 
             var json = await responseMessage.Content.ReadFromJsonAsync(jsonTypeInfo).ConfigureAwait(false);
 
             if (json is not null)
+            {
+                PixivFetchEngine.EngineHandle.ClearFailure();
                 return json;
+            }
 
-            MakoClient.LogException(new MakoNetworkException(url, MakoClient.Configuration.DomainFronting, "Result is null", (int) responseMessage.StatusCode));
+            var emptyResponseException = new MakoNetworkException(
+                url,
+                MakoClient.Configuration.DomainFronting,
+                "Result is null",
+                (int) responseMessage.StatusCode);
+            PixivFetchEngine.EngineHandle.ReportFailure(emptyResponseException);
+            MakoClient.LogException(emptyResponseException);
         }
         catch (Exception e)
         {
-            MakoClient.LogException(new MakoNetworkException(url, MakoClient.Configuration.DomainFronting, e.Message, (int?) (e as HttpRequestException)?.StatusCode ?? -1));
+            var networkException = new MakoNetworkException(
+                url,
+                MakoClient.Configuration.DomainFronting,
+                e.Message,
+                (int?) (e as HttpRequestException)?.StatusCode ?? -1);
+            PixivFetchEngine.EngineHandle.ReportFailure(networkException);
+            MakoClient.LogException(networkException);
         }
 
         return null;

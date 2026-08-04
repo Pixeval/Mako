@@ -8,9 +8,15 @@ namespace Mako.Net;
 
 internal sealed class PixivApiRequestThrottleState : IDisposable
 {
-    public DateTime Cooldown { get; set; } = DateTime.MinValue;
+    public DateTimeOffset CooldownUntil { get; private set; } = DateTimeOffset.MinValue;
 
     public SemaphoreSlim CooldownLock { get; } = new(1, 1);
+
+    public void ExtendCooldown(DateTimeOffset cooldownUntil)
+    {
+        if (cooldownUntil > CooldownUntil)
+            CooldownUntil = cooldownUntil;
+    }
 
     public void Dispose() => CooldownLock.Dispose();
 }

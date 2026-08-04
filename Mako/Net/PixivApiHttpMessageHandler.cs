@@ -17,13 +17,14 @@ internal class PixivApiHttpMessageHandler(
     MakoHttpMessageInvokerProvider invokerProvider)
     : MakoClientSupportedHttpMessageHandler(makoClient, invokerProvider)
 {
+    private static readonly TimeSpan _DefaultRateLimitCooldown = TimeSpan.FromMinutes(1);
+
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         await throttleState.CooldownLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            // 检查冷却时间并等待
-            var delay = throttleState.Cooldown - DateTime.UtcNow;
+            var delay = throttleState.CooldownUntil - DateTimeOffset.UtcNow;
             if (delay > TimeSpan.Zero)
                 await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
 
@@ -59,11 +60,21 @@ internal class PixivApiHttpMessageHandler(
                 .SendAsync(request, cancellationToken)
                 .ConfigureAwait(false);
 
-            // 更新冷却时间
-            throttleState.Cooldown = DateTime.UtcNow.AddMilliseconds(cooldown);
+            var now = DateTimeOffset.UtcNow;
+            throttleState.ExtendCooldown(now.AddMilliseconds(cooldown));
 
             if (result.StatusCode is HttpStatusCode.TooManyRequests)
-                MakoClient.OnRateLimitEncountered();
+            {
+                // 实际上 Pixiv 没有使用 Retry-After 头
+                var retryAt = result.Headers.RetryAfter switch
+                {
+                    { Delta: { } retryAfter } when retryAfter > TimeSpan.Zero => now.Add(retryAfter),
+                    { Date: { } retryDate } when retryDate > now => retryDate,
+                    _ => now.Add(_DefaultRateLimitCooldown)
+                };
+                throttleState.ExtendCooldown(retryAt);
+                MakoClient.OnRateLimitEncountered(throttleState.CooldownUntil);
+            }
 
             return result;
         }
