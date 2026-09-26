@@ -12,6 +12,7 @@ using Mako.Model;
 using Mako.Net.EndPoints;
 using Mako.Net.Requests;
 using Mako.Net.Responses;
+using Microsoft.Extensions.DependencyInjection;
 using Misaki;
 
 namespace Mako;
@@ -117,7 +118,7 @@ public partial class MakoClient
             .FollowUserAsync(new FollowUserRequest(id, privacyPolicy), token));
 
     /// <inheritdoc cref="IAppApiEndPoint.RemoveFollowUserAsync" />
-    public Task<bool> RemoveFollowUserAsync(long id, CancellationToken token = default) 
+    public Task<bool> RemoveFollowUserAsync(long id, CancellationToken token = default)
         => RunWithLoggerAsync(t => t
             .RemoveFollowUserAsync(id, token));
 
@@ -128,9 +129,16 @@ public partial class MakoClient
             : t.GetNovelTrendingTagsAsync(Configuration.TargetFilter, token));
 
     /// <inheritdoc cref="IAppApiEndPoint.GetUgoiraMetadataAsync" />
-    public Task<UgoiraMetadata> GetUgoiraMetadataAsync(long id, CancellationToken token = default)
-        => RunWithLoggerAsync<UgoiraMetadata, UgoiraMetadataResponse>(t => t
-            .GetUgoiraMetadataAsync(id, token));
+    /// <remarks>
+    /// Failures propagate to the caller, which decides whether to retry.
+    /// </remarks>
+    public async Task<UgoiraMetadata> GetUgoiraMetadataAsync(long id, CancellationToken token = default)
+    {
+        EnsureBuilt();
+        var endpoint = Provider.GetRequiredService<IAppApiEndPoint>();
+        var response = await endpoint.GetUgoiraMetadataAsync(id, token).ConfigureAwait(false);
+        return response?.Content ?? throw new JsonException("The ugoira response contains no metadata.");
+    }
 
     /// <inheritdoc cref="IAppApiEndPoint.DeleteIllustrationCommentAsync" />
     public Task<bool> DeleteWorkCommentAsync(SimpleWorkType type, long commentId, CancellationToken token = default)
@@ -161,7 +169,7 @@ public partial class MakoClient
         => RunWithLoggerAsync<Comment, PostCommentResponse>(t => type is SimpleWorkType.Illustration
             ? t.AddIllustrationCommentAsync(new AddStampIllustrationCommentRequest(workId, parentCommentId, stampId), token)
             : t.AddNovelCommentAsync(new AddStampNovelCommentRequest(workId, parentCommentId, stampId), token));
-    
+
     /// <inheritdoc cref="IAppApiEndPoint.GetAiShowSettingsAsync" />
     public Task<bool> GetAiShowSettingsAsync(CancellationToken token = default)
         => RunWithLoggerAsync<bool, ShowAiSettingsResponse>(t => t.GetAiShowSettingsAsync(token));

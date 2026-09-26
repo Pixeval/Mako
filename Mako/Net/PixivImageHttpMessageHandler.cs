@@ -42,6 +42,6 @@ internal class PixivImageHttpMessageHandler(
         if (domainFronting && request.RequestUri is not null)
             request.RequestUri = new UriBuilder(request.RequestUri) { Scheme = "http" }.Uri;
 
-        return invoker.SendAsync(request, cancellationToken);
+        return SendWithRateLimitNotificationAsync(invoker, request, cancellationToken);
     }
 }

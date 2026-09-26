@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Mako.Utilities;
 using Misaki;
@@ -132,7 +133,7 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
     {
         var fieldInfo = typeof(ThumbnailSize).GetField(value.ToString());
         if (fieldInfo?.GetCustomAttribute<ImageFrame.SizeAttribute>() is not
-                { Width: var width, Height: var height })
+            { Width: var width, Height: var height })
             throw new NotSupportedException(value.ToString());
         return IImageSize.Uniform(this, width, height);
     }
@@ -192,16 +193,16 @@ public partial record Illustration : WorkBase, IWorkEntry, ISingleImage, ISingle
                     [.. ugoiraMetadata.Delays]),
             ]);
 
-    [MemberNotNull(nameof(UgoiraMetadata))]
-    private async Task<UgoiraMetadata> GetUgoiraMetadataAsync(IMisakiService service)
+    private Task<UgoiraMetadata> GetUgoiraMetadataAsync(IMisakiService service) =>
+        service is MakoClient client
+            ? LoadUgoiraMetadataAsync(client)
+            : throw new InvalidOperationException("Invalid service");
+
+    public async Task<UgoiraMetadata> LoadUgoiraMetadataAsync(MakoClient client, CancellationToken token = default)
     {
         if (!IsPicGif)
             throw new InvalidOperationException("Not Ugoira");
-        if (service is not MakoClient makoClient)
-            throw new InvalidOperationException("Invalid service");
-#pragma warning disable CS8774 // 退出时，成员必须具有非 null 值。 傻逼编译器不知道为什么报警告
-        return UgoiraMetadata ??= await makoClient.GetUgoiraMetadataAsync(Id);
-#pragma warning restore CS8774
+        return UgoiraMetadata ??= await client.GetUgoiraMetadataAsync(Id, token).ConfigureAwait(false);
     }
 
     [field: AllowNull, MaybeNull]

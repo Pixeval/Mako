@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,8 +15,6 @@ internal sealed class PixivAppApiHttpMessageHandler(
     MakoHttpMessageInvokerProvider invokerProvider)
     : MakoClientSupportedHttpMessageHandler(makoClient, invokerProvider)
 {
-    private static readonly TimeSpan _DefaultRateLimitCooldown = TimeSpan.FromMinutes(1);
-
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         Debug.Assert(request.RequestUri is { Host: MakoHttpOptions.AppApiHost });
@@ -33,19 +30,6 @@ internal sealed class PixivAppApiHttpMessageHandler(
             var result = await SendApiAsync(request, cancellationToken).ConfigureAwait(false);
             var now = DateTimeOffset.UtcNow;
             throttleState.ExtendCooldown(now.AddMilliseconds(MakoClient.Configuration.ApiRequestCooldown));
-
-            if (result.StatusCode is HttpStatusCode.TooManyRequests)
-            {
-                // Pixiv currently omits Retry-After, but honor it if the API starts returning one.
-                var retryAt = result.Headers.RetryAfter switch
-                {
-                    { Delta: { } retryAfter } when retryAfter > TimeSpan.Zero => now.Add(retryAfter),
-                    { Date: { } retryDate } when retryDate > now => retryDate,
-                    _ => now.Add(_DefaultRateLimitCooldown)
-                };
-                throttleState.ExtendCooldown(retryAt);
-                MakoClient.OnRateLimitEncountered(throttleState.CooldownUntil);
-            }
 
             return result;
         }

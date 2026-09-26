@@ -28,6 +28,14 @@ public abstract class MakoClientSupportedHttpMessageHandler : HttpMessageHandler
         var invoker = configuration.DomainFronting
             ? InvokerProvider.GetApiDomainFrontingInvoker(configuration.DomainFrontingType)
             : InvokerProvider.GetDirectInvoker();
-        return invoker.SendAsync(request, token);
+        return SendWithRateLimitNotificationAsync(invoker, request, token);
+    }
+
+    private protected async Task<HttpResponseMessage> SendWithRateLimitNotificationAsync(
+        HttpMessageInvoker invoker, HttpRequestMessage request, CancellationToken token)
+    {
+        var response = await invoker.SendAsync(request, token).ConfigureAwait(false);
+        MakoClient.ReportRateLimit(response, request.RequestUri);
+        return response;
     }
 }
