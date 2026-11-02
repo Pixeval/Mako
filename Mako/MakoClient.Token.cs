@@ -18,7 +18,7 @@ public partial class MakoClient
     /// 关闭所有正在运行的实例并更换 Token（切换账号）
     /// </summary>
     /// <remarks>
-    /// 仅设置，不验证 Token 是否有效或刷新 Token，可以手动调用 <see cref="IdentifyTokenAsync"/> 来验证 Token 是否有效
+    /// 仅设置，不验证 Token 是否有效或刷新 Token，可以手动调用 <see cref="TryValidateTokenAsync"/> 来验证 Token 是否有效
     /// </remarks>
     public async Task SetTokenAsync(string? refreshToken, CancellationToken token = default)
     {
@@ -58,15 +58,14 @@ public partial class MakoClient
     /// <summary>
     /// 测试当前 Token 是否有效
     /// </summary>
-    public async Task<bool> IdentifyTokenAsync(CancellationToken token = default)
+    public async Task<bool> TryValidateTokenAsync(CancellationToken token = default)
     {
         EnsureBuilt();
         if (Status is ClientStatus.Created)
             throw new InvalidOperationException("Token not set");
-        var tokenProvider = GetTokenProvider();
         try
         {
-            _ = await tokenProvider.GetTokenAsync(token);
+            await ValidateTokenAsync(token).ConfigureAwait(false);
             return true;
         }
         catch (Exception e)
@@ -74,6 +73,19 @@ public partial class MakoClient
             LogException(e);
             return false;
         }
+    }
+
+    /// <summary>
+    /// 验证当前 Token，失败时保留异常供调用方处理。
+    /// </summary>
+    public async Task ValidateTokenAsync(CancellationToken token = default)
+    {
+        EnsureBuilt();
+        if (Status is ClientStatus.Created)
+            throw new InvalidOperationException("Token not set");
+        var result = await GetTokenProvider().GetTokenAsync(token).ConfigureAwait(false);
+        if (string.IsNullOrWhiteSpace(result?.Access_token))
+            throw new InvalidOperationException("Token request returned no access token");
     }
 
     private async Task ClearTokenInternalAsync(CancellationToken token = default)

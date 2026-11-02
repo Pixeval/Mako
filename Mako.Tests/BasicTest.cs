@@ -16,7 +16,7 @@ public sealed class BasicTest
     {
         await TestSettings.Client.SetTokenAsync(refreshToken);
 
-        var result = await TestSettings.Client.IdentifyTokenAsync();
+        var result = await TestSettings.Client.TryValidateTokenAsync();
 
         Assert.IsTrue(result);
 
