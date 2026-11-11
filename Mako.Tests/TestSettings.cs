@@ -18,6 +18,8 @@ public static class TestSettings
 {
     public static string RefreshToken => throw new NotImplementedException();
 
+    public static string? Cookie => null;
+
     public static IReadOnlyList<string> PixivAppApiNameResolver { get; } =
     [
         "104.18.42.239",
@@ -68,7 +70,7 @@ public static class TestSettings
             DomainFronting: false,
             DomainFrontingType: DomainFrontingType.Fragmentation,
             Proxy: null /*UseSystemProxy*/,
-            Cookie: null,
+            Cookie: Cookie,
             MirrorHost: null,
             TargetFilter: TargetFilter.ForAndroid,
             ApiRequestCooldown: 800,
@@ -91,4 +93,3 @@ public static class TestSettings
         return Client.SetTokenAsync(RefreshToken);
     }
 }
-

@@ -1,0 +1,5 @@
+<Project>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net11.0' and '$(EnableRuntimeAsync)' != 'false'">
+        <Features>$(Features);runtime-async=on</Features>
+    </PropertyGroup>
+</Project>
